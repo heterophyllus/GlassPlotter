@@ -3,14 +3,14 @@
 ![MDI](image/Screenshot_MDI.png)
 
 ## Overview
-GlassPlotter is an open source, comprehensive glass map viewer. It aims to be useful for daily work of diverse optical designers.
+GlassPlotter is an open source and comprehensive glassmap viewer. It aims to be useful for daily work of diverse optical designers.
 
 
 ## Key Features
-- Explore glassmaps with easy-to-use GUI
-  - Optical designers eager to find the best material to satisfy the target function.  This application provides the supportive environment to explore various optical glasses from different suppliers.
-- Support user defined curve
-  - Optical designers are often confused by the different definition of "normal line".  This application enables the consistent display on the single norm defined by the user.
+- Comprehensive environment with reasonable GUI
+  - This application provides rich environment to explore various glasses from different suppliers.
+- User defined curve
+  - This application frees optical designers from inconsistent "normal line" defined by every manufacturer. 
 
   
 ## Getting Started 
@@ -19,7 +19,7 @@ Executable binaries for Windows/Mac can be downloaded from [Release page](https:
 See also [Wiki](https://github.com/heterophyllus/glassplotter/wiki) to get more information.
 
 ## Resources
-This application utilizes glass data from catalog files in two formats.
+This application utilizes glass data from catalog files in either of two formats.
 
 1. Zemax AGF  
   AGF files are available on every manufacturers' web site. 
@@ -39,7 +39,7 @@ This application is built with:
 
 
 ## License
-This project is licensed under the GPL v3 License - see the [LICENSE](LICENSE.md) for details.
+This project is licensed under the GPL License - see the [LICENSE](LICENSE.md) for details.
 
 ## Contribution
 Contributions and feedbacks are greatly appreciated.
