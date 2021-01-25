@@ -30,11 +30,14 @@
 #define GLASSMAPFORM_H
 
 #include <QWidget>
+/*
 #include <QGridLayout>
 #include <QLabel>
 #include <QCheckBox>
 #include <QScrollArea>
+*/
 
+#include "qcputil.h"
 #include "qcpscatterchart.h"
 #include "glasscatalog.h"
 #include "glassdatasheetform.h"
@@ -109,12 +112,8 @@ public:
 
     void setUpScrollArea();
     void setUpCurveCtrl();
-
     void setDefault();
-
     void saveSetting();
-
-    QColor getColorFromIndex(int index);
 
 private slots:
 
@@ -158,7 +157,6 @@ private slots:
      * @name SLOT
      */
     void resetView();
-
 
     void showPresetDlg();
 

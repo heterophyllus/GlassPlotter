@@ -68,26 +68,6 @@ DispersionPlotForm::~DispersionPlotForm()
     delete ui;
 }
 
-QVector<double> DispersionPlotForm::scaleVector(QVector<double> v, double scale)
-{
-    QVector<double> vv;
-    vv = v;
-
-    for(int i = 0; i < v.size(); i++){
-        vv[i] = v[i]*scale;
-    }
-    return vv;
-}
-
-QCPRange DispersionPlotForm::currentXrange()
-{
-    return m_customPlot->xAxis->range();
-}
-
-QCPRange DispersionPlotForm::currentYrange()
-{
-    return m_customPlot->yAxis->range();
-}
 
 void DispersionPlotForm::setColorToGraph(QCPGraph* graph, QColor color)
 {
@@ -97,19 +77,6 @@ void DispersionPlotForm::setColorToGraph(QCPGraph* graph, QColor color)
     graph->setPen(pen);
 }
 
-QVector<double> DispersionPlotForm::getVectorFromRange(QCPRange range)
-{
-    QVector<double> xdata;
-    double lambdamin = range.lower;
-    double lambdamax = range.upper;
-    double lambdanano = lambdamin;
-    while(lambdanano < lambdamax)
-    {
-        xdata.append(lambdanano/1000);
-        lambdanano += plotStep;
-    }
-    return xdata;
-}
 
 QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
 {
@@ -139,15 +106,6 @@ QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
 }
 
 
-QColor DispersionPlotForm::getColorFromIndex(int i)
-{
-    QCPColorGradient colorgrad;
-    colorgrad.loadPreset(QCPColorGradient::gpHues);
-    QColor color = colorgrad.color(i, QCPRange(0, maxGraphCount));
-
-    return color;
-}
-
 void DispersionPlotForm::addGraph()
 {
     if(m_customPlot->graphCount() >= maxGraphCount+1) // 5 glass + 1 curve
@@ -176,11 +134,11 @@ void DispersionPlotForm::updateAll()
     m_customPlot->clearGraphs();
     m_table->clear();
 
-    QVector<double> xdata, ydata;
+    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
+    QVector<double> ydata;
     QCPGraph* graph;
-    Glass* currentGlass;
 
-    xdata = getVectorFromRange(currentXrange());
+    Glass* currentGlass;
 
     int rowCount = xdata.size();
     int columnCount = m_glassList.size() + 1+1; // lambda + glasses
@@ -189,6 +147,7 @@ void DispersionPlotForm::updateAll()
 
     QStringList header = QStringList() << "WVL";
     QTableWidgetItem* item;
+
     int i,j;
 
 
@@ -201,8 +160,8 @@ void DispersionPlotForm::updateAll()
         ydata = currentGlass->index(xdata);
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
-        graph->setData(scaleVector(xdata,1000), ydata);
-        setColorToGraph(graph, getColorFromIndex(i));
+        graph->setData(QCPUtil::scaleVector(xdata,1000), ydata);
+        setColorToGraph(graph, QCPUtil::getColorFromIndex(i, maxGraphCount));
         graph->setVisible(true);
 
         // table
@@ -211,7 +170,7 @@ void DispersionPlotForm::updateAll()
         {
             // wavelength
             item = new QTableWidgetItem;
-            item->setText(QString::number( scaleVector(xdata, 1000).at(j) ) );
+            item->setText(QString::number( QCPUtil::scaleVector(xdata, 1000).at(j) ) );
             m_table->setItem(j, 0, item);
 
             // refractive indices
@@ -228,7 +187,7 @@ void DispersionPlotForm::updateAll()
     ydata = computeUserDefined(xdata);
     graph = m_customPlot->addGraph();
     graph->setName("User Defined Curve");
-    graph->setData(scaleVector(xdata, 1000), ydata);
+    graph->setData(QCPUtil::scaleVector(xdata, 1000), ydata);
     graph->setVisible(m_checkBox->checkState());
     setColorToGraph(graph,Qt::black);
 

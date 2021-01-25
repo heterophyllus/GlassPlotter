@@ -56,52 +56,6 @@ TransmittancePlotForm::~TransmittancePlotForm()
     delete ui;
 }
 
-QVector<double> TransmittancePlotForm::scaleVector(QVector<double> v, double scale)
-{
-    QVector<double> vv;
-    vv = v;
-
-    for(int i = 0; i < v.size(); i++){
-        vv[i] = v[i]*scale;
-    }
-    return vv;
-}
-
-QCPRange TransmittancePlotForm::currentXrange()
-{
-    return m_customPlot->xAxis->range();
-}
-
-QCPRange TransmittancePlotForm::currentYrange()
-{
-    return m_customPlot->yAxis->range();
-}
-
-
-QVector<double> TransmittancePlotForm::getVectorFromRange(QCPRange range)
-{
-    QVector<double> xdata;
-    double lambdamin = range.lower;
-    double lambdamax = range.upper;
-    double lambdanano = lambdamin;
-    while(lambdanano < lambdamax)
-    {
-        xdata.append(lambdanano/1000);
-        lambdanano += plotStep;
-    }
-    return xdata;
-}
-
-
-QColor TransmittancePlotForm::getColorFromIndex(int i)
-{
-    QCPColorGradient colorgrad;
-    colorgrad.loadPreset(QCPColorGradient::gpHues);
-    QColor color = colorgrad.color(i, QCPRange(0, maxGraphCount));
-
-    return color;
-}
-
 void TransmittancePlotForm::setColorToGraph(QCPGraph* graph, QColor color)
 {
     QPen pen;
@@ -139,7 +93,7 @@ void TransmittancePlotForm::updateAll()
 
     double thickness = ui->lineEdit_Thickness->text().toDouble();
 
-    QVector<double> xdata = getVectorFromRange(currentXrange());
+    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range());
     QVector<double> ydata;
     QCPGraph* graph;
     QCPItemTracer* upperTracer;
@@ -165,8 +119,8 @@ void TransmittancePlotForm::updateAll()
         ydata = currentGlass->transmittance(xdata, thickness);
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
-        graph->setData(scaleVector(xdata,1000), ydata);
-        setColorToGraph(graph, getColorFromIndex(i));
+        graph->setData(QCPUtil::scaleVector(xdata,1000), ydata);
+        setColorToGraph(graph, QCPUtil::getColorFromIndex(i,maxGraphCount));
         graph->setVisible(true);
 
         // tracer
@@ -194,7 +148,7 @@ void TransmittancePlotForm::updateAll()
         {
             // wavelength
             item = new QTableWidgetItem;
-            item->setText(QString::number( scaleVector(xdata, 1000).at(j) ) );
+            item->setText(QString::number( QCPUtil::scaleVector(xdata, 1000).at(j) ) );
             m_table->setItem(j, 0, item);
 
             // refractive indices
@@ -254,7 +208,6 @@ void TransmittancePlotForm::setAxis()
     m_customPlot->yAxis->setRange(yrange);
 
     updateAll();
-    m_customPlot->replot();
 }
 
 void TransmittancePlotForm::clearAll()

@@ -56,7 +56,7 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, int plotType, QMdiA
     {
         entry = new GlassMapCtrl(this);
         entry->catalog = catalogList.at(i);
-        entry->setGlassMap(m_plotType, getColorFromIndex(i));
+        entry->setGlassMap(m_plotType, QCPUtil::getColorFromIndex(i,catalogList.size()));
         m_glassMapCtrlList.append(entry);
     }
     setUpScrollArea();
@@ -271,15 +271,6 @@ void GlassMapForm::showCurveFittingDlg()
     }
 }
 
-QColor GlassMapForm::getColorFromIndex(int index)
-{
-    QCPColorGradient colorgrad;
-    colorgrad.loadPreset(QCPColorGradient::gpHues);
-    QColor color;
-    color = colorgrad.color(index, QCPRange(0,m_catalogList.size()));
-
-    return color;
-}
 
 void GlassMapForm::setDefault()
 {
@@ -410,52 +401,53 @@ GlassMapForm::GlassMapCtrl::~GlassMapCtrl()
 
 void GlassMapForm::GlassMapCtrl::setGlassMap(int plotType, QColor color)
 {
+
     QVector<double> x,y;
     QVector<QString> str;
 
-        x.clear();
-        y.clear();
-        str.clear();
+    x.clear();
+    y.clear();
+    str.clear();
 
-        switch(plotType)
+    switch(plotType)
+    {
+    case NdVd: //vd-nd
+        for(int i = 0; i < catalog->glassCount(); i++)
         {
-        case NdVd: //vd-nd
-            for(int i = 0; i < catalog->glassCount(); i++)
-            {
-                x.append(catalog->glass(i)->vd());
-                y.append(catalog->glass(i)->nd());
-                str.append(catalog->glass(i)->name());
-            }
-            break;
-        case NeVe:
-            for(int i = 0; i < catalog->glassCount(); i++)
-            {
-                x.append(catalog->glass(i)->ve());
-                y.append(catalog->glass(i)->ne());
-                str.append(catalog->glass(i)->name());
-            }
-            break;
-        case PgFVd:
-            for(int i = 0; i < catalog->glassCount(); i++)
-            {
-                x.append(catalog->glass(i)->vd());
-                y.append(catalog->glass(i)->PgF());
-                str.append(catalog->glass(i)->name());
-            }
-            break;
-        case PCtVd:
-            for(int i = 0; i < catalog->glassCount(); i++)
-            {
-                x.append(catalog->glass(i)->vd());
-                y.append(catalog->glass(i)->Pxy("C","t"));
-                str.append(catalog->glass(i)->name());
-            }
-
+            x.append(catalog->glass(i)->vd());
+            y.append(catalog->glass(i)->nd());
+            str.append(catalog->glass(i)->name());
+        }
+        break;
+    case NeVe:
+        for(int i = 0; i < catalog->glassCount(); i++)
+        {
+            x.append(catalog->glass(i)->ve());
+            y.append(catalog->glass(i)->ne());
+            str.append(catalog->glass(i)->name());
+        }
+        break;
+    case PgFVd:
+        for(int i = 0; i < catalog->glassCount(); i++)
+        {
+            x.append(catalog->glass(i)->vd());
+            y.append(catalog->glass(i)->PgF());
+            str.append(catalog->glass(i)->name());
+        }
+        break;
+    case PCtVd:
+        for(int i = 0; i < catalog->glassCount(); i++)
+        {
+            x.append(catalog->glass(i)->vd());
+            y.append(catalog->glass(i)->Pxy("C","t"));
+            str.append(catalog->glass(i)->name());
         }
 
-        glassmap->setData(x,y,str);
-        glassmap->setName(catalog->supplyer());
-        glassmap->setColor(color);
+    }
+
+    glassmap->setData(x,y,str);
+    glassmap->setName(catalog->supplyer());
+    glassmap->setColor(color);
 }
 
 void GlassMapForm::GlassMapCtrl::setVisible(bool pointstate, bool labelstate)

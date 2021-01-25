@@ -34,6 +34,7 @@
 #include <QWidget>
 
 #include "qcustomplot.h"
+#include "qcputil.h"
 #include "glasscatalog.h"
 #include "glassselectiondialog.h"
 
@@ -78,12 +79,7 @@ private:
 
     void setDefault();
     void setColorToGraph(QCPGraph* graph, QColor color);
-    QCPRange currentXrange();
-    QCPRange currentYrange();
-    QColor getColorFromIndex(int i);
-    QVector<double> getVectorFromRange(QCPRange range);
     QVector<double> computeUserDefined(QVector<double> xdata);
-    QVector<double> scaleVector(QVector<double> v, double scale);
 
 };
 

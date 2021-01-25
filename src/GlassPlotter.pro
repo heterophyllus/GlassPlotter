@@ -41,6 +41,7 @@ SOURCES += \
     presetdialog.cpp \
     pugixml.cpp \
     qcpscatterchart.cpp \
+    qcputil.cpp \
     qcustomplot.cpp \
     spectralline.cpp \
     transmittanceplotform.cpp
@@ -60,6 +61,7 @@ HEADERS += \
     pugiconfig.hpp \
     pugixml.hpp \
     qcpscatterchart.h \
+    qcputil.h \
     qcustomplot.h \
     spectralline.h \
     spline.h \

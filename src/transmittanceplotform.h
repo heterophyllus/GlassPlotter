@@ -34,8 +34,8 @@
 #include <QWidget>
 
 #include "qcustomplot.h"
+#include "qcputil.h"
 #include "glasscatalog.h"
-
 #include "glassselectiondialog.h"
 
 
@@ -51,8 +51,6 @@ public:
     explicit TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
     ~TransmittancePlotForm();
 
-    void setDefault();
-
     const double plotStep = 5;
     const int maxGraphCount = 5;
 
@@ -67,20 +65,14 @@ private slots:
 private:
     Ui::TransmittancePlotForm *ui;
 
-    QCustomPlot* m_customPlot;
-
     QList<GlassCatalog*> m_catalogList;
     QList<Glass*> m_glassList;
 
+    QCustomPlot* m_customPlot;
     QTableWidget* m_table;
 
-    QCPRange currentXrange();
-    QCPRange currentYrange();
-    QColor getColorFromIndex(int i);
     void setColorToGraph(QCPGraph* graph, QColor color);
-    QVector<double> getVectorFromRange(QCPRange range);
-    QVector<double> scaleVector(QVector<double> v, double scale);
-
+    void setDefault();
 };
 
 #endif // TRANSMITTANCEPLOTFORM_H

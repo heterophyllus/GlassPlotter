@@ -96,7 +96,7 @@ bool GlassCatalog::loadAGF(QString AGFpath)
 
         if(linetext.startsWith("NM")){
             //lineparts = linetext.simplified().split(" ");
-            lineparts = linetext.simplified().split(QRegExp("[\r\n\t ]+"), QString::SkipEmptyParts);
+            lineparts = linetext.simplified().split(" ");
             g = new Glass;
             _glasses.append(g);
             _glasses.last()->setName(lineparts[1]);
@@ -108,6 +108,7 @@ bool GlassCatalog::loadAGF(QString AGFpath)
             if(lineparts.size() > 7){
                 _glasses.last()->setStatus(lineparts[7].toUInt());
             }
+            qDebug() << _glasses.last()->name() << "," << _glasses.last()->nd() << "," << _glasses.last()->vd() << "\n";
         }
         else if (linetext.startsWith("GC")){
             _glasses.last()->setComment(linetext.remove(0,2).simplified());
