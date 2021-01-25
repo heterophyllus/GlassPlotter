@@ -26,7 +26,7 @@
 #include "ui_glassmapform.h"
 
 
-GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, int plotType, QMdiArea *parent) :
+GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::GlassMapForm)
 {
@@ -36,7 +36,11 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, int plotType, QMdiA
 
     m_catalogList = catalogList;
     m_parentMdiArea = parent;
-    m_plotType = plotType;
+
+    m_xDataName = xdataname;
+    m_yDataName = ydataname;
+    m_defaultXrange = xrange;
+    m_defaultYrange = yrange;
 
     ui->setupUi(this);
 
@@ -48,18 +52,28 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, int plotType, QMdiA
     m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
     m_customPlot->legend->setVisible(true);
 
-    m_curveCtrl = new CurveCtrl(this);
-    setUpCurveCtrl();
+    // user defined curve control
+    curveGraph = m_customPlot->addGraph();
+    checkBoxCurve = ui->checkBox_Curve;
+    QObject::connect(ui->checkBox_Curve,SIGNAL(toggled(bool)), this, SLOT(update()));
 
-    GlassMapCtrl* entry;
+    QObject::connect(ui->lineEdit_C0,SIGNAL(textEdited(QString)),this, SLOT(update()));
+    QObject::connect(ui->lineEdit_C1,SIGNAL(textEdited(QString)),this, SLOT(update()));
+    QObject::connect(ui->lineEdit_C2,SIGNAL(textEdited(QString)),this, SLOT(update()));
+    QObject::connect(ui->lineEdit_C3,SIGNAL(textEdited(QString)),this, SLOT(update()));
+
+
+    // glassmap control
+    m_glassMapCtrlList.clear();
+    GlassMapCtrl* gmc;
     for(int i = 0; i < catalogList.size(); i++)
     {
-        entry = new GlassMapCtrl(this);
-        entry->catalog = catalogList.at(i);
-        entry->setGlassMap(m_plotType, QCPUtil::getColorFromIndex(i,catalogList.size()));
-        m_glassMapCtrlList.append(entry);
+        gmc = new GlassMapCtrl(m_customPlot);
+        setGlassmapData(gmc->glassmap,catalogList[i],xdataname,ydataname, QCPUtil::getColorFromIndex(i,catalogList.size()));
+        m_glassMapCtrlList.append(gmc);
     }
     setUpScrollArea();
+
 
     // Legend
     m_checkBoxLegend = ui->checkBox_Legend;
@@ -75,7 +89,7 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, int plotType, QMdiA
     // settings
     QDir qdir(QApplication::applicationDirPath());
     if(!qdir.exists("INI")) qdir.mkdir("INI");
-    m_settingFile = QApplication::applicationDirPath() + "/INI/" + "Glassmap" + QString::number(plotType) + ".ini";
+    m_settingFile = QApplication::applicationDirPath() + "/INI/" + "Glassmap_" + xdataname + "_" + ydataname + ".ini";
     m_settings = new QSettings(m_settingFile, QSettings::IniFormat);
     m_settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
 
@@ -92,8 +106,9 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, int plotType, QMdiA
     // preset
     QObject::connect(ui->pushButton_Preset, SIGNAL(clicked()), this, SLOT(showPresetDlg()));
 
+    // window title
+    this->setWindowTitle( xdataname + " - " + ydataname + " Plot");
 
-    setTitle();
     setDefault();
     update();
 }
@@ -107,26 +122,6 @@ GlassMapForm::~GlassMapForm()
     m_customPlot = nullptr;
 
     delete ui;
-}
-
-void GlassMapForm::setTitle()
-{
-    switch (m_plotType) {
-    case NdVd:
-        this->setWindowTitle("Nd-Vd Plot");
-        break;
-    case NeVe:
-        this->setWindowTitle("Ne - Ve Plot");
-        break;
-    case PgFVd:
-        this->setWindowTitle("Vd - PgF Plot");
-        break;
-    case PCtVd:
-        this->setWindowTitle("Vd - PCt Plot");
-        break;
-    default:
-        this->setWindowTitle("Plot");
-    }
 }
 
 void GlassMapForm::setUpScrollArea()
@@ -166,20 +161,6 @@ void GlassMapForm::setUpScrollArea()
     ui->scrollArea->setWidgetResizable(true);
 }
 
-void GlassMapForm::setUpCurveCtrl()
-{
-    QObject::connect(ui->checkBox_Curve,SIGNAL(toggled(bool)),
-                         this, SLOT(update()));
-    m_curveCtrl->checkBox = ui->checkBox_Curve;
-
-    m_curveCtrl->lineEditList.clear();
-    m_curveCtrl->lineEditList << ui->lineEdit_C0 << ui->lineEdit_C1 << ui->lineEdit_C2 << ui->lineEdit_C3;
-    for(int i = 0; i < m_curveCtrl->lineEditList.size(); i++){
-        QObject::connect(m_curveCtrl->lineEditList[i],SIGNAL(textEdited(QString)),
-                             this, SLOT(update()));
-    }
-}
-
 void GlassMapForm::setLegendVisible()
 {
     m_customPlot->legend->setVisible(m_checkBoxLegend->checkState());
@@ -203,28 +184,8 @@ void GlassMapForm::showNeighbors(QCPAbstractItem* item, QMouseEvent *event)
                 for(int j=0;j<cat->glassCount();j++){
                     currentGlass = cat->glass(j);
 
-                    switch(m_plotType)
-                    {
-                    case NdVd:
-                        dx = (targetGlass->vd() - currentGlass->vd());
-                        dy = (targetGlass->nd() - currentGlass->nd())*100;
-                        break;
-                    case NeVe:
-                        dx = (targetGlass->ve() - currentGlass->ve());
-                        dy = (targetGlass->ne() - currentGlass->ne())*100;
-                        break;
-                    case PgFVd:
-                        dx = (targetGlass->vd() - currentGlass->vd());
-                        dy = (targetGlass->PgF() - currentGlass->PgF())*1000;
-                        break;
-                    case PCtVd:
-                        dx = (targetGlass->vd() - currentGlass->vd());
-                        dy = (targetGlass->Pxy("C","t") - currentGlass->Pxy("C","t"))*1000;
-                        break;
-                    default:
-                        dx = 0;
-                        dy = 0;
-                    }
+                    dx = (targetGlass->getValue(m_xDataName) - currentGlass->getValue(m_xDataName));
+                    dy = (targetGlass->getValue(m_yDataName) - currentGlass->getValue(m_yDataName))*100;
 
                     if(abs(dx) < m_neighborThreshold && abs(dy) < m_neighborThreshold){
                         m_listWidgetNeighbors->addItem(currentGlass->name() + "_" + currentGlass->supplyer());
@@ -261,7 +222,7 @@ void GlassMapForm::showCurveFittingDlg()
     CurveFittingDialog* dlg = new CurveFittingDialog(m_catalogList, this);
     if(dlg->exec() == QDialog::Accepted)
     {
-        if(!dlg->calculateFitting(m_plotType)) return;
+        //if(!dlg->calculateFitting(m_plotType)) return;
         QList<double> coefs = dlg->fittingResult();
         ui->lineEdit_C0->setText(QString::number(coefs[0]));
         ui->lineEdit_C1->setText(QString::number(coefs[1]));
@@ -274,73 +235,25 @@ void GlassMapForm::showCurveFittingDlg()
 
 void GlassMapForm::setDefault()
 {
-    switch (m_plotType) {
-    case NdVd:
-        m_customPlot->xAxis->setLabel("vd");
-        m_customPlot->yAxis->setLabel("nd");
-        break;
-    case NeVe:
-        m_customPlot->xAxis->setLabel("ve");
-        m_customPlot->yAxis->setLabel("ne");
-        break;
-    case PgFVd:
-        m_customPlot->xAxis->setLabel("vd");
-        m_customPlot->yAxis->setLabel("PgF");
-        break;
-    case PCtVd:
-        m_customPlot->xAxis->setLabel("vd");
-        m_customPlot->yAxis->setLabel("PCt");
-        break;
-    }
+    m_customPlot->xAxis->setLabel(m_xDataName);
+    m_customPlot->yAxis->setLabel(m_yDataName);
 
-
-    // Axis
-    QCPRange xrange, yrange;
-
-     switch(m_plotType)
-     {
-     case NdVd:
-         xrange.lower = 10;
-         xrange.upper = 100;
-         yrange.lower = 1.4;
-         yrange.upper = 2.1;
-         break;
-     case NeVe:
-         xrange.lower = 10;
-         xrange.upper = 100;
-         yrange.lower = 1.4;
-         yrange.upper = 2.1;
-         break;
-     case PgFVd:
-         xrange.lower = 10;
-         xrange.upper = 100;
-         yrange.lower = 0.5;
-         yrange.upper = 0.7;
-         break;
-     case PCtVd:
-         xrange.lower = 10;
-         xrange.upper = 100;
-         yrange.lower = 0.6;
-         yrange.upper = 0.9;
-         break;
-     default:
-         break;
-     }
-
-     m_customPlot->xAxis->setRangeReversed(true);
-     m_customPlot->xAxis->setRange(xrange);
-     m_customPlot->yAxis->setRange(yrange);
+    m_customPlot->xAxis->setRangeReversed(true);
+    m_customPlot->xAxis->setRange(m_defaultXrange);
+    m_customPlot->yAxis->setRange(m_defaultYrange);
 }
 
 void GlassMapForm::update()
 {
+    // check and update visibility
     for(int i = 0; i < m_glassMapCtrlList.size(); i++){
-        m_glassMapCtrlList.at(i)->update();
+        m_glassMapCtrlList[i]->glassmap->setVisiblePointSeries( m_glassMapCtrlList[i]->checkBoxPlot->checkState() );
+        m_glassMapCtrlList[i]->glassmap->setVisibleTextLabels( m_glassMapCtrlList[i]->checkBoxLabel->checkState() );
     }
 
-    // replot curve
-    m_curveCtrl->setData();
-    m_curveCtrl->update();
+    // replot user defined curve
+    setCurveData();
+    curveGraph->setVisible(checkBoxCurve->checkState());
 
     m_customPlot->replot();
 }
@@ -349,7 +262,6 @@ void GlassMapForm::resetView()
 {
     setDefault();
     m_customPlot->replot();
-
 }
 
 Glass* GlassMapForm::getGlassFromName(QString glassName)
@@ -364,13 +276,10 @@ Glass* GlassMapForm::getGlassFromName(QString glassName)
 
 void GlassMapForm::showPresetDlg()
 {
-    PresetDialog* dlg = new PresetDialog(m_settings,m_curveCtrl->getCoefs(),this);
+    PresetDialog* dlg = new PresetDialog(m_settings,getCurveCoefs(),this);
 
     if(dlg->exec() == QDialog::Accepted){
-        QList<double> coefs = dlg->getCoefs();
-        for(int i = 0; i<coefs.size(); i++){
-            m_curveCtrl->lineEditList[i]->setText(QString::number(coefs[i]));
-        }
+        setCurveCoefsToUI(dlg->getCoefs());
         update();
     }
 }
@@ -379,29 +288,19 @@ void GlassMapForm::showPresetDlg()
 /****************************
  * Inner Class GlassMapCtrl
  * **************************/
-GlassMapForm::GlassMapCtrl::GlassMapCtrl(GlassMapForm* super)
+GlassMapForm::GlassMapCtrl::GlassMapCtrl(QCustomPlot* customPlot)
 {
-    m_customPlot = super->m_customPlot;
+    m_customPlot = customPlot;
     glassmap = new QCPScatterChart(m_customPlot);
 }
 
 GlassMapForm::GlassMapCtrl::~GlassMapCtrl()
 {
-    try{
-        delete catalog;
-        catalog = nullptr;
-        delete glassmap;
-        glassmap = nullptr;
-    } catch (...) {
-        catalog = nullptr;
-        glassmap = nullptr;
-    }
     m_customPlot = nullptr;
 }
 
-void GlassMapForm::GlassMapCtrl::setGlassMap(int plotType, QColor color)
+void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color)
 {
-
     QVector<double> x,y;
     QVector<QString> str;
 
@@ -409,40 +308,11 @@ void GlassMapForm::GlassMapCtrl::setGlassMap(int plotType, QColor color)
     y.clear();
     str.clear();
 
-    switch(plotType)
+    for(int i = 0; i < catalog->glassCount(); i++)
     {
-    case NdVd: //vd-nd
-        for(int i = 0; i < catalog->glassCount(); i++)
-        {
-            x.append(catalog->glass(i)->vd());
-            y.append(catalog->glass(i)->nd());
-            str.append(catalog->glass(i)->name());
-        }
-        break;
-    case NeVe:
-        for(int i = 0; i < catalog->glassCount(); i++)
-        {
-            x.append(catalog->glass(i)->ve());
-            y.append(catalog->glass(i)->ne());
-            str.append(catalog->glass(i)->name());
-        }
-        break;
-    case PgFVd:
-        for(int i = 0; i < catalog->glassCount(); i++)
-        {
-            x.append(catalog->glass(i)->vd());
-            y.append(catalog->glass(i)->PgF());
-            str.append(catalog->glass(i)->name());
-        }
-        break;
-    case PCtVd:
-        for(int i = 0; i < catalog->glassCount(); i++)
-        {
-            x.append(catalog->glass(i)->vd());
-            y.append(catalog->glass(i)->Pxy("C","t"));
-            str.append(catalog->glass(i)->name());
-        }
-
+        x.append(catalog->glass(i)->getValue(xlabel));
+        y.append(catalog->glass(i)->getValue(ylabel));
+        str.append(catalog->glass(i)->name());
     }
 
     glassmap->setData(x,y,str);
@@ -450,88 +320,51 @@ void GlassMapForm::GlassMapCtrl::setGlassMap(int plotType, QColor color)
     glassmap->setColor(color);
 }
 
-void GlassMapForm::GlassMapCtrl::setVisible(bool pointstate, bool labelstate)
+
+void GlassMapForm::setCurveData()
 {
-    glassmap->setVisiblePointSeries(pointstate);
-    glassmap->setVisibleTextLabels(labelstate);
-}
-
-void GlassMapForm::GlassMapCtrl::update()
-{
-    setVisible(checkBoxPlot->checkState(), checkBoxLabel->checkState());
-}
-
-
-/****************************
- * Inner Class CurveCtrl
- * **************************/
-GlassMapForm::CurveCtrl::CurveCtrl(GlassMapForm* super)
-{
-    m_customPlot = super->m_customPlot;
-    graph = m_customPlot->addGraph();
-    checkBox = super->ui->checkBox_Curve;
-    lineEditList.clear();
-}
-
-GlassMapForm::CurveCtrl::~CurveCtrl()
-{
-    m_customPlot->removeGraph(graph);
-    lineEditList.clear();
-    checkBox = nullptr;
-    m_customPlot = nullptr;
-}
-
-void GlassMapForm::CurveCtrl::setData()
-{
-    if(!graph) return;
-
-    double c;
-
     QVector<double> x(101),y(101);
-    double xmin, xmax;
-
-    xmin = 10;
-    xmax = 100;
+    QList<double> coefs = getCurveCoefs();
+    double xmin = m_customPlot->xAxis->range().lower;
+    double xmax = m_customPlot->xAxis->range().upper;
 
     for(int i = 0; i < 101; i++)
     {
         x[i] = xmin + (xmax-xmin)*(double)i/100;
 
         y[i] = 0;
-        for(int j = 0;j < lineEditList.size(); j ++)
+        for(int j = 0;j < coefs.size(); j++)
         {
-            c = lineEditList[j]->text().toDouble();
-            y[i] += c*pow(x[i],j);
+            y[i] += coefs[j]*pow(x[i],j);
         }
     }
 
-    graph->setData(x,y);
-    graph->setName("curve");
+    curveGraph->setData(x,y);
+    curveGraph->setName("curve");
 
     QPen pen;
     pen.setColor(Qt::black); //black
-    graph->setPen(pen);
+    curveGraph->setPen(pen);
 
 }
 
-void GlassMapForm::CurveCtrl::setVisible(bool state)
-{
-    graph->setVisible(state);
-}
-
-void GlassMapForm::CurveCtrl::update()
-{
-    setData();
-    setVisible(checkBox->isChecked());
-}
-
-QList<double> GlassMapForm::CurveCtrl::getCoefs()
+QList<double> GlassMapForm::getCurveCoefs()
 {
     QList<double> coefs;
+    coefs.clear();
 
-    for(int i = 0; i < lineEditList.size(); i++)
-    {
-        coefs.append(lineEditList[i]->text().toDouble());
-    }
+    coefs.append(ui->lineEdit_C0->text().toDouble());
+    coefs.append(ui->lineEdit_C1->text().toDouble());
+    coefs.append(ui->lineEdit_C2->text().toDouble());
+    coefs.append(ui->lineEdit_C3->text().toDouble());
+
     return coefs;
+}
+
+void GlassMapForm::setCurveCoefsToUI(QList<double> coefs)
+{
+    ui->lineEdit_C0->setText(QString::number(coefs[0]));
+    ui->lineEdit_C1->setText(QString::number(coefs[1]));
+    ui->lineEdit_C2->setText(QString::number(coefs[2]));
+    ui->lineEdit_C3->setText(QString::number(coefs[3]));
 }

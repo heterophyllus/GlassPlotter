@@ -66,6 +66,28 @@ Glass::~Glass()
     }
 }
 
+double Glass::getValue(QString dataName)
+{
+    if(dataName == "nd"){
+        return nd();
+    }
+    else if(dataName == "ne"){
+        return ne();
+    }
+    else if(dataName == "vd"){
+        return vd();
+    }
+    else if(dataName == "PgF"){
+        return PgF();
+    }
+    else if(dataName == "PCt"){
+        return Pxy_("C","t");
+    }
+    else{
+        return 0;
+    }
+}
+
 double Glass::index(double lambdamicron)
 {
     QList<double> c = _dispersionData->coefs;
@@ -277,9 +299,7 @@ void Glass::setStatus(int index)
 
 void Glass::setDispCoef(int index, double val)
 {
-    if(index < MAX_COEF_COUNT){
-        _dispersionData->coefs[index] = val;
-    }
+    _dispersionData->coefs[index] = val;
 }
 
 void Glass::setThermalCoef(int index, double val)

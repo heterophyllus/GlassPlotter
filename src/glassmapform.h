@@ -30,12 +30,6 @@
 #define GLASSMAPFORM_H
 
 #include <QWidget>
-/*
-#include <QGridLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <QScrollArea>
-*/
 
 #include "qcputil.h"
 #include "qcpscatterchart.h"
@@ -54,19 +48,8 @@ class GlassMapForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit GlassMapForm(QList<GlassCatalog*> catalogList, int plotType = 0, QMdiArea *parent = nullptr);
+    explicit GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, QMdiArea *parent = nullptr);
     ~GlassMapForm();
-
-    /**
-     * indexes for glassmap type
-     */
-    enum{
-        NdVd,
-        NeVe,
-        PgFVd,
-        PCtVd
-    };
-
 
     /**
      * @brief The inner class to manage glass map of the respective supplyer
@@ -74,46 +57,26 @@ public:
     class GlassMapCtrl
     {
     public:
-        GlassMapCtrl(GlassMapForm* super);
+        GlassMapCtrl(QCustomPlot* customPlot);
         ~GlassMapCtrl();
-        QString name;
-        GlassCatalog* catalog;
         QCPScatterChart* glassmap;
         QLabel* labelSupplyer;
         QCheckBox* checkBoxPlot;
         QCheckBox* checkBoxLabel;
-        void setGlassMap(int plotType, QColor color);
-        void setVisible(bool pointState, bool labelState);
-        void update();
     private:
         QCustomPlot* m_customPlot;
     };
 
-
-    /**
-     * @brief The inner class to manage user defined curve
-     */
-    class CurveCtrl
-    {
-    public:
-        CurveCtrl(GlassMapForm* super);
-        ~CurveCtrl();
-        QCPGraph* graph;
-        QList<QLineEdit*> lineEditList;
-        QCheckBox* checkBox;
-        void setData();
-        void setVisible(bool state);
-        QList<double> getCoefs();
-        void update();
-
-    private:
-        QCustomPlot* m_customPlot;
-    };
-
+    void setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
     void setUpScrollArea();
-    void setUpCurveCtrl();
     void setDefault();
     void saveSetting();
+
+    QCPGraph* curveGraph;
+    QCheckBox* checkBoxCurve;
+    QList<double> getCurveCoefs();
+    void setCurveCoefsToUI(QList<double> coefs);
+    void setCurveData();
 
 private slots:
 
@@ -171,19 +134,21 @@ private:
     QList<GlassCatalog*> m_catalogList;
     QList<GlassMapCtrl*> m_glassMapCtrlList;
 
-    CurveCtrl *m_curveCtrl;
-
     QListWidget* m_listWidgetNeighbors;
 
     const double m_neighborThreshold = 0.5;
 
-    int m_plotType;
 
     Glass* getGlassFromName(QString glassName);
-    void setTitle();
 
     QSettings* m_settings;
     QString m_settingFile;
+
+    QString m_xDataName;
+    QString m_yDataName;
+
+    QCPRange m_defaultXrange;
+    QCPRange m_defaultYrange;
 
 };
 

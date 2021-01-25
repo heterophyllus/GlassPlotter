@@ -39,7 +39,6 @@
 #include "spline.h" // c++ cubic spline library, Tino Kluge (ttk448 at gmail.com), https://github.com/ttk592/spline
 #include "spectralline.h"
 
-#define MAX_COEF_COUNT 3
 
 class Glass
 {
@@ -53,9 +52,7 @@ public:
     class DispersionData
     {
     public:
-        /**
-         * @brief DispersionData
-         */
+
         DispersionData(){
             coefs.clear();
             for(int i = 0;i<12;i++) coefs.append(0.0); //initialize
@@ -75,7 +72,7 @@ public:
         QList<double> coefs;
 
         /**
-         * @brief get coefficient
+         * @brief coefficients of dispersion formula
          * @param n coefficient index number
          * @return coefficient value
          */
@@ -83,31 +80,15 @@ public:
             return coefs[n];
         }
 
-        /**
-         * @brief dispersion formula name
-         * @return
-         */
         QString formulaName();
     };
 
-    /**
-     * @brief set dispersion formula index
-     * @param n index
-     */
-    void setDispForm(int n){ _dispersionData->formulaIndex = n;}
 
-    /**
-     * @brief set dispersion coefficient value
-     * @param n coefficient index
-     * @param val value
-     */
+    void setDispForm(int n){ _dispersionData->formulaIndex = n;}
     void setDispCoef(int index, double val);
 
     QVector<double> index(QVector<double> wvlvec);
 
-    /**
-     * @brief Dispersion class instance
-     */
     DispersionData* dispersion(){return _dispersionData;}
 
 
@@ -124,44 +105,17 @@ public:
             thickness.clear();
         }
 
-        /**
-         * @brief wavelengths contained in IT line of AGF
-         */
         QVector<double> wavelength;
-
-        /**
-         * @brief transmittance data contained in IT line of AGF
-         */
         QVector<double> transmittance;
-
-        /**
-         * @brief thickness data contained in IT line of AGF
-         */
         QVector<double> thickness;
 
-        /**
-         * @brief count transmittance data
-         * @return count
-         */
         int size(){
           return wavelength.size();
         }
     };
 
-    /**
-     * @brief get internal transmittance
-     * @param lambdamicron wavelength in micron
-     * @param thickness
-     * @return internal transmittance
-     */
-    double transmittance(double lambdamicron, double thickness = 25);
 
-    /**
-     * @brief get internal transmittance expressed as vector
-     * @param x wavelength vector
-     * @param thickness
-     * @return internal transmittance
-     */
+    double transmittance(double lambdamicron, double thickness = 25);
     QVector<double> transmittance(QVector<double> x, double thickness = 25);
 
 
@@ -175,7 +129,6 @@ public:
             coefs.clear();
             for(int i = 0;i<6;i++) coefs.append(0.0); //initialize
         }
-
 
         /**
          * @brief coefficients of dn/dT
@@ -210,56 +163,15 @@ public:
      */
     double index(QString spectral);
 
-    /**
-     * @brief glass name
-     */
     QString name() const { return _name;}
-
-    /**
-     * @brief supplier name
-     */
     QString supplyer() const { return _supplyer;}
-
-    /**
-     * @brief status
-     * @return
-     */
     QString status() const { return _status;}
-
-    /**
-     * @brief MIL code
-     * @return
-     */
     QString MIL() const {return _MIL;}
 
-    /**
-     * @brief nd
-     * @return
-     */
     double nd() const { return _nd;}
-
-    /**
-     * @brief ne
-     * @return
-     */
     double ne() const { return _ne;}
-
-    /**
-     * @brief Abbe value at d line
-     * @return
-     */
     double vd() const { return _vd;}
-
-    /**
-     * @brief Abbe value at e line
-     * @return
-     */
     double ve() const { return _ve;}
-
-    /**
-     * @brief PgF
-     * @return
-     */
     double PgF() const {return _PgF;}
 
     /**
@@ -271,29 +183,13 @@ public:
     double Pxy(QString x, QString y);
     double Pxy_(QString x, QString y);
 
-    /**
-     * @brief minimum wavelength in micron
-     * @return
-     */
+
     double lambdaMin() const {return _lambdaMin;}
-
-    /**
-     * @brief maximum wavelength in micron
-     * @return
-     */
     double lambdaMax() const {return _lambdaMax;}
-
-
-    /**
-     * @brief individual glass comment
-     * @return
-     */
     QString comment() const { return _comment; }
 
+    double getValue(QString dataName);
 
-    /**
-     * @brief compute properties
-     */
     void computeProperties();
 
     void setName(QString str){ _name = str;}

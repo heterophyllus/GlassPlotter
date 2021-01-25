@@ -141,14 +141,14 @@ void MainWindow::loadXML()
 }
 
 
-void MainWindow::showGlassMap(int plotType)
+void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange)
 {
     if(m_catalogList.empty()){
         QMessageBox::warning(this,tr("File"), tr("No catalog has been loaded"));
         return;
     }
 
-    GlassMapForm *subwindow = new GlassMapForm(m_catalogList, plotType, ui->mdiArea);
+    GlassMapForm *subwindow = new GlassMapForm(m_catalogList, xdataname, ydataname, xrange, yrange, ui->mdiArea);
     ui->mdiArea->addSubWindow(subwindow);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->parentWidget()->setGeometry(0,10,this->width()*3/4,this->height()*3/4);
@@ -157,22 +157,22 @@ void MainWindow::showGlassMap(int plotType)
 
 void MainWindow::showGlassMapNdVd()
 {
-    showGlassMap(NdVd);
+    showGlassMap("vd", "nd", QCPRange(10,100), QCPRange(1.4,2.1));
 }
 
 void MainWindow::showGlassMapNeVe()
 {
-    showGlassMap(NeVe);
+    showGlassMap("ve", "ne", QCPRange(10,100), QCPRange(1.4,2.1));
 }
 
 void MainWindow::showGlassMapVdPgF()
 {
-    showGlassMap(PgFVd);
+    showGlassMap("vd", "PgF", QCPRange(10,100), QCPRange(0.5, 0.7));
 }
 
 void MainWindow::showGlassMapVdPCt()
 {
-    showGlassMap(PCtVd);
+    showGlassMap("vd", "PCt",QCPRange(10,100), QCPRange(0.6,0.9));
 }
 
 template<class F> void MainWindow::showAnalysisForm()

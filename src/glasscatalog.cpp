@@ -108,7 +108,6 @@ bool GlassCatalog::loadAGF(QString AGFpath)
             if(lineparts.size() > 7){
                 _glasses.last()->setStatus(lineparts[7].toUInt());
             }
-            qDebug() << _glasses.last()->name() << "," << _glasses.last()->nd() << "," << _glasses.last()->vd() << "\n";
         }
         else if (linetext.startsWith("GC")){
             _glasses.last()->setComment(linetext.remove(0,2).simplified());

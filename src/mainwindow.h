@@ -52,18 +52,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    /**
-     * indexes for type of glassmap
-     */
-    enum{
-        NdVd,
-        NeVe,
-        PgFVd,
-        PCtVd
-    };
-
 private:
     template<class F> void showAnalysisForm();
+    void showGlassMap(QString xdataname, QString ydataname,QCPRange xrange, QCPRange yrange);
+    void updateStatusBar();
 
 private slots:
 
@@ -91,13 +83,6 @@ private:
     Ui::MainWindow *ui;
     QString m_agfDir = "";
     QList<GlassCatalog*> m_catalogList;
-
-    /**
-     * @brief base function to show glassmap
-     * @param plotType
-     */
-    void showGlassMap(int plotType);
-    void updateStatusBar();
 
 };
 #endif // MAINWINDOW_H

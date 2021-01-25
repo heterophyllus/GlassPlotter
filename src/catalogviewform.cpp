@@ -100,7 +100,7 @@ void CatalogViewForm::setUpTable()
 
         //coefficients
         j++;
-        for(int k = 0;k<MAX_COEF_COUNT;k++)
+        for(int k = 0;k<glass->dispersion()->coefs.size();k++)
         {
             item = new QTableWidgetItem();
             item->setText(QString::number(glass->dispersion()->coefs[k]));
