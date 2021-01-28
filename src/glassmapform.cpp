@@ -34,6 +34,8 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
         return;
     }
 
+    ui->setupUi(this);
+
     m_catalogList = catalogList;
     m_parentMdiArea = parent;
 
@@ -42,8 +44,7 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     m_defaultXrange = xrange;
     m_defaultYrange = yrange;
 
-    ui->setupUi(this);
-
+    // plot widget
     m_customPlot = ui->widget;
     m_customPlot->setInteraction(QCP::iRangeDrag, true);
     m_customPlot->setInteraction(QCP::iRangeZoom, true);
@@ -57,11 +58,10 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     checkBoxCurve = ui->checkBox_Curve;
     QObject::connect(ui->checkBox_Curve,SIGNAL(toggled(bool)), this, SLOT(update()));
 
-    QObject::connect(ui->lineEdit_C0,SIGNAL(textEdited(QString)),this, SLOT(update()));
-    QObject::connect(ui->lineEdit_C1,SIGNAL(textEdited(QString)),this, SLOT(update()));
-    QObject::connect(ui->lineEdit_C2,SIGNAL(textEdited(QString)),this, SLOT(update()));
-    QObject::connect(ui->lineEdit_C3,SIGNAL(textEdited(QString)),this, SLOT(update()));
-
+    m_lineEditList << ui->lineEdit_C0 << ui->lineEdit_C1 << ui->lineEdit_C2 << ui->lineEdit_C3;
+    for(int i = 0; i < 4; i++){
+        QObject::connect(m_lineEditList[i],SIGNAL(textEdited(QString)),this, SLOT(update()));
+    }
 
     // glassmap control
     m_glassMapCtrlList.clear();
@@ -101,7 +101,7 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     QObject::connect(ui->pushButton_Fitting, SIGNAL(clicked()), this, SLOT(showCurveFittingDlg()));
 
     // reset view button
-    QObject::connect(ui->pushButton_resetView, SIGNAL(clicked()), this, SLOT(resetView()));
+    QObject::connect(ui->pushButton_resetView, SIGNAL(clicked()), this, SLOT(setDefault()));
 
     // preset
     QObject::connect(ui->pushButton_Preset, SIGNAL(clicked()), this, SLOT(showPresetDlg()));
@@ -115,11 +115,23 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
 
 GlassMapForm::~GlassMapForm()
 {
-    delete m_settings;
+    try {
+        delete m_settings;
+    }  catch (...) {
+        m_settings = nullptr;
+    }
+    m_settings = nullptr;
+
+    m_customPlot->removeGraph(curveGraph);
+    m_customPlot->clearGraphs();
     m_customPlot->clearPlottables();
     m_customPlot->clearItems();
-    m_glassMapCtrlList.clear();
     m_customPlot = nullptr;
+    curveGraph = nullptr;
+
+    m_glassMapCtrlList.clear();
+    m_lineEditList.clear();
+    m_catalogList.clear();
 
     delete ui;
 }
@@ -176,18 +188,20 @@ void GlassMapForm::showNeighbors(QCPAbstractItem* item, QMouseEvent *event)
         //search neighbors
         GlassCatalog* cat;
         Glass* currentGlass;
+        double xThreshold = (m_customPlot->xAxis->range().upper - m_customPlot->xAxis->range().lower)/10;
+        double yThreshold = (m_customPlot->yAxis->range().upper - m_customPlot->yAxis->range().lower)/10;
         double dx,dy;
         for(int i = 0;i<m_catalogList.size();i++){
 
             if(m_glassMapCtrlList[i]->checkBoxPlot->checkState()){
                 cat = m_catalogList[i];
-                for(int j=0;j<cat->glassCount();j++){
+                for(int j = 0; j < cat->glassCount(); j++){
                     currentGlass = cat->glass(j);
 
                     dx = (targetGlass->getValue(m_xDataName) - currentGlass->getValue(m_xDataName));
-                    dy = (targetGlass->getValue(m_yDataName) - currentGlass->getValue(m_yDataName))*100;
+                    dy = (targetGlass->getValue(m_yDataName) - currentGlass->getValue(m_yDataName));
 
-                    if(abs(dx) < m_neighborThreshold && abs(dy) < m_neighborThreshold){
+                    if(abs(dx) < xThreshold && abs(dy) < yThreshold){
                         m_listWidgetNeighbors->addItem(currentGlass->name() + "_" + currentGlass->supplyer());
                     }
                 }
@@ -222,12 +236,11 @@ void GlassMapForm::showCurveFittingDlg()
     CurveFittingDialog* dlg = new CurveFittingDialog(m_catalogList, this);
     if(dlg->exec() == QDialog::Accepted)
     {
-        //if(!dlg->calculateFitting(m_plotType)) return;
+        if(!dlg->calculateFitting(m_xDataName, m_yDataName)) return;
         QList<double> coefs = dlg->fittingResult();
-        ui->lineEdit_C0->setText(QString::number(coefs[0]));
-        ui->lineEdit_C1->setText(QString::number(coefs[1]));
-        ui->lineEdit_C2->setText(QString::number(coefs[2]));
-        ui->lineEdit_C3->setText(QString::number(coefs[3]));
+        for(int i = 0; i < m_lineEditList.size(); i++){
+            m_lineEditList[i]->setText(QString::number(coefs[i]));
+        }
         update();
     }
 }
@@ -236,11 +249,13 @@ void GlassMapForm::showCurveFittingDlg()
 void GlassMapForm::setDefault()
 {
     m_customPlot->xAxis->setLabel(m_xDataName);
-    m_customPlot->yAxis->setLabel(m_yDataName);
-
-    m_customPlot->xAxis->setRangeReversed(true);
     m_customPlot->xAxis->setRange(m_defaultXrange);
+    m_customPlot->xAxis->setRangeReversed(true);
+
+    m_customPlot->yAxis->setLabel(m_yDataName);
     m_customPlot->yAxis->setRange(m_defaultYrange);
+
+    m_customPlot->replot();
 }
 
 void GlassMapForm::update()
@@ -258,17 +273,12 @@ void GlassMapForm::update()
     m_customPlot->replot();
 }
 
-void GlassMapForm::resetView()
-{
-    setDefault();
-    m_customPlot->replot();
-}
 
 Glass* GlassMapForm::getGlassFromName(QString glassName)
 {
     for(int i = 0; i < m_catalogList.size(); i++){
         if(m_catalogList.at(i)->hasGlass(glassName)){
-            return m_catalogList.at(i)->glass(glassName);
+            return m_catalogList[i]->glass(glassName);
         }
     }
     return nullptr;
@@ -296,6 +306,15 @@ GlassMapForm::GlassMapCtrl::GlassMapCtrl(QCustomPlot* customPlot)
 
 GlassMapForm::GlassMapCtrl::~GlassMapCtrl()
 {
+    try {
+        delete glassmap;
+    }  catch (...) {
+        glassmap = nullptr;
+    }
+    glassmap = nullptr;
+    labelSupplyer = nullptr;
+    checkBoxPlot = nullptr;
+    checkBoxLabel = nullptr;
     m_customPlot = nullptr;
 }
 
@@ -323,18 +342,17 @@ void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catal
 
 void GlassMapForm::setCurveData()
 {
-    QVector<double> x(101),y(101);
+    const int dataCount = 100;
+    QVector<double> x(dataCount),y(dataCount);
     QList<double> coefs = getCurveCoefs();
     double xmin = m_customPlot->xAxis->range().lower;
     double xmax = m_customPlot->xAxis->range().upper;
 
-    for(int i = 0; i < 101; i++)
+    for(int i = 0; i < dataCount; i++)
     {
-        x[i] = xmin + (xmax-xmin)*(double)i/100;
-
+        x[i] = xmin + (xmax-xmin)*(double)i/dataCount;
         y[i] = 0;
-        for(int j = 0;j < coefs.size(); j++)
-        {
+        for(int j = 0;j < coefs.size(); j++){
             y[i] += coefs[j]*pow(x[i],j);
         }
     }
@@ -345,7 +363,6 @@ void GlassMapForm::setCurveData()
     QPen pen;
     pen.setColor(Qt::black); //black
     curveGraph->setPen(pen);
-
 }
 
 QList<double> GlassMapForm::getCurveCoefs()
@@ -353,18 +370,15 @@ QList<double> GlassMapForm::getCurveCoefs()
     QList<double> coefs;
     coefs.clear();
 
-    coefs.append(ui->lineEdit_C0->text().toDouble());
-    coefs.append(ui->lineEdit_C1->text().toDouble());
-    coefs.append(ui->lineEdit_C2->text().toDouble());
-    coefs.append(ui->lineEdit_C3->text().toDouble());
-
+    for(int i = 0; i < m_lineEditList.size(); i++){
+        coefs.append(m_lineEditList[i]->text().toDouble());
+    }
     return coefs;
 }
 
 void GlassMapForm::setCurveCoefsToUI(QList<double> coefs)
 {
-    ui->lineEdit_C0->setText(QString::number(coefs[0]));
-    ui->lineEdit_C1->setText(QString::number(coefs[1]));
-    ui->lineEdit_C2->setText(QString::number(coefs[2]));
-    ui->lineEdit_C3->setText(QString::number(coefs[3]));
+    for(int i = 0; i < m_lineEditList.size(); i++){
+        m_lineEditList[i]->setText(QString::number(coefs[i]));
+    }
 }

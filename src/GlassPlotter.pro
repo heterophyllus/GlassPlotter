@@ -31,6 +31,7 @@ SOURCES += \
     catalogviewform.cpp \
     curvefittingdialog.cpp \
     dispersionplotform.cpp \
+    dndtplotform.cpp \
     glass.cpp \
     glasscatalog.cpp \
     glassdatasheetform.cpp \
@@ -50,7 +51,9 @@ HEADERS += \
     aboutdialog.h \
     catalogviewform.h \
     curvefittingdialog.h \
+    dispersionformula.h \
     dispersionplotform.h \
+    dndtplotform.h \
     glass.h \
     glasscatalog.h \
     glassdatasheetform.h \
@@ -72,6 +75,7 @@ FORMS += \
     catalogviewform.ui \
     curvefittingdialog.ui \
     dispersionplotform.ui \
+    dndtplotform.ui \
     glassdatasheetform.ui \
     glassmapform.ui \
     glassselectiondialog.ui \

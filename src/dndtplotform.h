@@ -19,82 +19,55 @@
  **  Author  : Hiiragi                                                      **
  **  Contact : heterophyllus.work@gmail.com                                 **
  **  Website : https://github.com/heterophyllus/glassplotter                **
- **  Date    : 2020-5-25                                                    **
+ **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Qt Form Class for Curve Fitting
-  */
+#ifndef DNDTPLOTFORM_H
+#define DNDTPLOTFORM_H
 
-#ifndef CURVEFITTINGDIALOG_H
-#define CURVEFITTINGDIALOG_H
-
-
-#define MAX_FITTING_ORDER 3
-
-#include <QDialog>
-#include <QComboBox>
-#include <QListWidget>
-#include <QMessageBox>
-
+#include <QWidget>
+#include "qcustomplot.h"
+#include "qcputil.h"
 #include "glasscatalog.h"
 #include "glassselectiondialog.h"
 
-#include "Eigen/Dense"
-
 namespace Ui {
-class CurveFittingDialog;
+class DnDtPlotForm;
 }
 
-class CurveFittingDialog : public QDialog
+class DnDtPlotForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
-    ~CurveFittingDialog();
-
-
-    /**
-     * @brief Calculate coefficients of fitting curve. Called from the parent Glassmapform.
-     * @param plotType
-     * @return success/failed
-     * @note coefficients data are stored in m_fittingResult;
-     */
-    bool calculateFitting(QString xdataname, QString ydataname);
-
-    /**
-     * @brief get fitting result
-     * @return fitting result
-     */
-    QList<double> fittingResult();
+    explicit DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    ~DnDtPlotForm();
 
 private slots:
-    /**
-     * @brief add glass to the list
-     * @name SLOT
-     */
-    void addGlass();
+    void setGlass();
+    void addGraph();
+    void deleteGraph();
+    void setAxis();
+    void setLegendVisible();
+    void clearAll();
+    void updateAll();
 
-    /**
-     * @brief delete selected glass from the list
-     * @name SLOT
-     */
-    void deleteSelectedGlass();
 
 private:
-    Ui::CurveFittingDialog *ui;
+    Ui::DnDtPlotForm *ui;
 
-    QList<double> m_fittingResult;
     QList<GlassCatalog*> m_catalogList;
-    QList<Glass*> m_targetGlassList;
-    QComboBox* m_comboBoxOrder;
-    QListWidget* m_listWidget;
+    QList<double> m_wvlList;
 
-    /**
-     * @brief update m_targetGlassList from m_listWidget
-     */
-    void updateGlassList();
+    Glass* m_currentGlass = nullptr;
+    QCustomPlot* m_customPlot;
+    QTableWidget* m_table;
+
+    const int m_maxGraphCount = 7;
+    const double m_plotStep = 5;
+
+    void setColorToGraph(QCPGraph* graph, QColor color);
+    void setDefault();
 };
 
-#endif // CURVEFITTINGDIALOG_H
+#endif // DNDTPLOTFORM_H

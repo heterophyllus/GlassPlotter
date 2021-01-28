@@ -37,6 +37,7 @@
 #include "dispersionplotform.h"
 #include "transmittanceplotform.h"
 #include "glassdatasheetform.h"
+#include "dndtplotform.h"
 #include "catalogviewform.h"
 
 
@@ -71,6 +72,7 @@ private slots:
     void showGlassMapVdPCt();
     void showDispersionPlot();
     void showTransmittancePlot();
+    void showDnDtabsPlot();
     void showCatalogViewForm();
 
     void tileWindows();

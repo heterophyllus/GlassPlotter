@@ -23,12 +23,12 @@
  *****************************************************************************/
 
 
-#include "transmittanceplotform.h"
-#include "ui_transmittanceplotform.h"
+#include "dndtplotform.h"
+#include "ui_dndtplotform.h"
 
-TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
+DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::TransmittancePlotForm)
+    ui(new Ui::DnDtPlotForm)
 {
     ui->setupUi(this);
 
@@ -36,11 +36,12 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
 
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
-    m_customPlot->xAxis->setLabel("Wavelength(nm)");
-    m_customPlot->yAxis->setLabel("Internal Transmittance");
+    m_customPlot->xAxis->setLabel("Temperature(C)");
+    m_customPlot->yAxis->setLabel("Dn/Dt(abs)  [10^(-6) /K]");
     m_customPlot->legend->setVisible(true);
     m_customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight|Qt::AlignBottom); // Legend position
 
+    QObject::connect(ui->pushButton_SetGlass,   SIGNAL(clicked()),     this, SLOT(setGlass()));
     QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()),     this, SLOT(addGraph()));
     QObject::connect(ui->pushButton_DeleteGraph,SIGNAL(clicked()),     this, SLOT(deleteGraph()));
     QObject::connect(ui->pushButton_SetAxis,    SIGNAL(clicked()),     this, SLOT(setAxis()));
@@ -51,139 +52,76 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
     setDefault();
 }
 
-TransmittancePlotForm::~TransmittancePlotForm()
+DnDtPlotForm::~DnDtPlotForm()
 {
+    m_currentGlass = nullptr;
     m_catalogList.clear();
-    m_glassList.clear();
-
-    m_customPlot->clearGraphs();
-    m_customPlot->clearPlottables();
-    m_customPlot = nullptr;
-
+    m_wvlList.clear();
     m_table->clear();
     m_table = nullptr;
+    m_customPlot->clearPlottables();
+    m_customPlot = nullptr;
 
     delete ui;
 }
 
-void TransmittancePlotForm::setColorToGraph(QCPGraph* graph, QColor color)
+void DnDtPlotForm::setGlass()
 {
-    QPen pen;
-    pen.setWidth(2);
-    pen.setColor(color);
-    graph->setPen(pen);
-}
-
-void TransmittancePlotForm::addGraph()
-{
-    if(m_customPlot->graphCount() >= m_maxGraphCount) // 5 glass
-    {
-        QString message = "Up to " + QString::number(m_maxGraphCount) + " graphs can be plotted";
-        QMessageBox::information(this,tr("Error"), message);
-        return;
-    }
-
     GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
     if(dlg->exec() == QDialog::Accepted)
     {
+        clearAll();
+
         int catalogIndex = dlg->getCatalogIndex();
         QString glassName = dlg->getGlassName();
-        Glass* newGlass = m_catalogList.at(catalogIndex)->glass(glassName);
+        m_currentGlass = m_catalogList[catalogIndex]->glass(glassName);
 
-        m_glassList.append(newGlass);
+        ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
+
+        m_wvlList.clear();
+        m_wvlList << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0 ;
+
         updateAll();
     }
 }
 
-
-void TransmittancePlotForm::updateAll()
+void DnDtPlotForm::addGraph()
 {
-    m_customPlot->clearGraphs();
-    m_customPlot->clearItems();
-    m_table->clear();
-
-    double thickness = ui->lineEdit_Thickness->text().toDouble();
-
-    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep); // unit:nm
-    QVector<double> ydata;
-    QCPGraph* graph;
-    QCPItemTracer* upperTracer;
-    QCPItemTracer* lowerTracer;
-
-    int i,j;
-    int rowCount = xdata.size();
-    int columnCount = m_glassList.size() + 1+1; // lambda + glasses
-    m_table->setRowCount(rowCount);
-    m_table->setColumnCount(columnCount);
-
-    QStringList header = QStringList() << "WVL";
-    QTableWidgetItem* item;
-
-    Glass* currentGlass;
-
-    // replot all graphs and recreate tables
-    for(i = 0; i < m_glassList.size(); i++)
-    {
-        currentGlass = m_glassList[i];
-
-        // graphs
-        ydata = currentGlass->transmittance(QCPUtil::scaleVector(xdata,1/1000), thickness);
-        graph = m_customPlot->addGraph();
-        graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
-        graph->setData(xdata, ydata);
-        setColorToGraph(graph, QCPUtil::getColorFromIndex(i, m_maxGraphCount));
-        graph->setVisible(true);
-
-        // tracer
-        upperTracer = new QCPItemTracer(m_customPlot);
-        upperTracer->setGraph(graph);
-        upperTracer->setInterpolating(true);
-        upperTracer->setStyle(QCPItemTracer::tsCircle);
-        upperTracer->setSize(7);
-        upperTracer->setPen(graph->pen());
-        upperTracer->setGraphKey(currentGlass->lambdaMax());
-        upperTracer->updatePosition();
-
-        lowerTracer = new QCPItemTracer(m_customPlot);
-        lowerTracer->setGraph(graph);
-        lowerTracer->setInterpolating(true);
-        lowerTracer->setStyle(QCPItemTracer::tsCircle);
-        lowerTracer->setSize(7);
-        lowerTracer->setPen(graph->pen());
-        lowerTracer->setGraphKey(currentGlass->lambdaMin());
-        lowerTracer->updatePosition();
-
-        // table
-        header << currentGlass->name();
-        for(j = 0; j< rowCount; j++)
-        {
-            // wavelength
-            item = new QTableWidgetItem;
-            item->setText(QString::number(xdata[j] ) );
-            m_table->setItem(j, 0, item);
-
-            // refractive indices
-            item = new QTableWidgetItem;
-            item->setText( QString::number(ydata[j]) );
-            m_table->setItem(j, i+1, item);
-        }
+    if(!m_currentGlass){
+        QMessageBox::information(this,tr("Error"), tr("Set glass from the button."));
+        return;
     }
 
-    m_customPlot->replot();
-    m_table->setHorizontalHeaderLabels(header);
+    bool ok;
+    double wvl = QInputDialog::getDouble(
+               this,
+               tr("Input new wavelength"),
+               tr("wavelength(nm):"),
+               587.0,
+               0.0,
+               10000,
+               2,
+               &ok
+           );
+    if(!ok) return;
+
+    m_wvlList.append(wvl);
+    updateAll();
 
 }
-void TransmittancePlotForm::deleteGraph()
+
+void DnDtPlotForm::deleteGraph()
 {
+    qDebug() << __FUNCTION__;
+
     if(m_customPlot->selectedGraphs().size() > 0)
     {
         QCPGraph* selectedGraph = m_customPlot->selectedGraphs().first();
         QString graphName = selectedGraph->name();
-        QStringList glass_supplyer = graphName.split("_");
 
-        for(int i = 0;i < m_glassList.size(); i++){
-            if(m_glassList[i]->name() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
-                m_glassList.removeAt(i);
+        for(int i = 0;i < m_wvlList.size(); i++){
+            if(abs(m_wvlList[i] - graphName.toDouble()) < 0.1 ){
+                m_wvlList.removeAt(i);
                 break;
             }
         }
@@ -191,10 +129,10 @@ void TransmittancePlotForm::deleteGraph()
     }
 }
 
-void TransmittancePlotForm::setDefault()
+void DnDtPlotForm::setDefault()
 {
-    QCPRange xrange = QCPRange(300,2000);
-    QCPRange yrange = QCPRange(0.0,1.2);
+    QCPRange xrange = QCPRange(-100,140);
+    QCPRange yrange = QCPRange(0,23);
 
     m_customPlot->xAxis->setRange(xrange);
     m_customPlot->yAxis->setRange(yrange);
@@ -203,11 +141,9 @@ void TransmittancePlotForm::setDefault()
     ui->lineEdit_Xmax->setText(QString::number(xrange.upper));
     ui->lineEdit_Ymin->setText(QString::number(yrange.lower));
     ui->lineEdit_Ymax->setText(QString::number(yrange.upper));
-
-    ui->lineEdit_Thickness->setText(QString::number(25));
 }
 
-void TransmittancePlotForm::setAxis()
+void DnDtPlotForm::setAxis()
 {
     QCPRange xrange, yrange;
     xrange.lower = ui->lineEdit_Xmin->text().toDouble();
@@ -221,9 +157,63 @@ void TransmittancePlotForm::setAxis()
     updateAll();
 }
 
-void TransmittancePlotForm::clearAll()
+void DnDtPlotForm::updateAll()
 {
-    m_glassList.clear();
+    if(!m_currentGlass) return ;
+
+    m_customPlot->clearGraphs();
+    m_table->clear();
+
+    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range());
+    QVector<double> ydata;
+    QCPGraph* graph;
+
+    int i,j;
+    int rowCount = xdata.size();
+    int columnCount = m_wvlList.size() + 1+1; // lambda + glasses
+    m_table->setRowCount(rowCount);
+    m_table->setColumnCount(columnCount);
+
+    QStringList header = QStringList() << "Temp";
+    QTableWidgetItem* item;
+
+    // replot all graphs and recreate tables
+    double currentWvl;
+    for(i = 0; i < m_wvlList.size(); i++)
+    {
+        currentWvl = m_wvlList[i]; // unit:nm
+
+        // graphs
+        ydata = QCPUtil::scaleVector(m_currentGlass->dn_dt_abs(xdata, currentWvl/1000), pow(10,6)); //unit:micron
+        graph = m_customPlot->addGraph();
+        graph->setName(QString::number(currentWvl));
+        graph->setData(xdata, ydata);
+        QCPUtil::setColorToGraph(graph, QCPUtil::getColorFromIndex(i,m_maxGraphCount));
+        graph->setVisible(true);
+
+        // table
+        header << QString::number(currentWvl) + "nm";
+        for(j = 0; j< rowCount; j++){
+
+            // temperature
+            item = new QTableWidgetItem;
+            item->setText(QString::number(xdata[j]) );
+            m_table->setItem(j, 0, item);
+
+            // dn/dt(abs)
+            item = new QTableWidgetItem;
+            item->setText( QString::number(ydata[j]) );
+            m_table->setItem(j, i+1, item);
+        }
+
+    }
+    m_customPlot->replot();
+    m_table->setHorizontalHeaderLabels(header);
+}
+
+void DnDtPlotForm::clearAll()
+{
+    m_wvlList.clear();
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot->replot();
@@ -231,7 +221,7 @@ void TransmittancePlotForm::clearAll()
     m_table->update();
 }
 
-void TransmittancePlotForm::setLegendVisible()
+void DnDtPlotForm::setLegendVisible()
 {
     m_customPlot->legend->setVisible(ui->checkBox_Legend->checkState());
     m_customPlot->replot();

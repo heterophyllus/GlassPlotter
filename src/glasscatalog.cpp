@@ -95,7 +95,6 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         linecount++;
 
         if(linetext.startsWith("NM")){
-            //lineparts = linetext.simplified().split(" ");
             lineparts = linetext.simplified().split(" ");
             g = new Glass;
             _glasses.append(g);
@@ -103,18 +102,13 @@ bool GlassCatalog::loadAGF(QString AGFpath)
             _glasses.last()->setSupplyer(_supplyer);
             _glasses.last()->setDispForm(lineparts[2].toInt());
             _glasses.last()->setMIL(lineparts[3]);
-            _glasses.last()->setNd(lineparts[4].toDouble());
-            _glasses.last()->setVd(lineparts[5].toDouble());
+
             if(lineparts.size() > 7){
                 _glasses.last()->setStatus(lineparts[7].toUInt());
             }
         }
         else if (linetext.startsWith("GC")){
             _glasses.last()->setComment(linetext.remove(0,2).simplified());
-        }
-        else if (linetext.startsWith("ED")) {
-            lineparts = linetext.simplified().split(" ");
-            _glasses.last()->setdPgF(lineparts[4].toDouble());
         }
         else if(linetext.startsWith("CD")){ // CD <dispersion coefficients 1 - 10>
             lineparts = linetext.simplified().split(" ");
@@ -125,12 +119,12 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         else if(linetext.startsWith("TD")){ // TD <D0> <D1> <D2> <E0> <E1> <Ltk> <Temp>
             lineparts = linetext.simplified().split(" ");
             if(lineparts.size() > 7){
-                for(int i = 1;i<7;i++){
-                    _glasses.last()->thermalData()->hasData = true;
-                    _glasses.last()->setThermalCoef(i-1, lineparts[i].toDouble());
+                _glasses.last()->hasThermalData = true;
+                for(int i = 1;i<8;i++){
+                    _glasses.last()->setThermalData(i-1, lineparts[i].toDouble());
                 }
             }else{
-                _glasses.last()->thermalData()->hasData = false;
+                _glasses.last()->hasThermalData = false;
             }
         }
         else if(linetext.startsWith("LD")){
@@ -150,11 +144,6 @@ bool GlassCatalog::loadAGF(QString AGFpath)
     }
 
     file.close();
-
-    for(int i = 0; i<_glasses.size();i++)
-    {
-        _glasses[i]->computeProperties();
-    }
 
     return true;
 }
@@ -213,8 +202,6 @@ bool GlassCatalog::loadXml(QString xmlpath)
             g->setDispCoef(k,dc_it->text().as_double());
             k++;
         }
-        g->computeProperties();
-
 
         // transmittance
         g->setLambdaMin(glass_it->child("LowWavelength").text().as_double());
@@ -235,13 +222,14 @@ bool GlassCatalog::loadXml(QString xmlpath)
         }
 
         // DnDt data
-        g->thermalData()->hasData = true;
-        g->setThermalCoef( 0, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D0").text().as_double() );
-        g->setThermalCoef( 1, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D1").text().as_double() );
-        g->setThermalCoef( 2, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D2").text().as_double() );
-        g->setThermalCoef( 3, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E0").text().as_double() );
-        g->setThermalCoef( 4, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E1").text().as_double() );
-        g->setThermalCoef( 5, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Lambda").text().as_double() );
+        g->hasThermalData = true;
+        g->setThermalData( 0, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D0").text().as_double() );
+        g->setThermalData( 1, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D1").text().as_double() );
+        g->setThermalData( 2, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D2").text().as_double() );
+        g->setThermalData( 3, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E0").text().as_double() );
+        g->setThermalData( 4, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E1").text().as_double() );
+        g->setThermalData( 5, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Lambda").text().as_double() );
+        g->setThermalData( 6, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Temperature").text().as_double() );
 
         _glasses.append(g);
     }

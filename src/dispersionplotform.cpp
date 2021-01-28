@@ -64,6 +64,8 @@ DispersionPlotForm::~DispersionPlotForm()
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot = nullptr;
+    m_checkBox = nullptr;
+    m_table = nullptr;
 
     delete ui;
 }
@@ -108,9 +110,9 @@ QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
 
 void DispersionPlotForm::addGraph()
 {
-    if(m_customPlot->graphCount() >= maxGraphCount+1) // 5 glass + 1 curve
+    if(m_customPlot->graphCount() >= m_maxGraphCount+1) // 5 glass + 1 curve
     {
-        QString message = "Up to " + QString::number(maxGraphCount) + " graphs can be plotted";
+        QString message = "Up to " + QString::number(m_maxGraphCount) + " graphs can be plotted";
         QMessageBox::information(this,tr("Error"), message);
         return;
     }
@@ -134,7 +136,7 @@ void DispersionPlotForm::updateAll()
     m_customPlot->clearGraphs();
     m_table->clear();
 
-    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
+    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep); // unit:nm
     QVector<double> ydata;
     QCPGraph* graph;
 
@@ -157,11 +159,11 @@ void DispersionPlotForm::updateAll()
         currentGlass = m_glassList[i];
 
         // graphs
-        ydata = currentGlass->index(xdata);
+        ydata = currentGlass->index(QCPUtil::scaleVector(xdata,1/1000));
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
-        graph->setData(QCPUtil::scaleVector(xdata,1000), ydata);
-        setColorToGraph(graph, QCPUtil::getColorFromIndex(i, maxGraphCount));
+        graph->setData(xdata, ydata);
+        setColorToGraph(graph, QCPUtil::getColorFromIndex(i, m_maxGraphCount));
         graph->setVisible(true);
 
         // table
@@ -184,10 +186,10 @@ void DispersionPlotForm::updateAll()
     header << "curve";
     m_table->setHorizontalHeaderLabels(header);
 
-    ydata = computeUserDefined(xdata);
+    ydata = computeUserDefined(QCPUtil::scaleVector(xdata,1/1000));
     graph = m_customPlot->addGraph();
     graph->setName("User Defined Curve");
-    graph->setData(QCPUtil::scaleVector(xdata, 1000), ydata);
+    graph->setData(xdata, ydata);
     graph->setVisible(m_checkBox->checkState());
     setColorToGraph(graph,Qt::black);
 

@@ -27,60 +27,51 @@
 
 Glass::Glass()
 {
-    _name = "";
+    _name     = "";
+    _supplyer = "";
+    _status   = "-";
+    _comment  = "";
+    _MIL      = "";
 
-    _nd  = 0;
-    _ne  = 0;
-    _vd  = 0;
-    _ve  = 0;
-    _PgF = 0;
-    _dPgF = 0;
-    _status = "-";
-
-    _comment = "";
+    _formulaIndex = 1;
 
     _lambdaMax = 0;
     _lambdaMin = 0;
 
-    _dispersionData = new DispersionData;
-    _transmittanceData = new TransmittanceData;
-    _thermalData = new ThermalData;
+    _dispersionData.clear();
+    _wavelengthData.clear();
+    _transmittanceData.clear();
+    _thicknessData.clear();
+    _thermalData.clear();
 }
 
 Glass::~Glass()
 {
-    try {
-        delete _dispersionData;
-        _dispersionData = nullptr;
-        delete _transmittanceData;
-        _transmittanceData = nullptr;
-        delete _thermalData;
-        _thermalData = nullptr;
-    } catch (...) {
-        if(_dispersionData != nullptr)
-            delete _dispersionData;
-        if(_transmittanceData != nullptr)
-            delete _transmittanceData;
-        if(_thermalData != nullptr)
-            delete _thermalData;
-    }
+    _dispersionData.clear();
+    _wavelengthData.clear();
+    _transmittanceData.clear();
+    _thicknessData.clear();
+    _thermalData.clear();
 }
 
-double Glass::getValue(QString dataName)
+double Glass::getValue(QString dname)
 {
-    if(dataName == "nd"){
+    if(dname == "nd"){
         return nd();
     }
-    else if(dataName == "ne"){
+    else if(dname == "ne"){
         return ne();
     }
-    else if(dataName == "vd"){
+    else if(dname == "vd"){
         return vd();
     }
-    else if(dataName == "PgF"){
+    else if(dname == "ve"){
+        return ve();
+    }
+    else if(dname == "PgF"){
         return PgF();
     }
-    else if(dataName == "PCt"){
+    else if(dname == "PCt"){
         return Pxy_("C","t");
     }
     else{
@@ -90,51 +81,51 @@ double Glass::getValue(QString dataName)
 
 double Glass::index(double lambdamicron)
 {
-    QList<double> c = _dispersionData->coefs;
+    QList<double> c = _dispersionData;
 
-    switch(_dispersionData->formulaIndex){
+    switch(_formulaIndex){
 
     // ---> Zemax AGF
     case 1:
-        return Schott(lambdamicron,c);
+        return DispersionFormula::Schott(lambdamicron,c);
     case 2:
-        return Sellmeier1(lambdamicron,c);
+        return DispersionFormula::Sellmeier1(lambdamicron,c);
     case 3:
-        return Herzberger(lambdamicron,c);
+        return DispersionFormula::Herzberger(lambdamicron,c);
     case 4:
-        return Sellmeier2(lambdamicron,c);
+        return DispersionFormula::Sellmeier2(lambdamicron,c);
     case 5:
-        return Conrady(lambdamicron,c);
+        return DispersionFormula::Conrady(lambdamicron,c);
     case 6:
-        return Sellmeier3(lambdamicron,c);
+        return DispersionFormula::Sellmeier3(lambdamicron,c);
     case 7:
-        return HandbookOfOptics1(lambdamicron,c);
+        return DispersionFormula::HandbookOfOptics1(lambdamicron,c);
     case 8:
-        return HandbookOfOptics2(lambdamicron,c);
+        return DispersionFormula::HandbookOfOptics2(lambdamicron,c);
     case 9:
-        return Sellmeier4(lambdamicron,c);
+        return DispersionFormula::Sellmeier4(lambdamicron,c);
     case 10:
-        return Extended1(lambdamicron,c);
+        return DispersionFormula::Extended1(lambdamicron,c);
     case 11:
-        return Sellmeier5(lambdamicron,c);
+        return DispersionFormula::Sellmeier5(lambdamicron,c);
     case 12:
-        return Extended2(lambdamicron,c);
+        return DispersionFormula::Extended2(lambdamicron,c);
     case 13: // Unknown
         return 0;
 
     // ---> CODEV XML
     case 101:
-        return Laurent(lambdamicron,c);
+        return DispersionFormula::Laurent(lambdamicron,c);
     case 102:
-        return GlassManufacturerLaurent(lambdamicron,c);
+        return DispersionFormula::GlassManufacturerLaurent(lambdamicron,c);
     case 103:
-        return GlassManufacturerSellmeier(lambdamicron,c);
+        return DispersionFormula::GlassManufacturerSellmeier(lambdamicron,c);
     case 104:
-        return StandardSellmeier(lambdamicron,c);
+        return DispersionFormula::StandardSellmeier(lambdamicron,c);
     case 105:
-        return Cauchy(lambdamicron,c);
+        return DispersionFormula::Cauchy(lambdamicron,c);
     case 106:
-        return Hartman(lambdamicron,c);
+        return DispersionFormula::Hartman(lambdamicron,c);
     default:
         return 0;
     }
@@ -143,9 +134,7 @@ double Glass::index(double lambdamicron)
 
 double Glass::index(QString spectral)
 {
-    double lambdamicron = SpectralLine::wavelength(spectral)/1000;
-
-    return index(lambdamicron);
+    return index(SpectralLine::wavelength(spectral)/1000); // unit:micron
 }
 
 QVector<double> Glass::index(QVector<double> wvlvec)
@@ -159,48 +148,50 @@ QVector<double> Glass::index(QVector<double> wvlvec)
     return y;
 }
 
-double Glass::transmittance(double lambdamicron, double thickness)
+void Glass::setStatus(QString str)
 {
-    double refThickness = _transmittanceData->thickness.first();
-    QVector<double> sx, sy;
-
-    for(int i = 0; i < _transmittanceData->size(); i++)
-    {
-        sx.append(_transmittanceData->wavelength.at(i));
-        sy.append(pow(_transmittanceData->transmittance.at(i), thickness/refThickness)); // T^(t/ref_t)
-    }
-
-    tk::spline s;
-    s.set_points(sx.toStdVector(), sy.toStdVector());
-    return s(lambdamicron);
+    _status = str;
 }
 
-QVector<double> Glass::transmittance(QVector<double> x, double thickness)
+void Glass::setStatus(int index)
 {
-    double refThickness = _transmittanceData->thickness.first();
-    QVector<double> sx, sy;
-
-    for(int i = 0; i < _transmittanceData->size(); i++)
+    switch(index)
     {
-        sx.append(_transmittanceData->wavelength.at(i));
-        sy.append(pow(_transmittanceData->transmittance.at(i), thickness/refThickness));
+    case 1:
+        _status = "Preferred";
+        break;
+    case 2:
+        _status = "Obsolete";
+        break;
+    case 3:
+        _status = "Special";
+        break;
+    case 4:
+        _status = "Melt";
+        break;
+    default:
+        _status = "No Data";
     }
-
-    tk::spline s;
-    s.set_points(sx.toStdVector(), sy.toStdVector());
-
-    QVector<double> y;
-    for(int i = 0; i < x.count(); i++)
-    {
-        y.append(s(x[i]));
-    }
-    return y;
 }
 
 
-QString Glass::DispersionData::formulaName()
+void Glass::setDispCoef(int index, double val)
 {
-    switch(formulaIndex){
+    if(_dispersionData.isEmpty()){
+        _dispersionData.append(val);
+    }
+    else if(_dispersionData.size() <= index){
+        _dispersionData.append(val);
+    }
+    else{
+        _dispersionData[index] = val;
+    }
+}
+
+
+QString Glass::formulaName()
+{
+    switch(_formulaIndex){
     case 1:
         return "Schott";
     case 2:
@@ -244,74 +235,82 @@ QString Glass::DispersionData::formulaName()
     }
 }
 
-double Glass::dn_dT(double T, double lambdamicron)
+double Glass::transmittance(double lambdamicron, double thickness)
 {
-    // should be implemented
-    return 0;
-}
+    double refThickness = _thicknessData[0];
+    QVector<double> sx, sy;
 
-
-double Glass::Pxy(QString x, QString y)
-{
-    return (index(x) - index(y)) / ( index("F") - index("C") );
-}
-
-double Glass::Pxy_(QString x, QString y)
-{
-    return (index(x) - index(y)) / ( index("F_") - index("C_") );
-}
-
-void Glass::computeProperties()
-{
-    _nd = index("d");
-    _ne = index("e");
-    _vd = (index("d") - 1)/(index("F") - index("C"));
-    _ve = (index("e") - 1)/(index("F_") - index("C_"));
-    _PgF = Pxy("g","F");
-}
-
-void Glass::setStatus(QString str)
-{
-    _status = str;
-}
-
-void Glass::setStatus(int index)
-{
-    switch(index)
+    for(int i = 0; i < _transmittanceData.size(); i++)
     {
-    case 1:
-        _status = "Preferred";
-        break;
-    case 2:
-        _status = "Obsolete";
-        break;
-    case 3:
-        _status = "Special";
-        break;
-    case 4:
-        _status = "Melt";
-        break;
-    default:
-        _status = "No Data";
+        sx.append(_wavelengthData[i]);
+        sy.append(pow(_transmittanceData[i], thickness/refThickness)); // T^(t/ref_t)
     }
+
+    tk::spline s;
+    s.set_points(sx.toStdVector(), sy.toStdVector());
+    return s(lambdamicron);
 }
 
-
-void Glass::setDispCoef(int index, double val)
+QVector<double> Glass::transmittance(QVector<double> x, double thickness)
 {
-    _dispersionData->coefs[index] = val;
-}
+    double refThickness = _transmittanceData[0];
+    QVector<double> sx, sy;
 
-void Glass::setThermalCoef(int index, double val)
-{
-    _thermalData->coefs[index] = val;
+    for(int i = 0; i < _transmittanceData.size(); i++)
+    {
+        sx.append(_wavelengthData[i]);
+        sy.append(pow(_transmittanceData[i], thickness/refThickness));
+    }
+
+    tk::spline s;
+    s.set_points(sx.toStdVector(), sy.toStdVector());
+
+    QVector<double> y;
+    for(int i = 0; i < x.count(); i++)
+    {
+        y.append(s(x[i]));
+    }
+    return y;
 }
 
 void Glass::appendTransmittanceData(double lambdamicron, double trans, double thick)
 {
-    _transmittanceData->wavelength.append(lambdamicron);
-    _transmittanceData->transmittance.append(trans);
-    _transmittanceData->thickness.append(thick);
+    _wavelengthData.append(lambdamicron);
+    _transmittanceData.append(trans);
+    _thicknessData.append(thick);
 }
+
+
+double Glass::dn_dt_abs(double T, double lambdamicron)
+{
+    double dT = (T - T0());
+    double n = index(lambdamicron);
+
+    return (n*n-1)/(2*n) * ( D0() + 2*D1()*dT + 3*D2()*dT*dT + (E0() + 2*E1()*dT)/(lambdamicron*lambdamicron - Ltk()*Ltk()) );
+}
+
+QVector<double> Glass::dn_dt_abs(QVector<double> T, double lambdamicron)
+{
+    QVector<double> dndt = T;
+    for(int i = 0; i < T.size(); i++){
+        dndt[i] = dn_dt_abs(T[i],lambdamicron);
+    }
+    return dndt;
+}
+
+
+void Glass::setThermalData(int index, double val)
+{
+    if(_thermalData.isEmpty()){
+        _thermalData.append(val);
+    }
+    else if(_thermalData.size() <= index){
+        _thermalData.append(val);
+    }
+    else{
+        _thermalData[index] = val;
+    }
+}
+
 
 

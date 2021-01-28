@@ -51,9 +51,6 @@ public:
     explicit TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
     ~TransmittancePlotForm();
 
-    const double plotStep = 5;
-    const int maxGraphCount = 5;
-
 private slots:
     void addGraph();
     void deleteGraph();
@@ -70,6 +67,9 @@ private:
 
     QCustomPlot* m_customPlot;
     QTableWidget* m_table;
+
+    const double m_plotStep = 5;
+    const int m_maxGraphCount = 5;
 
     void setColorToGraph(QCPGraph* graph, QColor color);
     void setDefault();

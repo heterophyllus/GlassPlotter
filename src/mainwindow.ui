@@ -56,6 +56,7 @@
     <addaction name="menuGlass_Map"/>
     <addaction name="action_DispersionPlot"/>
     <addaction name="action_TransmittancePlot"/>
+    <addaction name="action_DnDtabsPlot"/>
     <addaction name="action_CatalogView"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
@@ -145,6 +146,11 @@
   <action name="action_loadXML">
    <property name="text">
     <string>load XML</string>
+   </property>
+  </action>
+  <action name="action_DnDtabsPlot">
+   <property name="text">
+    <string>Dn/Dt(abs) Plot</string>
    </property>
   </action>
  </widget>

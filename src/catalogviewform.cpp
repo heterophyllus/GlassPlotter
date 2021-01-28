@@ -57,8 +57,8 @@ void CatalogViewForm::setUpTable()
 {
     GlassCatalog* catalog = m_catalogList[ m_comboBox->currentIndex() ];
 
-    QStringList headerLabels = QStringList() << tr("Glass") << tr("Nd" ) << tr("Vd") << tr("MIL") << tr("Status") << tr("Formula") << tr("C0") << tr("C1") << tr("C2") << tr("C3") <<tr("C4") << tr("C5") << tr("C6") << tr("C7") << tr("C8") << tr("C9") <<tr("C10") << tr("C11") << tr("Comment") ;
-
+    QStringList headerLabels = QStringList() << tr("Glass") << tr("Nd" ) << tr("Vd") << tr("Comment") << tr("MIL") << tr("Status") << tr("Formula");
+    for(int i = 0; i < 12; i++) headerLabels << (tr("C") + QString::number(i));
     m_table->setSortingEnabled(false);
 
     m_table->clear();
@@ -85,6 +85,12 @@ void CatalogViewForm::setUpTable()
         // Abbe
         item = new QTableWidgetItem(QString::number(glass->vd()));
         m_table->setItem(i, ++j, item);
+        ++j;
+
+        // individual comment
+        item = new QTableWidgetItem();
+        item->setText(glass->comment());
+        m_table->setItem(i, j++, item);
 
         // MIL
         item = new QTableWidgetItem(glass->MIL());
@@ -95,22 +101,19 @@ void CatalogViewForm::setUpTable()
         m_table->setItem(i, ++j, item);
 
         //formula
-        item = new QTableWidgetItem(glass->dispersion()->formulaName());
+        item = new QTableWidgetItem(glass->formulaName());
         m_table->setItem(i, ++j, item);
 
         //coefficients
         j++;
-        for(int k = 0;k<glass->dispersion()->coefs.size();k++)
+        for(int k = 0; k < glass->dispersionCoefCount(); k++)
         {
             item = new QTableWidgetItem();
-            item->setText(QString::number(glass->dispersion()->coefs[k]));
+            item->setText(QString::number(glass->dispersionCoef(k)));
             m_table->setItem(i, j++, item);
         }
 
-        // individual comment
-        item = new QTableWidgetItem();
-        item->setText(glass->comment());
-        m_table->setItem(i, j++, item);
+
     }
     glass = nullptr;
     item  = nullptr;

@@ -69,7 +69,7 @@ public:
 
     void setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
     void setUpScrollArea();
-    void setDefault();
+
     void saveSetting();
 
     QCPGraph* curveGraph;
@@ -116,10 +116,10 @@ private slots:
     void update();
 
     /**
-     * @brief Reset axis of the glassmap
+     * @brief Set default axis and replot
      * @name SLOT
      */
-    void resetView();
+    void setDefault();
 
     void showPresetDlg();
 
@@ -133,13 +133,9 @@ private:
 
     QList<GlassCatalog*> m_catalogList;
     QList<GlassMapCtrl*> m_glassMapCtrlList;
+    QList<QLineEdit*> m_lineEditList;
 
     QListWidget* m_listWidgetNeighbors;
-
-    const double m_neighborThreshold = 0.5;
-
-
-    Glass* getGlassFromName(QString glassName);
 
     QSettings* m_settings;
     QString m_settingFile;
@@ -149,6 +145,8 @@ private:
 
     QCPRange m_defaultXrange;
     QCPRange m_defaultYrange;
+
+    Glass* getGlassFromName(QString glassName);
 
 };
 

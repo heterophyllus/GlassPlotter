@@ -30,8 +30,8 @@ SpectralLine::SpectralLine()
 }
 
 //http://www.hoya-opticalworld.com/japanese/technical/002.html
-const double SpectralLine::t = 1013.98;
-const double SpectralLine::s = 852.11;
+const double SpectralLine::t = 1013.980;
+const double SpectralLine::s = 852.110;
 const double SpectralLine::r = 706.519;
 const double SpectralLine::C = 656.273;
 const double SpectralLine::C_= 643.847;

@@ -55,9 +55,6 @@ public:
     explicit DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
     ~DispersionPlotForm();
 
-    const double plotStep = 5;
-    const int maxGraphCount = 5;
-
 private slots:
     void addGraph();
     void deleteGraph();
@@ -67,7 +64,6 @@ private slots:
     void clearAll();
 
 private:
-
     Ui::DispersionPlotForm *ui;
 
     QCustomPlot* m_customPlot;
@@ -76,6 +72,9 @@ private:
 
     QCheckBox* m_checkBox;
     QTableWidget* m_table;
+
+    const double m_plotStep = 5;
+    const int m_maxGraphCount = 5;
 
     void setDefault();
     void setColorToGraph(QCPGraph* graph, QColor color);

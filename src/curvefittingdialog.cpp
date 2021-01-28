@@ -101,7 +101,7 @@ void CurveFittingDialog::deleteSelectedGlass()
     }
 }
 
-bool CurveFittingDialog::calculateFitting(int plotType)
+bool CurveFittingDialog::calculateFitting(QString xdataname, QString ydataname)
 {
     //https://en.wikipedia.org/wiki/Polynomial_regression
 
@@ -114,7 +114,7 @@ bool CurveFittingDialog::calculateFitting(int plotType)
         QMessageBox::warning(this,tr("File"), tr("No glass has been selected"));
         return false;
     }else if( M <= N ){
-        QMessageBox::warning(this,tr("File"), tr("Too few samples. Curve will seem weird."));
+        QMessageBox::warning(this,tr("File"), tr("Too few samples. Curve will be weird."));
     }
 
     // initialize results
@@ -127,39 +127,10 @@ bool CurveFittingDialog::calculateFitting(int plotType)
 
     for(int i = 0; i<M; i++)
     {
-        switch (plotType) {
-        case NdVd:
-
-            for(int j = 0; j < N+1; j++){
-                X(i,j) = pow(m_targetGlassList[i]->vd(), j);
-            }
-            y(i) = m_targetGlassList[i]->nd();
-            break;
-
-        case NeVe:
-
-            for(int j = 0;j<N+1;j++){
-                X(i,j) = pow(m_targetGlassList[i]->ve(), j);
-            }
-            y(i) = m_targetGlassList[i]->ne();
-            break;
-
-        case PgFVd:
-
-            for(int j = 0;j<N+1;j++){
-                X(i,j) = pow(m_targetGlassList[i]->vd(), j);
-            }
-            y(i) = m_targetGlassList[i]->PgF();
-            break;
-
-        case PCtVd:
-
-            for(int j = 0;j<N+1;j++){
-                X(i,j) = pow(m_targetGlassList[i]->vd(), j);
-            }
-            y(i) = m_targetGlassList[i]->Pxy("C", "t");
-            break;
+        for(int j = 0; j < N+1; j++){
+            X(i,j) = pow(m_targetGlassList[i]->getValue(xdataname), j);
         }
+        y(i) = m_targetGlassList[i]->getValue(ydataname);
     }
 
     MatrixXd A = X.transpose()*X;

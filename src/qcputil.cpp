@@ -28,14 +28,22 @@ QVector<double> QCPUtil::scaleVector(QVector<double> v, double scale)
 QVector<double> QCPUtil::getVectorFromRange(QCPRange range, double step)
 {
     QVector<double> xdata;
-    double lambdamin = range.lower;
-    double lambdamax = range.upper;
-    double lambdanano = lambdamin;
-    while(lambdanano < lambdamax)
+    double xmin = range.lower;
+    double xmax = range.upper;
+    double x = xmin;
+    while(x < xmax)
     {
-        xdata.append(lambdanano/1000);
-        lambdanano += step;
+        xdata.append(x);
+        x += step;
     }
     return xdata;
+}
+
+void QCPUtil::setColorToGraph(QCPGraph *graph, QColor color)
+{
+    QPen pen = graph->pen();
+    pen.setWidth(2);
+    pen.setColor(color);
+    graph->setPen(pen);
 }
 

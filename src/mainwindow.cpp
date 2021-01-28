@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->action_VdPCt,             SIGNAL(triggered()),this, SLOT(showGlassMapVdPCt()));
     QObject::connect(ui->action_DispersionPlot,    SIGNAL(triggered()),this, SLOT(showDispersionPlot()));
     QObject::connect(ui->action_TransmittancePlot, SIGNAL(triggered()),this, SLOT(showTransmittancePlot()));
+    QObject::connect(ui->action_DnDtabsPlot,       SIGNAL(triggered()),this, SLOT(showDnDtabsPlot()));
     QObject::connect(ui->action_CatalogView,       SIGNAL(triggered()),this, SLOT(showCatalogViewForm()));
 
     // Window menu
@@ -197,6 +198,11 @@ void MainWindow::showDispersionPlot()
 void MainWindow::showTransmittancePlot()
 {
     showAnalysisForm<TransmittancePlotForm>();
+}
+
+void MainWindow::showDnDtabsPlot()
+{
+    showAnalysisForm<DnDtPlotForm>();
 }
 
 void MainWindow::showCatalogViewForm()
