@@ -31,6 +31,7 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
     ui(new Ui::TransmittancePlotForm)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Transmittance Plot");
 
     m_catalogList = catalogList;
 

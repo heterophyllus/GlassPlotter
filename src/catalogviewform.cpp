@@ -30,6 +30,7 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
     ui(new Ui::CatalogViewForm)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Catalog");
 
     m_catalogList = catalogList;
     m_comboBox = ui->comboBox_Supplyer;
@@ -57,10 +58,9 @@ void CatalogViewForm::setUpTable()
 {
     GlassCatalog* catalog = m_catalogList[ m_comboBox->currentIndex() ];
 
-    QStringList headerLabels = QStringList() << tr("Glass") << tr("Nd" ) << tr("Vd") << tr("Comment") << tr("MIL") << tr("Status") << tr("Formula");
-    for(int i = 0; i < 12; i++) headerLabels << (tr("C") + QString::number(i));
-    m_table->setSortingEnabled(false);
+    QStringList headerLabels = QStringList() << tr("Glass") << tr("Nd" ) << tr("Vd") << tr("Ne") << tr("Ve") << tr("PgF") << tr("Status") << tr("Formula") << tr("Comment");
 
+    m_table->setSortingEnabled(false);
     m_table->clear();
     m_table->setColumnCount( headerLabels.size() );
     m_table->setRowCount( catalog->glassCount() );
@@ -78,22 +78,24 @@ void CatalogViewForm::setUpTable()
         item = new QTableWidgetItem(glass->name());
         m_table->setItem(i, j, item);
 
-        // index
+        // nd
         item = new QTableWidgetItem(QString::number(glass->nd()));
         m_table->setItem(i, ++j, item);
 
-        // Abbe
+        // vd
         item = new QTableWidgetItem(QString::number(glass->vd()));
         m_table->setItem(i, ++j, item);
-        ++j;
 
-        // individual comment
-        item = new QTableWidgetItem();
-        item->setText(glass->comment());
-        m_table->setItem(i, j++, item);
+        // ne
+        item = new QTableWidgetItem(QString::number(glass->ne()));
+        m_table->setItem(i, ++j, item);
 
-        // MIL
-        item = new QTableWidgetItem(glass->MIL());
+        // ve
+        item = new QTableWidgetItem(QString::number(glass->ve()));
+        m_table->setItem(i, ++j, item);
+
+        // PgF
+        item = new QTableWidgetItem(QString::number(glass->PgF()));
         m_table->setItem(i, ++j, item);
 
         // status
@@ -104,16 +106,10 @@ void CatalogViewForm::setUpTable()
         item = new QTableWidgetItem(glass->formulaName());
         m_table->setItem(i, ++j, item);
 
-        //coefficients
-        j++;
-        for(int k = 0; k < glass->dispersionCoefCount(); k++)
-        {
-            item = new QTableWidgetItem();
-            item->setText(QString::number(glass->dispersionCoef(k)));
-            m_table->setItem(i, j++, item);
-        }
-
-
+        // individual comment
+        item = new QTableWidgetItem();
+        item->setText(glass->comment());
+        m_table->setItem(i, ++j, item);
     }
     glass = nullptr;
     item  = nullptr;

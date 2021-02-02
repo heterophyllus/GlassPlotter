@@ -33,7 +33,6 @@ GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
     ui->setupUi(this);
 
     m_glass = glass;
-
     setWindowTitle("DataSheet - " + m_glass->name());
 
     // set names

@@ -30,6 +30,7 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     ui(new Ui::DispersionPlotForm)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Dispersion Plot");
 
     m_catalogList = catalogList;
     m_customPlot = ui->widget;

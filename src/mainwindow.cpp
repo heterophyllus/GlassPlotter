@@ -32,9 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     ui->mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    this->setWindowTitle("GlassPlotter");
 
     // File menu
     QObject::connect(ui->action_loadAGF,SIGNAL(triggered()), this, SLOT(loadAGF()));

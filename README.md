@@ -19,10 +19,10 @@ See also [Wiki](https://github.com/heterophyllus/glassplotter/wiki) for further 
 This application requires additional files in either of two formats.
 
 1. Zemax AGF  
-  AGF files are provided from the manufacturers. 
+   Available on each manufacturer's website. 
 
 2. CODE V XML  
-   CODE V XML files are available on [Synopsys support page](https://www.synopsys.com/optical-solutions/support/support-glass-catalog.html)
+   Available on [Synopsys support page](https://www.synopsys.com/optical-solutions/support/support-glass-catalog.html)
 
 Note that the AGF/XML files included in this repository are not always up to date.
 

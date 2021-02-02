@@ -57,22 +57,28 @@ Glass::~Glass()
 double Glass::getValue(QString dname)
 {
     if(dname == "nd"){
-        return nd();
+        //return nd();
+        return index("d");
     }
     else if(dname == "ne"){
-        return ne();
+        //return ne();
+        return index("e");
     }
     else if(dname == "vd"){
-        return vd();
+        //return vd();
+        return (index("d") - 1)/(index("F") - index("C"));
     }
     else if(dname == "ve"){
-        return ve();
+        //return ve();
+        return (index("e") - 1)/(index("F_") - index("C_"));
     }
     else if(dname == "PgF"){
-        return PgF();
+        //return PgF();
+        return (index("g") - index("F")) / ( index("F") - index("C") );
     }
     else if(dname == "PCt"){
-        return Pxy_("C","t");
+        //return Pxy_("C","t");
+        return (index("C") - index("t")) / ( index("F_") - index("C_") );
     }
     else{
         return 0;
@@ -129,7 +135,7 @@ double Glass::index(double lambdamicron)
     default:
         return 0;
     }
-
+    c.clear();
 }
 
 double Glass::index(QString spectral)

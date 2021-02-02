@@ -31,6 +31,7 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     ui(new Ui::DnDtPlotForm)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Dn/Dt(abs) Plot");
 
     m_catalogList = catalogList;
 
@@ -79,9 +80,20 @@ void DnDtPlotForm::setGlass()
         ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
 
         m_wvlList.clear();
-        m_wvlList << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0 ;
+        m_wvlList << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0;
 
         updateAll();
+
+        // rescale y axis
+        m_customPlot->yAxis->rescale();
+        m_customPlot->replot();
+
+        ui->lineEdit_Xmin->setText(QString::number(m_customPlot->xAxis->range().lower));
+        ui->lineEdit_Xmax->setText(QString::number(m_customPlot->xAxis->range().upper));
+        ui->lineEdit_Ymin->setText(QString::number(m_customPlot->yAxis->range().lower));
+        ui->lineEdit_Ymax->setText(QString::number(m_customPlot->yAxis->range().upper));
+
+
     }
 }
 
@@ -112,8 +124,6 @@ void DnDtPlotForm::addGraph()
 
 void DnDtPlotForm::deleteGraph()
 {
-    qDebug() << __FUNCTION__;
-
     if(m_customPlot->selectedGraphs().size() > 0)
     {
         QCPGraph* selectedGraph = m_customPlot->selectedGraphs().first();
