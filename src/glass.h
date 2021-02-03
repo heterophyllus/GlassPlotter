@@ -38,6 +38,14 @@
 #include "spectralline.h"
 #include "dispersionformula.h"
 
+#ifndef SIZE_OF_DISPERSIONDATA
+#define SIZE_OF_DISPERSIONDATA 12
+#endif
+
+#ifndef SIZE_OF_THERMALDATA
+#define SIZE_OF_THERMALDATA 7
+#endif
+
 class Glass
 {
 public:

@@ -71,11 +71,17 @@ void DnDtPlotForm::setGlass()
     GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
     if(dlg->exec() == QDialog::Accepted)
     {
-        clearAll();
-
         int catalogIndex = dlg->getCatalogIndex();
         QString glassName = dlg->getGlassName();
-        m_currentGlass = m_catalogList[catalogIndex]->glass(glassName);
+        Glass* newGlass = m_catalogList[catalogIndex]->glass(glassName);
+
+        if(!newGlass->hasThermalData){
+            QMessageBox::information(this,tr("Error"), tr("This glass does not have thermal data."));
+            newGlass = nullptr;
+            return;
+        }
+        m_currentGlass = newGlass;
+        clearAll();
 
         ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
 
@@ -92,8 +98,6 @@ void DnDtPlotForm::setGlass()
         ui->lineEdit_Xmax->setText(QString::number(m_customPlot->xAxis->range().upper));
         ui->lineEdit_Ymin->setText(QString::number(m_customPlot->yAxis->range().lower));
         ui->lineEdit_Ymax->setText(QString::number(m_customPlot->yAxis->range().upper));
-
-
     }
 }
 
@@ -180,11 +184,11 @@ void DnDtPlotForm::updateAll()
 
     int i,j;
     int rowCount = xdata.size();
-    int columnCount = m_wvlList.size() + 1+1; // lambda + glasses
+    int columnCount = m_wvlList.size() + 1; // temperature + wavelengths
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
 
-    QStringList header = QStringList() << "Temp";
+    QStringList header = QStringList() << "Temperature";
     QTableWidgetItem* item;
 
     // replot all graphs and recreate tables

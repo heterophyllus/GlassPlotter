@@ -192,17 +192,17 @@ void GlassDataSheetForm::setUpDispersionTab()
     gridLayout->addWidget(label, 0, 1, 1, 1);
 
     // list up coefficients
-    for(int i = 1; i < m_glass->dispersionCoefCount();i++)
+    for(int i = 0; i < m_glass->dispersionCoefCount();i++)
     {
         // C0, C1, C2...
         label = new QLabel(scrollAreaContents);
-        label->setText("C" + QString::number(i-1));
-        gridLayout->addWidget(label, i, 0, 1, 1);
+        label->setText("C" + QString::number(i));
+        gridLayout->addWidget(label, i+1, 0, 1, 1);
 
         // coefficient value
         label = new QLabel(scrollAreaContents);
-        label->setText(QString::number(m_glass->dispersionCoef(i-1)));
-        gridLayout->addWidget(label, i, 1, 1, 1);
+        label->setText(QString::number(m_glass->dispersionCoef(i)));
+        gridLayout->addWidget(label, i+1, 1, 1, 1);
     }
 }
 
@@ -213,8 +213,8 @@ void GlassDataSheetForm::setUpThermalTab()
     QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout_dndT"));
 
-    QStringList coefNames = QStringList() << "D0" << "D1" << "D2" << "E0" << "E1" << "Ltk";
-    QList<double> coefValues = QList<double>() << m_glass->D0() << m_glass->D1() << m_glass->D2() << m_glass->E0() << m_glass->E1() << m_glass->Ltk();
+    QStringList coefNames = QStringList() << "D0" << "D1" << "D2" << "E0" << "E1" << "Ltk" << "T0";
+    QList<double> coefValues = QList<double>() << m_glass->D0() << m_glass->D1() << m_glass->D2() << m_glass->E0() << m_glass->E1() << m_glass->Ltk() << m_glass->T0();
     QLabel *label;
 
     if(m_glass->hasThermalData){
