@@ -51,91 +51,39 @@ public:
     explicit GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, QMdiArea *parent = nullptr);
     ~GlassMapForm();
 
-    /**
-     * @brief The inner class to manage glass map of the respective supplyer
-     */
-    class GlassMapCtrl
-    {
-    public:
-        GlassMapCtrl(QCustomPlot* customPlot);
-        ~GlassMapCtrl();
-        QCPScatterChart* glassmap;
-        QLabel* labelSupplyer;
-        QCheckBox* checkBoxPlot;
-        QCheckBox* checkBoxLabel;
-    private:
-        QCustomPlot* m_customPlot;
-    };
-
-    void setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
-    void setUpScrollArea();
-
-    void saveSetting();
-
-    QCPGraph* curveGraph;
-    QCheckBox* checkBoxCurve;
-    QList<double> getCurveCoefs();
-    void setCurveCoefsToUI(QList<double> coefs);
-    void setCurveData();
-
 private slots:
-
-    /**
-     * @brief set legend visible
-     * @name SLOT
-     */
     void setLegendVisible();
-
-    /**
-     * @brief show CurveFittingDlg
-     * @name SLOT
-     */
     void showCurveFittingDlg();
-
-    /**
-     * @brief show neighboring glass list
-     * @param item selected text item on the glassmap
-     * @param event mouse event
-     * @name SLOT
-     */
     void showNeighbors(QCPAbstractItem* item, QMouseEvent *event);
-
-    /**
-     * @brief clear neighboring glass list
-     * @param event mouse event
-     * @name SLOT
-     */
-    void clearNeighbors(QMouseEvent* event);
-
-    /**
-     * @brief show GlassDataSheet form
-     * @name SLOT
-     */
+    void clearNeighbors(QMouseEvent* event=nullptr);
     void showGlassDataSheet();
-
     void update();
-
-    /**
-     * @brief Set default axis and replot
-     * @name SLOT
-     */
     void setDefault();
-
     void showPresetDlg();
 
 private:
+    /**
+     * @brief The GlassMapCtrl class
+     * @details Inner class to contain the checkbox pair
+     */
+    class GlassMapCtrl{
+    public:
+        GlassMapCtrl(QCheckBox* p, QCheckBox* l);
+        QCheckBox* checkBoxPlot;
+        QCheckBox* checkBoxLabel;
+    };
+
     Ui::GlassMapForm *ui;
 
     QMdiArea* m_parentMdiArea;
     QCustomPlot* m_customPlot;
-
     QCheckBox* m_checkBoxLegend;
+    QCheckBox* checkBoxCurve;
+    QListWidget* m_listWidgetNeighbors;
 
     QList<GlassCatalog*> m_catalogList;
-    QList<GlassMapCtrl*> m_glassMapCtrlList;
+    QList<GlassMapCtrl> m_glassMapCtrlList;
     QList<QLineEdit*> m_lineEditList;
-
-    QListWidget* m_listWidgetNeighbors;
 
     QSettings* m_settings;
     QString m_settingFile;
@@ -147,7 +95,12 @@ private:
     QCPRange m_defaultYrange;
 
     Glass* getGlassFromName(QString glassName);
-
+    void setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
+    void setUpScrollArea();
+    void saveSetting();
+    QList<double> getCurveCoefs();
+    void setCurveCoefsToUI(QList<double> coefs);
+    void setCurveData(QCPGraph* curveGraph, QList<double> coefs);
 };
 
 #endif // GLASSMAPFORM_H

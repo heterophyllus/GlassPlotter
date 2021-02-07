@@ -116,8 +116,8 @@ private:
     QString _comment;
 
     // dispersion data
-    QList<double> _dispersionData;
-    int           _formulaIndex;
+    QVector<double> _dispersionData;
+    int             _formulaIndex;
 
     // transmittance data
     double        _lambdaMax;
@@ -127,7 +127,7 @@ private:
     QList<double> _thicknessData;
 
     // thermal data
-    QList<double> _thermalData; //<D0> <D1> <D2> <E0> <E1> <Ltk> <temp>
+    QVector<double> _thermalData; //<D0> <D1> <D2> <E0> <E1> <Ltk> <temp>
 };
 
 

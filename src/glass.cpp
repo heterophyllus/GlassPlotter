@@ -89,55 +89,53 @@ double Glass::getValue(QString dname)
 
 double Glass::index(double lambdamicron)
 {
-    QList<double> c = _dispersionData;
-
     switch(_formulaIndex){
 
     // ---> Zemax AGF
     case 1:
-        return DispersionFormula::Schott(lambdamicron,c);
+        return DispersionFormula::Schott(lambdamicron,_dispersionData);
     case 2:
-        return DispersionFormula::Sellmeier1(lambdamicron,c);
+        return DispersionFormula::Sellmeier1(lambdamicron,_dispersionData);
     case 3:
-        return DispersionFormula::Herzberger(lambdamicron,c);
+        return DispersionFormula::Herzberger(lambdamicron,_dispersionData);
     case 4:
-        return DispersionFormula::Sellmeier2(lambdamicron,c);
+        return DispersionFormula::Sellmeier2(lambdamicron,_dispersionData);
     case 5:
-        return DispersionFormula::Conrady(lambdamicron,c);
+        return DispersionFormula::Conrady(lambdamicron,_dispersionData);
     case 6:
-        return DispersionFormula::Sellmeier3(lambdamicron,c);
+        return DispersionFormula::Sellmeier3(lambdamicron,_dispersionData);
     case 7:
-        return DispersionFormula::HandbookOfOptics1(lambdamicron,c);
+        return DispersionFormula::HandbookOfOptics1(lambdamicron,_dispersionData);
     case 8:
-        return DispersionFormula::HandbookOfOptics2(lambdamicron,c);
+        return DispersionFormula::HandbookOfOptics2(lambdamicron,_dispersionData);
     case 9:
-        return DispersionFormula::Sellmeier4(lambdamicron,c);
+        return DispersionFormula::Sellmeier4(lambdamicron,_dispersionData);
     case 10:
-        return DispersionFormula::Extended1(lambdamicron,c);
+        return DispersionFormula::Extended1(lambdamicron,_dispersionData);
     case 11:
-        return DispersionFormula::Sellmeier5(lambdamicron,c);
+        return DispersionFormula::Sellmeier5(lambdamicron,_dispersionData);
     case 12:
-        return DispersionFormula::Extended2(lambdamicron,c);
+        return DispersionFormula::Extended2(lambdamicron,_dispersionData);
     case 13: // Unknown
         return 0;
 
     // ---> CODEV XML
     case 101:
-        return DispersionFormula::Laurent(lambdamicron,c);
+        return DispersionFormula::Laurent(lambdamicron,_dispersionData);
     case 102:
-        return DispersionFormula::GlassManufacturerLaurent(lambdamicron,c);
+        return DispersionFormula::GlassManufacturerLaurent(lambdamicron,_dispersionData);
     case 103:
-        return DispersionFormula::GlassManufacturerSellmeier(lambdamicron,c);
+        return DispersionFormula::GlassManufacturerSellmeier(lambdamicron,_dispersionData);
     case 104:
-        return DispersionFormula::StandardSellmeier(lambdamicron,c);
+        return DispersionFormula::StandardSellmeier(lambdamicron,_dispersionData);
     case 105:
-        return DispersionFormula::Cauchy(lambdamicron,c);
+        return DispersionFormula::Cauchy(lambdamicron,_dispersionData);
     case 106:
-        return DispersionFormula::Hartman(lambdamicron,c);
+        return DispersionFormula::Hartman(lambdamicron,_dispersionData);
     default:
         return 0;
     }
-    c.clear();
+
 }
 
 double Glass::index(QString spectral)

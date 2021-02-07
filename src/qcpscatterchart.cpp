@@ -48,7 +48,6 @@ QCPScatterChart::QCPScatterChart(QCPScatterChart &other)
 {
     m_customPlot = other.parentPlot();
     m_graphPoints = other.graphPoints();
-    m_pointCount = other.textLabels().count();
     m_textlabels = other.textLabels();
 }
 
@@ -92,7 +91,6 @@ void QCPScatterChart::setData(QVector<double> x, QVector<double> y, QVector<QStr
     m_graphPoints->setData(x,y);
     m_graphPoints->setLineStyle(QCPGraph::lsNone);
     m_graphPoints->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc,8));
-    m_graphPoints->setVisible(false);
 
     //set text to labels
     m_textlabels.clear();
@@ -104,16 +102,13 @@ void QCPScatterChart::setData(QVector<double> x, QVector<double> y, QVector<QStr
         m_textlabels.last()->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
         m_textlabels.last()->setText(str[i]);
         m_textlabels.last()->setObjectName(str[i]); //used for mouse click
-        m_textlabels[i]->setVisible(false);
     }
 
 }
 
 void QCPScatterChart::setVisiblePointSeries(bool state)
-{
-    if(m_customPlot->hasPlottable(m_graphPoints)){
-        m_graphPoints->setVisible(state);
-    }
+{    
+    m_graphPoints->setVisible(state);
 }
 
 void QCPScatterChart::setVisibleTextLabels(bool state)
@@ -121,4 +116,9 @@ void QCPScatterChart::setVisibleTextLabels(bool state)
     for(int i = 0; i < m_textlabels.size(); i++){
         m_textlabels[i]->setVisible(state);
     }
+}
+
+int QCPScatterChart::dataCount()
+{
+    return m_textlabels.size();
 }

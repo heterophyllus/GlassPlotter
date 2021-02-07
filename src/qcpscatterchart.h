@@ -74,11 +74,10 @@ public:
     void setColor(QColor color);
     void setVisiblePointSeries(bool state);
     void setVisibleTextLabels(bool state);
-
     void setAxis(QCPRange xrange, QCPRange yrange);
+    int dataCount();
 
 private:
-    int m_pointCount;
     QCustomPlot* m_customPlot;
     QCPGraph* m_graphPoints; //points
     QList<QCPItemText*> m_textlabels; // text label for each point
