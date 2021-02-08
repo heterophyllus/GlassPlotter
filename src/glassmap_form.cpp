@@ -270,7 +270,7 @@ void GlassMapForm::update()
         plot_on  = m_glassMapCtrlList[i].checkBoxPlot->checkState();
         label_on = m_glassMapCtrlList[i].checkBoxLabel->checkState();
 
-        if(plot_on or label_on){
+        if(plot_on || label_on){
             glassmap = new QCPScatterChart(m_customPlot);
             setGlassmapData(glassmap,m_catalogList[i],m_xDataName,m_yDataName,QCPUtil::getColorFromIndex(i,catalogCount));
             glassmap->setVisiblePointSeries(plot_on);
