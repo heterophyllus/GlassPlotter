@@ -1,4 +1,4 @@
-# GlassPlotter - Simple Glassmap Viewer
+# GlassPlotter - Comprehensive Glassmap Viewer
 
 ![MDI](image/Screenshot_MDI.png)
 
