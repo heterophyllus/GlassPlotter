@@ -26,14 +26,17 @@
 #define DNDT_PLOT_FORM_H
 
 #include <QWidget>
-#include "qcustomplot.h"
+
 #include "qcputil.h"
-#include "glasscatalog.h"
-#include "glass_selection_dialog.h"
+
+
 
 namespace Ui {
 class DnDtPlotForm;
 }
+
+class Glass;
+class GlassCatalog;
 
 class DnDtPlotForm : public QWidget
 {
@@ -51,7 +54,6 @@ private slots:
     void setLegendVisible();
     void clearAll();
     void updateAll();
-
 
 private:
     Ui::DnDtPlotForm *ui;

@@ -27,17 +27,15 @@
   * GlassCatalog Container Class
   * */
 
+#pragma once
+
 #ifndef GLASSCATALOGUE_H
 #define GLASSCATALOGUE_H
 
 #include <QString>
-#include <QFile>
-#include <QFileInfo>
-#include <QTextStream>
-#include <QDebug>
+#include <QList>
 
-#include "glass.h"
-#include "pugixml.hpp" //https://pugixml.org
+class Glass;
 
 class GlassCatalog
 {
@@ -45,53 +43,16 @@ public:
     GlassCatalog();
     ~GlassCatalog();
 
-    /**
-     * @brief glass supplyer name
-     * @return
-     */
     QString supplyer() const { return _supplyer;}
 
-    /**
-     * @brief get number of glasses
-     * @return
-     */
     int glassCount() const {return _glasses.size();}
 
-    /**
-     * @brief get Glass object at the index of the list
-     * @param index number
-     * @return
-     */
-    Glass* glass(int index) const {return _glasses.at(index);}
-
-    /**
-     * @brief get Glass object from the name
-     * @param glassname name
-     * @return
-     */
+    Glass* glass(int n) const {return _glasses[n];}
     Glass* glass(QString glassname) const;
 
-
-    /**
-     * @brief Check if the specified glass is contained
-     * @param glassname
-     * @return
-     */
     bool hasGlass(QString glassname);
 
-    /**
-     * @brief load AGF file
-     * @param AGF file path
-     * @return
-     */
     bool loadAGF(QString AGFpath);
-
-    /**
-     * @brief load CodeV Xml
-     * @param Xmlpath
-     * @return
-     * @note This function utilizes xml parser library by https://pugixml.org
-     */
     bool loadXml(QString xmlpath);
 
 private:

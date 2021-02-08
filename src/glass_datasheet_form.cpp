@@ -22,9 +22,11 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-
 #include "glass_datasheet_form.h"
 #include "ui_glass_datasheet_form.h"
+
+#include "spectral_line.h"
+#include "glass.h"
 
 GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
     QWidget(parent),

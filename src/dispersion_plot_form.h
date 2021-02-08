@@ -33,14 +33,14 @@
 
 #include <QWidget>
 
-#include "qcustomplot.h"
 #include "qcputil.h"
-#include "glasscatalog.h"
-#include "glass_selection_dialog.h"
 
 namespace Ui {
 class DispersionPlotForm;
 }
+
+class Glass;
+class GlassCatalog;
 
 class DispersionPlotForm : public QWidget
 {

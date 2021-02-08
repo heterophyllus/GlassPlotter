@@ -25,6 +25,10 @@
 
 #include "glass.h"
 
+#include "spline.h" // c++ cubic spline library, Tino Kluge (ttk448 at gmail.com), https://github.com/ttk592/spline
+#include "spectral_line.h"
+#include "dispersion_formula.h"
+
 Glass::Glass()
 {
     _name     = "";

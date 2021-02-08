@@ -33,11 +33,10 @@
 
 #include <QWidget>
 
-#include "qcustomplot.h"
 #include "qcputil.h"
-#include "glasscatalog.h"
-#include "glass_selection_dialog.h"
 
+class Glass;
+class GlassCatalog;
 
 namespace Ui {
 class TransmittancePlotForm;

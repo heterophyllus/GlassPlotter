@@ -26,6 +26,10 @@
 #include "transmittance_plot_form.h"
 #include "ui_transmittance_plot_form.h"
 
+#include "glass.h"
+#include "glass_catalog.h"
+#include "glass_selection_dialog.h"
+
 TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::TransmittancePlotForm)

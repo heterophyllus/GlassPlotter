@@ -25,6 +25,10 @@
 #include "curve_fitting_dialog.h"
 #include "ui_curve_fitting_dialog.h"
 
+#include "glass.h"
+#include "glass_catalog.h"
+#include "glass_selection_dialog.h"
+
 using namespace Eigen;
 
 CurveFittingDialog::CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget *parent) :

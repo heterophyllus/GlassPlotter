@@ -37,14 +37,16 @@
 #include <QListWidget>
 #include <QMessageBox>
 
-#include "glasscatalog.h"
-#include "glass_selection_dialog.h"
+
 
 #include "Eigen/Dense"
 
 namespace Ui {
 class CurveFittingDialog;
 }
+
+class Glass;
+class GlassCatalog;
 
 class CurveFittingDialog : public QDialog
 {

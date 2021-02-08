@@ -25,6 +25,9 @@
 #include "catalog_view_form.h"
 #include "ui_catalog_view_form.h"
 
+#include "glass.h"
+#include "glass_catalog.h"
+
 CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::CatalogViewForm)

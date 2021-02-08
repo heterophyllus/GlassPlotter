@@ -1,6 +1,9 @@
 #include "preset_dialog.h"
 #include "ui_preset_dialog.h"
 
+#include <QTextCodec>
+#include <QInputDialog>
+
 PresetDialog::PresetDialog(QSettings* settings, QList<double> currentCoefs, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PresetDialog)

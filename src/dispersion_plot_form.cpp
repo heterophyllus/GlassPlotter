@@ -25,6 +25,10 @@
 #include "dispersion_plot_form.h"
 #include "ui_dispersion_plot_form.h"
 
+#include "glass.h"
+#include "glass_catalog.h"
+#include "glass_selection_dialog.h"
+
 DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DispersionPlotForm)

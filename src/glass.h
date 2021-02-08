@@ -26,17 +26,14 @@
   * Glass property container class
   */
 
-
+#pragma once
 
 #ifndef GLASS_H
 #define GLASS_H
 
 #include <QString>
 #include <QList>
-
-#include "spline.h" // c++ cubic spline library, Tino Kluge (ttk448 at gmail.com), https://github.com/ttk592/spline
-#include "spectral_line.h"
-#include "dispersion_formula.h"
+#include <QVector>
 
 #ifndef SIZE_OF_DISPERSIONDATA
 #define SIZE_OF_DISPERSIONDATA 12

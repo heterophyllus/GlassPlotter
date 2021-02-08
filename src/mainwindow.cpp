@@ -26,6 +26,21 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDebug>
+
+#include "glass.h"
+#include "glass_catalog.h"
+
+#include "about_dialog.h"
+#include "glassmap_form.h"
+#include "dispersion_plot_form.h"
+#include "transmittance_plot_form.h"
+#include "glass_datasheet_form.h"
+#include "dndt_plot_form.h"
+#include "catalog_view_form.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

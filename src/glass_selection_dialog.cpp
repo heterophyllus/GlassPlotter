@@ -25,6 +25,10 @@
 #include "glass_selection_dialog.h"
 #include "ui_glass_selection_dialog.h"
 
+#include "glass.h"
+#include "glass_catalog.h"
+#include <QSortFilterProxyModel>
+
 GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GlassSelectionDialog)

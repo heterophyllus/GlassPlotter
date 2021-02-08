@@ -2,10 +2,9 @@
 #define PRESET_DIALOG_H
 
 #include <QDialog>
-#include <QTextCodec>
+
 #include <QListWidget>
 #include <QSettings>
-#include <QInputDialog>
 
 namespace Ui {
 class PresetDialog;

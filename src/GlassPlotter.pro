@@ -33,9 +33,9 @@ SOURCES += \
     dispersion_plot_form.cpp \
     dndt_plot_form.cpp \
     glass.cpp \
+    glass_catalog.cpp \
     glass_datasheet_form.cpp \
     glass_selection_dialog.cpp \
-    glasscatalog.cpp \
     glassmap_form.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -55,9 +55,9 @@ HEADERS += \
     dispersion_plot_form.h \
     dndt_plot_form.h \
     glass.h \
+    glass_catalog.h \
     glass_datasheet_form.h \
     glass_selection_dialog.h \
-    glasscatalog.h \
     glassmap_form.h \
     mainwindow.h \
     preset_dialog.h \

@@ -25,6 +25,12 @@
 #include "glassmap_form.h"
 #include "ui_glassmap_form.h"
 
+#include "qcputil.h"
+#include "glass.h"
+#include "glass_catalog.h"
+#include "glass_datasheet_form.h"
+#include "curve_fitting_dialog.h"
+#include "preset_dialog.h"
 
 GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, QMdiArea *parent) :
     QWidget(parent),

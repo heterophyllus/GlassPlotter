@@ -33,12 +33,14 @@
 #include <QDialog>
 #include <QListWidget>
 #include <QComboBox>
-#include <QSortFilterProxyModel>
-#include "glasscatalog.h"
+
+
 
 namespace Ui {
 class GlassSelectionDialog;
 }
+
+class GlassCatalog;
 
 class GlassSelectionDialog : public QDialog
 {

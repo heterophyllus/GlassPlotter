@@ -31,17 +31,14 @@
 
 #include <QWidget>
 
-#include "qcputil.h"
 #include "qcpscatterchart.h"
-#include "glasscatalog.h"
-#include "glass_datasheet_form.h"
-#include "curve_fitting_dialog.h"
-#include "preset_dialog.h"
 
 namespace Ui {
 class GlassMapForm;
 }
 
+class GlassCatalog;
+class Glass;
 
 class GlassMapForm : public QWidget
 {

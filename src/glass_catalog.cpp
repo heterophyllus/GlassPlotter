@@ -22,8 +22,15 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-#include "glasscatalog.h"
+#include "glass_catalog.h"
 
+#include "glass.h"
+#include "pugixml.hpp" //https://pugixml.org
+
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
+#include <QDebug>
 
 GlassCatalog::GlassCatalog()
 {

@@ -30,7 +30,8 @@
 #include <QMdiArea>
 #include <QComboBox>
 #include <QTableWidget>
-#include "glasscatalog.h"
+
+class GlassCatalog;
 
 namespace Ui {
 class CatalogViewForm;

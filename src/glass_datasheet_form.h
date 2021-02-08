@@ -31,11 +31,11 @@
 
 #include <QWidget>
 
-#include "glass.h"
-
 namespace Ui {
 class GlassDataSheetForm;
 }
+
+class Glass;
 
 class GlassDataSheetForm : public QWidget
 {
