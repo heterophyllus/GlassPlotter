@@ -24,7 +24,7 @@
 
 
 #include "glass_datasheet_form.h"
-#include "ui_glassdatasheetform.h"
+#include "ui_glass_datasheet_form.h"
 
 GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
     QWidget(parent),
@@ -84,8 +84,6 @@ void GlassDataSheetForm::setUpBasicTab()
     label = new QLabel(m_glass->status(), scrollAreaContents);
     gridLayout->addWidget(label, 3, 1, 1, 1);
 
-    label = nullptr;
-
 }
 
 void GlassDataSheetForm::setUpIndicesTab()
@@ -124,12 +122,12 @@ void GlassDataSheetForm::setUpIndicesTab()
 
         // lambda(nm)
         label = new QLabel(scrollAreaContents);
-        label ->setText(QString::number(lambdamicron));
+        label ->setText(QString::number(lambdamicron, 'f', 3));
         gridLayout->addWidget(label, i, 1, 1, 1);
 
         // refractive index
         label = new QLabel(scrollAreaContents);
-        label -> setText(QString::number(index));
+        label -> setText(QString::number(index, 'f', 6));
         gridLayout->addWidget(label, i, 2, 1, 1);
     }
 }
@@ -152,7 +150,7 @@ void GlassDataSheetForm::setUpPartialTab()
         gridLayout->addWidget(label, i, 0, 1, 1);
 
         label = new QLabel(scrollAreaContents);
-        label->setText(QString::number(m_glass->Pxy(firsts[i], seconds[i])));
+        label->setText(QString::number(m_glass->Pxy(firsts[i], seconds[i]), 'f', 6));
         gridLayout->addWidget(label, i, 1, 1, 1);
     }
 
@@ -166,7 +164,7 @@ void GlassDataSheetForm::setUpPartialTab()
         gridLayout->addWidget(label, j+rowOffset, 0, 1, 1);
 
         label = new QLabel(scrollAreaContents);
-        label->setText(QString::number(m_glass->Pxy_(firsts[j], seconds[j])));
+        label->setText(QString::number(m_glass->Pxy_(firsts[j], seconds[j]), 'f', 6));
         gridLayout->addWidget(label, j+rowOffset, 1, 1, 1);
     }
 
@@ -201,7 +199,7 @@ void GlassDataSheetForm::setUpDispersionTab()
 
         // coefficient value
         label = new QLabel(scrollAreaContents);
-        label->setText(QString::number(m_glass->dispersionCoef(i)));
+        label->setText(QString::number(m_glass->dispersionCoef(i),'g',5));
         gridLayout->addWidget(label, i+1, 1, 1, 1);
     }
 }

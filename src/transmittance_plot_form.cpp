@@ -24,7 +24,7 @@
 
 
 #include "transmittance_plot_form.h"
-#include "ui_transmittanceplotform.h"
+#include "ui_transmittance_plot_form.h"
 
 TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
@@ -120,10 +120,11 @@ void TransmittancePlotForm::updateAll()
     QStringList header = QStringList() << "WVL";
     QTableWidgetItem* item;
 
+    int glassCount = m_glassList.size();
     Glass* currentGlass;
 
     // replot all graphs and recreate tables
-    for(i = 0; i < m_glassList.size(); i++)
+    for(i = 0; i < glassCount; i++)
     {
         currentGlass = m_glassList[i];
 
@@ -178,7 +179,7 @@ void TransmittancePlotForm::deleteGraph()
 {
     if(m_customPlot->selectedGraphs().size() > 0)
     {
-        QCPGraph* selectedGraph = m_customPlot->selectedGraphs().first();
+        QCPGraph* selectedGraph = m_customPlot->selectedGraphs()[0];
         QString graphName = selectedGraph->name();
         QStringList glass_supplyer = graphName.split("_");
 

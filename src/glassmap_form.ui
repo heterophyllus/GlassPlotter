@@ -61,7 +61,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>127</width>
+        <width>128</width>
         <height>440</height>
        </rect>
       </property>
@@ -95,7 +95,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>101</width>
+            <width>102</width>
             <height>391</height>
            </rect>
           </property>
@@ -133,7 +133,7 @@
        <item>
         <widget class="QPushButton" name="pushButton_Fitting">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -153,7 +153,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -178,7 +178,7 @@
           <item row="3" column="1">
            <widget class="QLineEdit" name="lineEdit_C3">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -201,7 +201,7 @@
           <item row="1" column="1">
            <widget class="QLineEdit" name="lineEdit_C1">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -211,7 +211,7 @@
           <item row="2" column="1">
            <widget class="QLineEdit" name="lineEdit_C2">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -234,7 +234,7 @@
           <item row="0" column="1">
            <widget class="QLineEdit" name="lineEdit_C0">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -264,7 +264,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>155</width>
+        <width>157</width>
         <height>440</height>
        </rect>
       </property>

@@ -54,8 +54,8 @@ public:
 private slots:
     void setLegendVisible();
     void showCurveFittingDlg();
-    void showNeighbors(QCPAbstractItem* item, QMouseEvent *event);
-    void clearNeighbors(QMouseEvent* event=nullptr);
+    void showNeighbors(QCPAbstractItem* item);
+    void clearNeighbors();
     void showGlassDataSheet();
     void update();
     void setDefault();

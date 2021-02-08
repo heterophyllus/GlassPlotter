@@ -70,16 +70,7 @@ public:
     QList<double> fittingResult();
 
 private slots:
-    /**
-     * @brief add glass to the list
-     * @name SLOT
-     */
     void addGlass();
-
-    /**
-     * @brief delete selected glass from the list
-     * @name SLOT
-     */
     void deleteSelectedGlass();
 
 private:

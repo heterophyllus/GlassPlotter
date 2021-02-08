@@ -69,7 +69,7 @@ public:
 private slots:
     void updateGlassList();
     void createGlassNameList();
-    void onComboChanged(int index);
+    void onComboChanged();
 
 private:
     Ui::GlassSelectionDialog *ui;

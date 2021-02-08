@@ -23,7 +23,7 @@
  *****************************************************************************/
 
 #include "catalog_view_form.h"
-#include "ui_catalogviewform.h"
+#include "ui_catalog_view_form.h"
 
 CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *parent) :
     QWidget(parent),
@@ -33,16 +33,14 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
     this->setWindowTitle("Catalog");
 
     m_catalogList = catalogList;
-    m_comboBox = ui->comboBox_Supplyer;
-    m_table = ui->tableWidget;
 
+    m_comboBox = ui->comboBox_Supplyer;
     for(int i = 0; i < m_catalogList.size(); i++){
         m_comboBox->addItem(m_catalogList.at(i)->supplyer());
     }
+    QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(setUpTable()));
 
-    QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)),
-                         this, SLOT(setUpTable()));
-
+    m_table = ui->tableWidget;
     setUpTable();
 }
 
@@ -69,7 +67,7 @@ void CatalogViewForm::setUpTable()
     Glass* glass;
     QTableWidgetItem* item;
     int j;
-    for(int i = 0;i < catalog->glassCount();i++)
+    for(int i = 0; i < catalog->glassCount(); i++)
     {
         glass = catalog->glass(i);
         j = 0;
@@ -78,25 +76,36 @@ void CatalogViewForm::setUpTable()
         item = new QTableWidgetItem(glass->name());
         m_table->setItem(i, j, item);
 
-        // nd
-        item = new QTableWidgetItem(QString::number(glass->nd()));
-        m_table->setItem(i, ++j, item);
+        // refractive index
+        if( tr("Unknown") == glass->formulaName() ){
+            item = new QTableWidgetItem("-");
+            m_table->setItem(i, ++j, item); // nd
+            m_table->setItem(i, ++j, item); // vd
+            m_table->setItem(i, ++j, item); // ne
+            m_table->setItem(i, ++j, item); // ve
+            m_table->setItem(i, ++j, item); // PgF
+        }
+        else{
+            // nd
+            item = new QTableWidgetItem(QString::number(glass->nd(), 'f', 6));
+            m_table->setItem(i, ++j, item);
 
-        // vd
-        item = new QTableWidgetItem(QString::number(glass->vd()));
-        m_table->setItem(i, ++j, item);
+            // vd
+            item = new QTableWidgetItem(QString::number(glass->vd(), 'f', 6));
+            m_table->setItem(i, ++j, item);
 
-        // ne
-        item = new QTableWidgetItem(QString::number(glass->ne()));
-        m_table->setItem(i, ++j, item);
+            // ne
+            item = new QTableWidgetItem(QString::number(glass->ne(), 'f', 6));
+            m_table->setItem(i, ++j, item);
 
-        // ve
-        item = new QTableWidgetItem(QString::number(glass->ve()));
-        m_table->setItem(i, ++j, item);
+            // ve
+            item = new QTableWidgetItem(QString::number(glass->ve(), 'f', 6));
+            m_table->setItem(i, ++j, item);
 
-        // PgF
-        item = new QTableWidgetItem(QString::number(glass->PgF()));
-        m_table->setItem(i, ++j, item);
+            // PgF
+            item = new QTableWidgetItem(QString::number(glass->PgF(), 'f', 6));
+            m_table->setItem(i, ++j, item);
+        }
 
         // status
         item = new QTableWidgetItem(glass->status());

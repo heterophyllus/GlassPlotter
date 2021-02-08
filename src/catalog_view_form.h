@@ -54,7 +54,6 @@ private:
 
     QTableWidget* m_table;
     QComboBox* m_comboBox;
-
 };
 
 #endif // CATALOG_VIEW_FORM_H

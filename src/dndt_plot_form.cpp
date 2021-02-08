@@ -24,7 +24,7 @@
 
 
 #include "dndt_plot_form.h"
-#include "ui_dndtplotform.h"
+#include "ui_dndt_plot_form.h"
 
 DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
@@ -80,14 +80,12 @@ void DnDtPlotForm::setGlass()
             newGlass = nullptr;
             return;
         }
-        m_currentGlass = newGlass;
-        clearAll();
 
+        clearAll();
+        m_currentGlass = newGlass;
         ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
 
-        m_wvlList.clear();
-        m_wvlList << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0;
-
+        m_wvlList  = QList<double>() << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0;
         updateAll();
 
         // rescale y axis
@@ -173,7 +171,7 @@ void DnDtPlotForm::setAxis()
 
 void DnDtPlotForm::updateAll()
 {
-    if(!m_currentGlass) return ;
+    if(!m_currentGlass) return;
 
     m_customPlot->clearGraphs();
     m_table->clear();
@@ -228,9 +226,11 @@ void DnDtPlotForm::updateAll()
 void DnDtPlotForm::clearAll()
 {
     m_wvlList.clear();
+
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot->replot();
+
     m_table->clear();
     m_table->update();
 }

@@ -16,10 +16,10 @@ QColor QCPUtil::getColorFromIndex(int index, int maxIndex)
 
 QVector<double> QCPUtil::scaleVector(QVector<double> v, double scale)
 {
-    QVector<double> vv;
-    vv = v;
+    QVector<double> vv = v;
+    int len = v.size();
 
-    for(int i = 0; i < v.size(); i++){
+    for(int i = 0; i < len; i++){
         vv[i] = v[i]*scale;
     }
     return vv;
@@ -27,14 +27,17 @@ QVector<double> QCPUtil::scaleVector(QVector<double> v, double scale)
 
 QVector<double> QCPUtil::getVectorFromRange(QCPRange range, double step)
 {
-    QVector<double> xdata;
+
     double xmin = range.lower;
     double xmax = range.upper;
+    QVector<double> xdata(floor((xmax - xmin)/step) + 1);
     double x = xmin;
+    int i = 0;
     while(x < xmax)
     {
-        xdata.append(x);
+        xdata[i] = x;
         x += step;
+        i++;
     }
     return xdata;
 }

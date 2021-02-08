@@ -35,7 +35,7 @@
 #include <QList>
 
 #include "spline.h" // c++ cubic spline library, Tino Kluge (ttk448 at gmail.com), https://github.com/ttk592/spline
-#include "spectralline.h"
+#include "spectral_line.h"
 #include "dispersion_formula.h"
 
 #ifndef SIZE_OF_DISPERSIONDATA
@@ -54,7 +54,7 @@ public:
 
     double          index(double lambdamicron);
     double          index(QString spectral);
-    QVector<double> index(QVector<double> wvlvec);
+    QVector<double> index(QVector<double> vWvl);
     QString         name() const { return _name;}
     QString         supplyer() const { return _supplyer;}
     QString         status() const { return _status;}
@@ -75,7 +75,7 @@ public:
     void setSupplyer(QString str){ _supplyer = str;}
     void setMIL(QString str) {_MIL = str;}
     void setStatus(QString str);
-    void setStatus(int index);
+    void setStatus(int n);
     void setComment(QString str){ _comment = str; }
 
     // dispersion data
@@ -84,11 +84,11 @@ public:
     int     dispersionCoefCount(){ return _dispersionData.size(); }
     double  dispersionCoef(int n) const { return _dispersionData[n]; }
     void    setDispForm(int n){ _formulaIndex = n;}
-    void    setDispCoef(int index, double val);
+    void    setDispCoef(int n, double val);
 
     // transmittance data
-    double          transmittance(double lambdamicron, double thickness = 25);
-    QVector<double> transmittance(QVector<double> x, double thickness = 25);
+    double          transmittance(double lambdamicron, double thi = 25);
+    QVector<double> transmittance(QVector<double> vLambdamicron, double thi = 25);
     void            appendTransmittanceData(double lambdamicron, double trans, double thick);
     void            setLambdaMin(double value){ _lambdaMin = value;}
     void            setLambdaMax(double value){ _lambdaMax = value;}
@@ -104,8 +104,8 @@ public:
     double          Ltk(){ return _thermalData[5]; }
     double          T0(){  return _thermalData[6]; }
     double          dn_dt_abs(double T, double lambdamicron);
-    QVector<double> dn_dt_abs(QVector<double> T, double lambdamicron);
-    void            setThermalData(int index, double val);
+    QVector<double> dn_dt_abs(QVector<double> vT, double lambdamicron);
+    void            setThermalData(int n, double val);
     bool            hasThermalData = false;
 
 private:

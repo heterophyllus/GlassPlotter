@@ -33,13 +33,13 @@ GlassCatalog::GlassCatalog()
 
 GlassCatalog::~GlassCatalog()
 {
-    if(_glasses.size() > 0){
-        for(int i = 0; i < _glasses.size(); i++){
+    if(!_glasses.isEmpty()){
+        for(auto &g:_glasses){
             try {
-                delete _glasses[i];
+                delete g;
+                g = nullptr;
             } catch (...) {
-                if(_glasses[i] != nullptr)
-                    delete _glasses[i];
+                g = nullptr;
             }
         }
         _glasses.clear();
@@ -49,10 +49,10 @@ GlassCatalog::~GlassCatalog()
 
 Glass* GlassCatalog::glass(QString glassname) const
 {
-    for(int i = 0; i < _glasses.count(); i++)
+    for(auto &g : _glasses)
     {
-        if(glassname == _glasses[i]->name()){
-            return _glasses[i];
+        if(glassname == g->name()){
+            return g;
         }
     }
     return nullptr;
@@ -60,11 +60,11 @@ Glass* GlassCatalog::glass(QString glassname) const
 
 bool GlassCatalog::hasGlass(QString glassname)
 {
-    if(_glasses.count() > 0)
+    if(!_glasses.isEmpty())
     {
-        for(int i = 0; i < _glasses.count(); i++)
+        for(auto &g : _glasses)
         {
-            if(glassname == _glasses[i]->name()){
+            if(glassname == g->name()){
                 return true;
             }
         }

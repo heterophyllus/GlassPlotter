@@ -23,7 +23,7 @@
  *****************************************************************************/
 
 #include "curve_fitting_dialog.h"
-#include "ui_curvefittingdialog.h"
+#include "ui_curve_fitting_dialog.h"
 
 using namespace Eigen;
 
@@ -43,11 +43,10 @@ CurveFittingDialog::CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget
         m_comboBoxOrder->addItem(QString::number(i));
     }
 
-    QObject::connect(ui->pushButton_AddGlass, SIGNAL(clicked()), this, SLOT(addGlass()));
+    QObject::connect(ui->pushButton_AddGlass,    SIGNAL(clicked()), this, SLOT(addGlass()));
     QObject::connect(ui->pushButton_DeleteGlass, SIGNAL(clicked()), this, SLOT(deleteSelectedGlass()));
 
-    m_fittingResult.clear();
-    for(int i = 0;i<MAX_FITTING_ORDER+1;i++) m_fittingResult.append(0); // order:0,1,2,3
+    m_fittingResult = {0,0,0,0}; // order: 0,1,2,3
 }
 
 CurveFittingDialog::~CurveFittingDialog()
@@ -70,10 +69,10 @@ void CurveFittingDialog::updateGlassList()
         glassname = tempname.split("_")[0];
         supplyername = tempname.split("_")[1];
 
-        for(int j = 0;j < m_catalogList.size();j++)
+        for(auto cat: m_catalogList)
         {
-            if(m_catalogList[j]->supplyer() == supplyername){
-                glass = m_catalogList[j]->glass(glassname);
+            if(cat->supplyer() == supplyername){
+                glass = cat->glass(glassname);
                 m_targetGlassList.append(glass);
             }
         }
@@ -110,22 +109,18 @@ bool CurveFittingDialog::calculateFitting(QString xdataname, QString ydataname)
     int N = m_comboBoxOrder->currentIndex() + 1; //order
     int M = m_targetGlassList.size(); //samples
 
-    if(m_targetGlassList.size() == 0){
+    if(m_targetGlassList.isEmpty()){
         QMessageBox::warning(this,tr("File"), tr("No glass has been selected"));
         return false;
     }else if( M <= N ){
         QMessageBox::warning(this,tr("File"), tr("Too few samples. Curve will be weird."));
     }
 
-    // initialize results
-    m_fittingResult.clear();
-    for(int i = 0;i<MAX_FITTING_ORDER+1;i++) m_fittingResult.append(0);
-
     // sampling points
     MatrixXd X = MatrixXd::Zero(M, N+1);
     VectorXd y(M);
 
-    for(int i = 0; i<M; i++)
+    for(int i = 0; i < M; i++)
     {
         for(int j = 0; j < N+1; j++){
             X(i,j) = pow(m_targetGlassList[i]->getValue(xdataname), j);
@@ -138,7 +133,8 @@ bool CurveFittingDialog::calculateFitting(QString xdataname, QString ydataname)
     VectorXd beta = A.bdcSvd(ComputeThinU | ComputeThinV).solve(b);
     //VectorXd beta = (X.transpose()*X).inverse()*(X.transpose())*y;
 
-    for(int k = 0;k<=N;k++)
+    m_fittingResult = {0.0, 0.0, 0.0, 0.0};
+    for(int k = 0; k <= N; k++)
     {
         m_fittingResult[k] = beta(k);
     }

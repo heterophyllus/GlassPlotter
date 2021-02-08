@@ -23,7 +23,7 @@
  *****************************************************************************/
 
 #include "glass_selection_dialog.h"
-#include "ui_glassselectiondialog.h"
+#include "ui_glass_selection_dialog.h"
 
 GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QDialog(parent),
@@ -42,11 +42,9 @@ GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWi
         m_comboBoxSupplyer->addItem(m_catalogList.at(i)->supplyer());
     }
 
-    QObject::connect(m_comboBoxSupplyer,SIGNAL(currentIndexChanged(int)),
-                         this, SLOT(onComboChanged(int)));
+    QObject::connect(m_comboBoxSupplyer,SIGNAL(currentIndexChanged(int)), this, SLOT(onComboChanged()));
 
-    QObject::connect(m_lineEditFilter,SIGNAL(textEdited(QString)),
-                         this, SLOT(updateGlassList()));
+    QObject::connect(m_lineEditFilter,SIGNAL(textEdited(QString)), this, SLOT(updateGlassList()));
 
     createGlassNameList();
     updateGlassList();
@@ -59,7 +57,7 @@ GlassSelectionDialog::~GlassSelectionDialog()
     delete ui;
 }
 
-void GlassSelectionDialog::onComboChanged(int index)
+void GlassSelectionDialog::onComboChanged()
 {
     m_lineEditFilter->clear();
     createGlassNameList();

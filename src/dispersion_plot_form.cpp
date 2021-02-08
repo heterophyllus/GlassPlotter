@@ -23,7 +23,7 @@
  *****************************************************************************/
 
 #include "dispersion_plot_form.h"
-#include "ui_dispersionplotform.h"
+#include "ui_dispersion_plot_form.h"
 
 DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
