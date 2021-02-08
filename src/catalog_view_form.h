@@ -23,8 +23,8 @@
  *****************************************************************************/
 
 
-#ifndef CATALOGVIEWFORM_H
-#define CATALOGVIEWFORM_H
+#ifndef CATALOG_VIEW_FORM_H
+#define CATALOG_VIEW_FORM_H
 
 #include <QWidget>
 #include <QMdiArea>
@@ -57,4 +57,4 @@ private:
 
 };
 
-#endif // CATALOGVIEWFORM_H
+#endif // CATALOG_VIEW_FORM_H

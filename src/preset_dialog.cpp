@@ -1,4 +1,4 @@
-#include "presetdialog.h"
+#include "preset_dialog.h"
 #include "ui_presetdialog.h"
 
 PresetDialog::PresetDialog(QSettings* settings, QList<double> currentCoefs, QWidget *parent) :

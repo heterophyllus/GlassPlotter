@@ -22,57 +22,46 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Qt Form Class for Glass Datasheet
-  */
+#include "about_dialog.h"
+#include "ui_aboutdialog.h"
 
-#ifndef GLASSDATASHEETFORM_H
-#define GLASSDATASHEETFORM_H
+AboutDialog::AboutDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::AboutDialog)
+{
+    ui->setupUi(this);
+    this->setWindowTitle("About");
 
-#include <QWidget>
+    gridLayout = new QGridLayout(this);
+    gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+    label = new QLabel(this);
+    label->setObjectName(QString::fromUtf8("label"));
 
-#include "glass.h"
+    gridLayout->addWidget(label, 0, 0, 1, 1);
 
-namespace Ui {
-class GlassDataSheetForm;
+    label->setText(QApplication::translate("AboutDlg",
+    "GlassPlotter - Simple Glassmap Viewer\n"
+    "\n"
+    "    Copyright (C) <2020>  Hiiragi<heterophyllus.work@gmail.com>\n"
+    "\n"
+    "    This program is free software: you can redistribute it and/or modify \n"
+    "    it under the terms of the GNU General Public License as published by\n"
+    "    the Free Software Foundation, either version 3 of the License, or\n"
+    "    any later version.\n"
+    "\n"
+    "    This program is distributed in the hope that it will be useful,\n"
+    "    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+    "    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+    "    GNU General Public License for more details.\n"
+    "\n"
+    "    You should have received a copy of the GNU General Public License\n"
+    "    along with this program.  If not, see <https://www.gnu.org/licenses/>.\n"
+    "\n"
+    "    Additional information of this application is provided at:\n"
+    "    https://github.com/heterophyllus/glassplotter", nullptr));
 }
 
-class GlassDataSheetForm : public QWidget
+AboutDialog::~AboutDialog()
 {
-    Q_OBJECT
-
-public:
-    explicit GlassDataSheetForm(Glass* glass, QWidget *parent = nullptr);
-    ~GlassDataSheetForm();
-
-private:
-    Ui::GlassDataSheetForm *ui;
-    Glass* m_glass;
-
-    /**
-     * @brief set up Basic Tab
-     */
-    void setUpBasicTab();
-
-    /**
-     * @brief set up Indices Tab
-     */
-    void setUpIndicesTab();
-
-    /**
-     * @brief set up Partial Tab
-     */
-    void setUpPartialTab();
-
-    /**
-     * @brief set up Dispersion Tab
-     */
-    void setUpDispersionTab();
-
-    /**
-     * @brief set up Thermal Tab
-     */
-    void setUpThermalTab();
-};
-
-#endif // GLASSDATASHEETFORM_H
+    delete ui;
+}

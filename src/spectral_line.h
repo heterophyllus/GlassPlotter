@@ -19,82 +19,52 @@
  **  Author  : Hiiragi                                                      **
  **  Contact : heterophyllus.work@gmail.com                                 **
  **  Website : https://github.com/heterophyllus/glassplotter                **
- **  Date    : 2020-5-25                                                    **
+ **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
+
 /**
-  * Qt Form Class for Curve Fitting
+  * Container class for Fraunhofer spectral lines
   */
 
-#ifndef CURVEFITTINGDIALOG_H
-#define CURVEFITTINGDIALOG_H
+#ifndef SPECTRAL_LINE_H
+#define SPECTRAL_LINE_H
 
+#include<QString>
+#include<QStringList>
 
-#define MAX_FITTING_ORDER 3
-
-#include <QDialog>
-#include <QComboBox>
-#include <QListWidget>
-#include <QMessageBox>
-
-#include "glasscatalog.h"
-#include "glassselectiondialog.h"
-
-#include "Eigen/Dense"
-
-namespace Ui {
-class CurveFittingDialog;
-}
-
-class CurveFittingDialog : public QDialog
+class SpectralLine
 {
-    Q_OBJECT
-
 public:
-    explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
-    ~CurveFittingDialog();
-
+    SpectralLine();
 
     /**
-     * @brief Calculate coefficients of fitting curve. Called from the parent Glassmapform.
-     * @param plotType
-     * @return success/failed
-     * @note coefficients data are stored in m_fittingResult;
+     * @brief get wavelength of the line
+     * @param spectralname
+     * @return
      */
-    bool calculateFitting(QString xdataname, QString ydataname);
+    static double wavelength(QString spectralname);
 
     /**
-     * @brief get fitting result
-     * @return fitting result
+     * @brief get line name list
+     * @return
      */
-    QList<double> fittingResult();
+    static QStringList spectralLineList();
 
-private slots:
-    /**
-     * @brief add glass to the list
-     * @name SLOT
-     */
-    void addGlass();
 
-    /**
-     * @brief delete selected glass from the list
-     * @name SLOT
-     */
-    void deleteSelectedGlass();
-
-private:
-    Ui::CurveFittingDialog *ui;
-
-    QList<double> m_fittingResult;
-    QList<GlassCatalog*> m_catalogList;
-    QList<Glass*> m_targetGlassList;
-    QComboBox* m_comboBoxOrder;
-    QListWidget* m_listWidget;
-
-    /**
-     * @brief update m_targetGlassList from m_listWidget
-     */
-    void updateGlassList();
+    static const double t;
+    static const double s;
+    static const double r;
+    static const double C;
+    static const double C_;
+    static const double D;
+    static const double d;
+    static const double e;
+    static const double F;
+    static const double F_;
+    static const double g;
+    static const double h;
+    static const double i;
 };
 
-#endif // CURVEFITTINGDIALOG_H
+#endif // SPECTRAL_LINE_H

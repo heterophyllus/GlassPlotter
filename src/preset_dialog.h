@@ -1,5 +1,5 @@
-#ifndef PRESETDIALOG_H
-#define PRESETDIALOG_H
+#ifndef PRESET_DIALOG_H
+#define PRESET_DIALOG_H
 
 #include <QDialog>
 #include <QTextCodec>
@@ -38,4 +38,4 @@ private:
 
 };
 
-#endif // PRESETDIALOG_H
+#endif // PRESET_DIALOG_H

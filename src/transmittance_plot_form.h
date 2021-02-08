@@ -22,29 +22,36 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-#ifndef DNDTPLOTFORM_H
-#define DNDTPLOTFORM_H
+/**
+  * Qt Form Class for Transmittance Plot
+  *
+  */
+
+
+#ifndef TRANSMITTANCE_PLOT_FORM_H
+#define TRANSMITTANCE_PLOT_FORM_H
 
 #include <QWidget>
+
 #include "qcustomplot.h"
 #include "qcputil.h"
 #include "glasscatalog.h"
-#include "glassselectiondialog.h"
+#include "glass_selection_dialog.h"
+
 
 namespace Ui {
-class DnDtPlotForm;
+class TransmittancePlotForm;
 }
 
-class DnDtPlotForm : public QWidget
+class TransmittancePlotForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
-    ~DnDtPlotForm();
+    explicit TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    ~TransmittancePlotForm();
 
 private slots:
-    void setGlass();
     void addGraph();
     void deleteGraph();
     void setAxis();
@@ -52,22 +59,20 @@ private slots:
     void clearAll();
     void updateAll();
 
-
 private:
-    Ui::DnDtPlotForm *ui;
+    Ui::TransmittancePlotForm *ui;
 
     QList<GlassCatalog*> m_catalogList;
-    QList<double> m_wvlList;
+    QList<Glass*> m_glassList;
 
-    Glass* m_currentGlass = nullptr;
     QCustomPlot* m_customPlot;
     QTableWidget* m_table;
 
-    const int m_maxGraphCount = 7;
     const double m_plotStep = 5;
+    const int m_maxGraphCount = 5;
 
     void setColorToGraph(QCPGraph* graph, QColor color);
     void setDefault();
 };
 
-#endif // DNDTPLOTFORM_H
+#endif // TRANSMITTANCE_PLOT_FORM_H

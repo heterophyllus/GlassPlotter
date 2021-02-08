@@ -22,7 +22,7 @@
  **  Date    : 2020-5-25                                                    **
  *****************************************************************************/
 
-#include "curvefittingdialog.h"
+#include "curve_fitting_dialog.h"
 #include "ui_curvefittingdialog.h"
 
 using namespace Eigen;

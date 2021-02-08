@@ -22,30 +22,64 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
+/**
+  * Form class for dispersion plot
+  *
+  */
 
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
 
-#include <QDialog>
-#include <QGridLayout>
-#include <QLabel>
+#ifndef DISPERSION_PLOT_FORM_H
+#define DISPERSION_PLOT_FORM_H
+
+#include <QWidget>
+
+#include "qcustomplot.h"
+#include "qcputil.h"
+#include "glasscatalog.h"
+#include "glass_selection_dialog.h"
 
 namespace Ui {
-class AboutDialog;
+class DispersionPlotForm;
 }
 
-class AboutDialog : public QDialog
+class DispersionPlotForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
-    QGridLayout *gridLayout;
-    QLabel *label;
+    /**
+     * @brief DispersionPlotForm
+     * @param catalogList Glass catalig list
+     * @param parent parent QWidget MDI area
+     */
+    explicit DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    ~DispersionPlotForm();
+
+private slots:
+    void addGraph();
+    void deleteGraph();
+    void setAxis();
+    void setLegendVisible();
+    void updateAll();
+    void clearAll();
 
 private:
-    Ui::AboutDialog *ui;
+    Ui::DispersionPlotForm *ui;
+
+    QCustomPlot* m_customPlot;
+    QList<GlassCatalog*> m_catalogList;
+    QList<Glass*> m_glassList;
+
+    QCheckBox* m_checkBox;
+    QTableWidget* m_table;
+
+    const double m_plotStep = 5;
+    const int m_maxGraphCount = 5;
+
+    void setDefault();
+    void setColorToGraph(QCPGraph* graph, QColor color);
+    QVector<double> computeUserDefined(QVector<double> xdata);
+
 };
 
-#endif // ABOUTDIALOG_H
+#endif // DISPERSION_PLOT_FORM_H

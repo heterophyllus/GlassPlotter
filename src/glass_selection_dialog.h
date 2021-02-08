@@ -27,8 +27,8 @@
   */
 
 
-#ifndef GLASSSELECTIONDIALOG_H
-#define GLASSSELECTIONDIALOG_H
+#ifndef GLASS_SELECTION_DIALOG_H
+#define GLASS_SELECTION_DIALOG_H
 
 #include <QDialog>
 #include <QListWidget>
@@ -83,4 +83,4 @@ private:
 
 };
 
-#endif // GLASSSELECTIONDIALOG_H
+#endif // GLASS_SELECTION_DIALOG_H

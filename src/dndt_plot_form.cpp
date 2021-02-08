@@ -23,7 +23,7 @@
  *****************************************************************************/
 
 
-#include "dndtplotform.h"
+#include "dndt_plot_form.h"
 #include "ui_dndtplotform.h"
 
 DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :

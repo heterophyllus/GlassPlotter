@@ -19,49 +19,82 @@
  **  Author  : Hiiragi                                                      **
  **  Contact : heterophyllus.work@gmail.com                                 **
  **  Website : https://github.com/heterophyllus/glassplotter                **
- **  Date    : 2020-1-25                                                    **
+ **  Date    : 2020-5-25                                                    **
  *****************************************************************************/
 
-#include "aboutdialog.h"
-#include "ui_aboutdialog.h"
+/**
+  * Qt Form Class for Curve Fitting
+  */
 
-AboutDialog::AboutDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::AboutDialog)
-{
-    ui->setupUi(this);
-    this->setWindowTitle("About");
+#ifndef CURVE_FITTING_DIALOG_H
+#define CURVE_FITTING_DIALOG_H
 
-    gridLayout = new QGridLayout(this);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-    label = new QLabel(this);
-    label->setObjectName(QString::fromUtf8("label"));
 
-    gridLayout->addWidget(label, 0, 0, 1, 1);
+#define MAX_FITTING_ORDER 3
 
-    label->setText(QApplication::translate("AboutDlg",
-    "GlassPlotter - Simple Glassmap Viewer\n"
-    "\n"
-    "    Copyright (C) <2020>  Hiiragi<heterophyllus.work@gmail.com>\n"
-    "\n"
-    "    This program is free software: you can redistribute it and/or modify \n"
-    "    it under the terms of the GNU General Public License as published by\n"
-    "    the Free Software Foundation, either version 3 of the License, or\n"
-    "    any later version.\n"
-    "\n"
-    "    This program is distributed in the hope that it will be useful,\n"
-    "    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-    "    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-    "    GNU General Public License for more details.\n"
-    "\n"
-    "    You should have received a copy of the GNU General Public License\n"
-    "    along with this program.  If not, see <https://www.gnu.org/licenses/>.\n"
-    "\n"
-    "    Additional information of this application is provided at:\n"
-    "    https://github.com/heterophyllus/glassplotter", nullptr));
+#include <QDialog>
+#include <QComboBox>
+#include <QListWidget>
+#include <QMessageBox>
+
+#include "glasscatalog.h"
+#include "glass_selection_dialog.h"
+
+#include "Eigen/Dense"
+
+namespace Ui {
+class CurveFittingDialog;
 }
 
-AboutDialog::~AboutDialog()
+class CurveFittingDialog : public QDialog
 {
-    delete ui;
-}
+    Q_OBJECT
+
+public:
+    explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    ~CurveFittingDialog();
+
+
+    /**
+     * @brief Calculate coefficients of fitting curve. Called from the parent Glassmapform.
+     * @param plotType
+     * @return success/failed
+     * @note coefficients data are stored in m_fittingResult;
+     */
+    bool calculateFitting(QString xdataname, QString ydataname);
+
+    /**
+     * @brief get fitting result
+     * @return fitting result
+     */
+    QList<double> fittingResult();
+
+private slots:
+    /**
+     * @brief add glass to the list
+     * @name SLOT
+     */
+    void addGlass();
+
+    /**
+     * @brief delete selected glass from the list
+     * @name SLOT
+     */
+    void deleteSelectedGlass();
+
+private:
+    Ui::CurveFittingDialog *ui;
+
+    QList<double> m_fittingResult;
+    QList<GlassCatalog*> m_catalogList;
+    QList<Glass*> m_targetGlassList;
+    QComboBox* m_comboBoxOrder;
+    QListWidget* m_listWidget;
+
+    /**
+     * @brief update m_targetGlassList from m_listWidget
+     */
+    void updateGlassList();
+};
+
+#endif // CURVE_FITTING_DIALOG_H

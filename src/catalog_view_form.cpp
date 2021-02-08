@@ -22,7 +22,7 @@
  **  Date    : 2020-5-20                                                    **
  *****************************************************************************/
 
-#include "catalogviewform.h"
+#include "catalog_view_form.h"
 #include "ui_catalogviewform.h"
 
 CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *parent) :

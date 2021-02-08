@@ -22,7 +22,7 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-#include "glassselectiondialog.h"
+#include "glass_selection_dialog.h"
 #include "ui_glassselectiondialog.h"
 
 GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWidget *parent) :

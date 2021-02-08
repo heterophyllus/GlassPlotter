@@ -27,61 +27,61 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    aboutdialog.cpp \
-    catalogviewform.cpp \
-    curvefittingdialog.cpp \
-    dispersionplotform.cpp \
-    dndtplotform.cpp \
+    about_dialog.cpp \
+    catalog_view_form.cpp \
+    curve_fitting_dialog.cpp \
+    dispersion_plot_form.cpp \
+    dndt_plot_form.cpp \
     glass.cpp \
+    glass_datasheet_form.cpp \
+    glass_selection_dialog.cpp \
     glasscatalog.cpp \
-    glassdatasheetform.cpp \
-    glassmapform.cpp \
-    glassselectiondialog.cpp \
+    glassmap_form.cpp \
     main.cpp \
     mainwindow.cpp \
-    presetdialog.cpp \
+    preset_dialog.cpp \
     pugixml.cpp \
     qcpscatterchart.cpp \
     qcputil.cpp \
     qcustomplot.cpp \
-    spectralline.cpp \
-    transmittanceplotform.cpp
+    spectral_line.cpp \
+    transmittance_plot_form.cpp
 
 HEADERS += \
-    aboutdialog.h \
-    catalogviewform.h \
-    curvefittingdialog.h \
-    dispersionformula.h \
-    dispersionplotform.h \
-    dndtplotform.h \
+    about_dialog.h \
+    catalog_view_form.h \
+    curve_fitting_dialog.h \
+    dispersion_formula.h \
+    dispersion_plot_form.h \
+    dndt_plot_form.h \
     glass.h \
+    glass_datasheet_form.h \
+    glass_selection_dialog.h \
     glasscatalog.h \
-    glassdatasheetform.h \
-    glassmapform.h \
-    glassselectiondialog.h \
+    glassmap_form.h \
     mainwindow.h \
-    presetdialog.h \
+    preset_dialog.h \
     pugiconfig.hpp \
     pugixml.hpp \
     qcpscatterchart.h \
     qcputil.h \
     qcustomplot.h \
-    spectralline.h \
+    spectral_line.h \
     spline.h \
-    transmittanceplotform.h
+    transmittance_plot_form.h
 
 FORMS += \
-    aboutdialog.ui \
-    catalogviewform.ui \
-    curvefittingdialog.ui \
-    dispersionplotform.ui \
-    dndtplotform.ui \
-    glassdatasheetform.ui \
-    glassmapform.ui \
-    glassselectiondialog.ui \
+    about_dialog.ui \
+    catalog_view_form.ui \
+    curve_fitting_dialog.ui \
+    dispersion_plot_form.ui \
+    dndt_plot_form.ui \
+    glass_datasheet_form.ui \
+    glass_selection_dialog.ui \
+    glassmap_form.ui \
     mainwindow.ui \
-    presetdialog.ui \
-    transmittanceplotform.ui
+    preset_dialog.ui \
+    transmittance_plot_form.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

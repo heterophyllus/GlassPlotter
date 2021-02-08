@@ -23,8 +23,8 @@
  *****************************************************************************/
 
 
-#ifndef DISPERSIONFORMULA_H
-#define DISPERSIONFORMULA_H
+#ifndef DISPERSION_FORMULA_H
+#define DISPERSION_FORMULA_H
 
 #include <QVector>
 
@@ -88,4 +88,4 @@ public:
     }
 };
 
-#endif // DISPERSIONFORMULA_H
+#endif // DISPERSION_FORMULA_H

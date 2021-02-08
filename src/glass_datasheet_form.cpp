@@ -23,7 +23,7 @@
  *****************************************************************************/
 
 
-#include "glassdatasheetform.h"
+#include "glass_datasheet_form.h"
 #include "ui_glassdatasheetform.h"
 
 GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :

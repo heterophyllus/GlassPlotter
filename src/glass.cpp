@@ -38,13 +38,13 @@ Glass::Glass()
     _lambdaMax = 0;
     _lambdaMin = 0;
 
-    _dispersionData.clear();
-    for(int i = 0; i < SIZE_OF_DISPERSIONDATA; i++){ _dispersionData.append(0);}
+    _dispersionData = QVector<double>(SIZE_OF_DISPERSIONDATA, 0.0);
+
     _wavelengthData.clear();
     _transmittanceData.clear();
     _thicknessData.clear();
-    _thermalData.clear();
-    for(int i = 0; i < SIZE_OF_THERMALDATA; i++){ _thermalData.append(0);}
+
+    _thermalData = QVector<double>(SIZE_OF_THERMALDATA, 0.0);
 }
 
 Glass::~Glass()

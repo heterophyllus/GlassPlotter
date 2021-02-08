@@ -26,17 +26,17 @@
   * Qt Form Class for Glassmap
   */
 
-#ifndef GLASSMAPFORM_H
-#define GLASSMAPFORM_H
+#ifndef GLASSMAP_FORM_H
+#define GLASSMAP_FORM_H
 
 #include <QWidget>
 
 #include "qcputil.h"
 #include "qcpscatterchart.h"
 #include "glasscatalog.h"
-#include "glassdatasheetform.h"
-#include "curvefittingdialog.h"
-#include "presetdialog.h"
+#include "glass_datasheet_form.h"
+#include "curve_fitting_dialog.h"
+#include "preset_dialog.h"
 
 namespace Ui {
 class GlassMapForm;
@@ -103,4 +103,4 @@ private:
     void setCurveData(QCPGraph* curveGraph, QList<double> coefs);
 };
 
-#endif // GLASSMAPFORM_H
+#endif // GLASSMAP_FORM_H
