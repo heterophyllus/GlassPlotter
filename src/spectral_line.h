@@ -36,8 +36,6 @@
 class SpectralLine
 {
 public:
-    SpectralLine();
-
     /**
      * @brief get wavelength of the line
      * @param spectralname

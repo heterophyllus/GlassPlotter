@@ -25,9 +25,13 @@
 #include "curve_fitting_dialog.h"
 #include "ui_curve_fitting_dialog.h"
 
+#include <QMessageBox>
+
 #include "glass.h"
 #include "glass_catalog.h"
 #include "glass_selection_dialog.h"
+
+#include "Eigen/Dense"
 
 using namespace Eigen;
 

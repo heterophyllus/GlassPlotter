@@ -1,4 +1,4 @@
-# GlassPlotter - Comprehensive Glassmap Viewer
+# GlassPlotter - Desktop Glassmap Viewer
 
 ![MDI](image/Screenshot_MDI.png)
 
@@ -22,9 +22,9 @@ This application requires additional files in either of two formats.
    Available on each manufacturer's website. 
 
 2. CODE V XML  
-   Available on [Synopsys support page](https://www.synopsys.com/optical-solutions/support/support-glass-catalog.html)
+   Available on [Synopsys support page](https://www.synopsys.com/optical-solutions/support/support-glass-catalog.html).
 
-Note that the AGF/XML files included in this repository are not always up to date.
+Note that the AGF/XML files in this repository are not always up to date.
 
 ## Development
 This application is built with:

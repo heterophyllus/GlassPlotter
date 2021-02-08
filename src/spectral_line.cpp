@@ -24,10 +24,6 @@
 
 #include "spectral_line.h"
 
-SpectralLine::SpectralLine()
-{
-
-}
 
 //http://www.hoya-opticalworld.com/japanese/technical/002.html
 const double SpectralLine::t = 1013.980;

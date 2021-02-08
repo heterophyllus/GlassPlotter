@@ -29,17 +29,11 @@
 #ifndef CURVE_FITTING_DIALOG_H
 #define CURVE_FITTING_DIALOG_H
 
-
 #define MAX_FITTING_ORDER 3
 
 #include <QDialog>
 #include <QComboBox>
 #include <QListWidget>
-#include <QMessageBox>
-
-
-
-#include "Eigen/Dense"
 
 namespace Ui {
 class CurveFittingDialog;
