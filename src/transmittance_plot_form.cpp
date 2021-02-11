@@ -118,7 +118,7 @@ void TransmittancePlotForm::updateAll()
 
     int i,j;
     int rowCount = vLambdanano.size();
-    int columnCount = m_glassList.size() + 1+1; // lambda + glasses
+    int columnCount = m_glassList.size() + 1; // lambda + glasses
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
 

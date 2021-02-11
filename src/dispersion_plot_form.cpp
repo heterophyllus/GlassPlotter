@@ -141,14 +141,15 @@ void DispersionPlotForm::updateAll()
     m_customPlot->clearGraphs();
     m_table->clear();
 
-    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep); // unit:nm
+    QVector<double> vLambdanano = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep);
+    QVector<double> vLambdamicron = QCPUtil::scaleVector(vLambdanano, 0.001);
     QVector<double> ydata;
     QCPGraph* graph;
 
     Glass* currentGlass;
 
-    int rowCount = xdata.size();
-    int columnCount = m_glassList.size() + 1+1; // lambda + glasses
+    int rowCount = vLambdanano.size();
+    int columnCount = m_glassList.size() + 1+1; // wvl + glasses + curve
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
 
@@ -164,10 +165,10 @@ void DispersionPlotForm::updateAll()
         currentGlass = m_glassList[i];
 
         // graphs
-        ydata = currentGlass->index(QCPUtil::scaleVector(xdata,1/1000));
+        ydata = currentGlass->index(vLambdamicron);
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
-        graph->setData(xdata, ydata);
+        graph->setData(vLambdanano, ydata);
         setColorToGraph(graph, QCPUtil::getColorFromIndex(i, m_maxGraphCount));
         graph->setVisible(true);
 
@@ -177,7 +178,7 @@ void DispersionPlotForm::updateAll()
         {
             // wavelength
             item = new QTableWidgetItem;
-            item->setText(QString::number( QCPUtil::scaleVector(xdata, 1000).at(j) ) );
+            item->setText(QString::number( vLambdanano.at(j) ) );
             m_table->setItem(j, 0, item);
 
             // refractive indices
@@ -189,23 +190,24 @@ void DispersionPlotForm::updateAll()
 
     // user defined curve
     header << "curve";
-    m_table->setHorizontalHeaderLabels(header);
+    if(m_checkBox->checkState())
+    {
+        ydata = computeUserDefined(vLambdanano);
+        graph = m_customPlot->addGraph();
+        graph->setName("User Defined Curve");
+        graph->setData(vLambdanano, ydata);
+        graph->setVisible(true);
+        setColorToGraph(graph,Qt::black);
 
-    ydata = computeUserDefined(QCPUtil::scaleVector(xdata,1/1000));
-    graph = m_customPlot->addGraph();
-    graph->setName("User Defined Curve");
-    graph->setData(xdata, ydata);
-    graph->setVisible(m_checkBox->checkState());
-    setColorToGraph(graph,Qt::black);
-
-    if(m_checkBox->checkState()){
-        for(i = 0; i < xdata.size(); i++)
+        for(i = 0; i < vLambdanano.size(); i++)
         {
             item = new QTableWidgetItem;
             item->setText( QString::number(ydata[i]) );
             m_table->setItem(i, columnCount-1, item);
         }
     }
+
+    m_table->setHorizontalHeaderLabels(header);
 
     m_customPlot->replot();
 

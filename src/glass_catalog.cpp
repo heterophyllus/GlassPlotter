@@ -30,7 +30,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-#include <QDebug>
 
 GlassCatalog::GlassCatalog()
 {
@@ -65,15 +64,12 @@ Glass* GlassCatalog::glass(QString glassname) const
     return nullptr;
 }
 
-bool GlassCatalog::hasGlass(QString glassname)
+bool GlassCatalog::hasGlass(QString glassname) const
 {
-    if(!_glasses.isEmpty())
+    for(auto &g : _glasses)
     {
-        for(auto &g : _glasses)
-        {
-            if(glassname == g->name()){
-                return true;
-            }
+        if(glassname == g->name()){
+            return true;
         }
     }
     return false;
@@ -83,7 +79,6 @@ bool GlassCatalog::loadAGF(QString AGFpath)
 {
     QFile file(AGFpath);
     if (! file.open(QIODevice::ReadOnly)) {
-        qDebug() << "AGF File Open Error : " << AGFpath;
         return false;
     }
 
@@ -159,7 +154,6 @@ bool GlassCatalog::loadXml(QString xmlpath)
 {
     pugi::xml_document doc;
     if(!doc.load_file(xmlpath.toUtf8().data())) {
-        qDebug() << "XML file open error : " << xmlpath;
         return false;
     }
 

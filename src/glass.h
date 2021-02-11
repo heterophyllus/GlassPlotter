@@ -35,38 +35,30 @@
 #include <QList>
 #include <QVector>
 
-#ifndef SIZE_OF_DISPERSIONDATA
-#define SIZE_OF_DISPERSIONDATA 12
-#endif
-
-#ifndef SIZE_OF_THERMALDATA
-#define SIZE_OF_THERMALDATA 7
-#endif
-
 class Glass
 {
 public:
     Glass();
     ~Glass();
 
-    double          index(double lambdamicron);
-    double          index(QString spectral);
-    QVector<double> index(QVector<double> vLambdamicron);
+    // fundamental data
+    double          index(double lambdamicron) const;
+    double          index(QString spectral) const;
+    QVector<double> index(QVector<double> vLambdamicron) const;
     QString         name() const { return _name;}
     QString         supplyer() const { return _supplyer;}
     QString         status() const { return _status;}
     QString         MIL() const {return _MIL;}
     QString         comment() const { return _comment; }
 
-    // fundamental data
-    double getValue(QString dname);
-    double nd(){return index("d");}
-    double ne(){return index("e");}
-    double vd(){return (index("d") - 1)/(index("F") - index("C"));}
-    double ve(){return (index("e") - 1)/(index("F_") - index("C_"));}
-    double PgF(){return Pxy("g","F");}
-    double Pxy(QString x, QString y){return (index(x) - index(y)) / ( index("F") - index("C") );}
-    double Pxy_(QString x, QString y){return (index(x) - index(y)) / ( index("F_") - index("C_") );}
+    double getValue(QString dname) const;
+    double nd() const {return index("d");}
+    double ne() const {return index("e");}
+    double vd() const {return (index("d") - 1)/(index("F") - index("C"));}
+    double ve() const {return (index("e") - 1)/(index("F_") - index("C_"));}
+    double Pxy(QString x, QString y) const {return (index(x) - index(y)) / ( index("F") - index("C") );}
+    double Pxy_(QString x, QString y) const {return (index(x) - index(y)) / ( index("F_") - index("C_") );}
+    double PgF() const {return Pxy("g","F");}
 
     void setName(QString str){ _name = str;}
     void setSupplyer(QString str){ _supplyer = str;}
@@ -75,33 +67,38 @@ public:
     void setStatus(int n);
     void setComment(QString str){ _comment = str; }
 
+
     // dispersion data
     int     formulaIndex() const {return _formulaIndex;};
-    QString formulaName();
-    int     dispersionCoefCount(){ return _dispersionData.size(); }
+    QString formulaName() const;
+    int     dispersionCoefCount() const { return _dispersionData.size(); }
     double  dispersionCoef(int n) const { return _dispersionData[n]; }
+
     void    setDispForm(int n){ _formulaIndex = n;}
     void    setDispCoef(int n, double val);
 
+
     // transmittance data
-    double          transmittance(double lambdamicron, double thi = 25);
-    QVector<double> transmittance(QVector<double> vLambdamicron, double thi = 25);
-    void            appendTransmittanceData(double lambdamicron, double trans, double thick);
-    void            setLambdaMin(double value){ _lambdaMin = value;}
-    void            setLambdaMax(double value){ _lambdaMax = value;}
+    double          transmittance(double lambdamicron, double thi = 25) const;
+    QVector<double> transmittance(QVector<double> vLambdamicron, double thi = 25) const;
     double          lambdaMin() const {return _lambdaMin;}
     double          lambdaMax() const {return _lambdaMax;}
 
+    void            appendTransmittanceData(double lambdamicron, double trans, double thick);
+    void            setLambdaMin(double val){ _lambdaMin = val;}
+    void            setLambdaMax(double val){ _lambdaMax = val;}
+
+
     // thermal data
-    double          D0(){  return _thermalData[0]; }
-    double          D1(){  return _thermalData[1]; }
-    double          D2(){  return _thermalData[2]; }
-    double          E0(){  return _thermalData[3]; }
-    double          E1(){  return _thermalData[4]; }
-    double          Ltk(){ return _thermalData[5]; }
-    double          T0(){  return _thermalData[6]; }
-    double          dn_dt_abs(double T, double lambdamicron);
-    QVector<double> dn_dt_abs(QVector<double> vT, double lambdamicron);
+    double          D0() const {  return _thermalData[0]; }
+    double          D1() const {  return _thermalData[1]; }
+    double          D2() const {  return _thermalData[2]; }
+    double          E0() const {  return _thermalData[3]; }
+    double          E1() const {  return _thermalData[4]; }
+    double          Ltk() const{  return _thermalData[5]; }
+    double          T0() const {  return _thermalData[6]; }
+    double          dn_dt_abs(double T, double lambdamicron) const;
+    QVector<double> dn_dt_abs(QVector<double> vT, double lambdamicron) const;
     void            setThermalData(int n, double val);
     bool            hasThermalData = false;
 
@@ -113,6 +110,7 @@ private:
     QString _comment;
 
     // dispersion data
+    const int       _dispersion_data_size = 12;
     QVector<double> _dispersionData;
     int             _formulaIndex;
 
@@ -124,8 +122,9 @@ private:
     QList<double> _thicknessData;
 
     // thermal data
+    const int       _thermal_data_size = 7;
     QVector<double> _thermalData; //<D0> <D1> <D2> <E0> <E1> <Ltk> <temp>
-};
 
+};
 
 #endif // GLASS_H

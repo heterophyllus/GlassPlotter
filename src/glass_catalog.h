@@ -44,13 +44,10 @@ public:
     ~GlassCatalog();
 
     QString supplyer() const { return _supplyer;}
-
-    int glassCount() const {return _glasses.size();}
-
-    Glass* glass(int n) const {return _glasses[n];}
-    Glass* glass(QString glassname) const;
-
-    bool hasGlass(QString glassname);
+    Glass*  glass(int n) const {return _glasses[n];}
+    Glass*  glass(QString glassname) const;
+    int     glassCount() const {return _glasses.size();}
+    bool    hasGlass(QString glassname) const;
 
     bool loadAGF(QString AGFpath);
     bool loadXml(QString xmlpath);

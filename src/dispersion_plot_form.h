@@ -73,7 +73,7 @@ private:
     QCheckBox* m_checkBox;
     QTableWidget* m_table;
 
-    const double m_plotStep = 5;
+    const double m_plotStep = 5.0;
     const int m_maxGraphCount = 5;
 
     void setDefault();

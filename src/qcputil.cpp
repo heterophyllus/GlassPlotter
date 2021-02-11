@@ -1,9 +1,5 @@
 #include "qcputil.h"
 
-QCPUtil::QCPUtil()
-{
-
-}
 
 QColor QCPUtil::getColorFromIndex(int index, int maxIndex)
 {

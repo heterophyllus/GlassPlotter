@@ -75,7 +75,7 @@ public:
     void setVisiblePointSeries(bool state);
     void setVisibleTextLabels(bool state);
     void setAxis(QCPRange xrange, QCPRange yrange);
-    int dataCount();
+    int  dataCount();
 
 private:
     QCustomPlot* m_customPlot;

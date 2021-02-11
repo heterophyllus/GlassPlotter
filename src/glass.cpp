@@ -44,13 +44,13 @@ Glass::Glass()
     _lambdaMax = 0;
     _lambdaMin = 0;
 
-    _dispersionData = QVector<double>(SIZE_OF_DISPERSIONDATA, 0.0);
+    _dispersionData = QVector<double>(_dispersion_data_size, 0.0);
 
     _wavelengthData.clear();
     _transmittanceData.clear();
     _thicknessData.clear();
 
-    _thermalData = QVector<double>(SIZE_OF_THERMALDATA, 0.0);
+    _thermalData = QVector<double>(_thermal_data_size, 0.0);
 }
 
 Glass::~Glass()
@@ -62,7 +62,7 @@ Glass::~Glass()
     _thermalData.clear();
 }
 
-double Glass::getValue(QString dname)
+double Glass::getValue(QString dname) const
 {
     if(dname == "nd"){
         //return nd();
@@ -93,7 +93,7 @@ double Glass::getValue(QString dname)
     }
 }
 
-double Glass::index(double lambdamicron)
+double Glass::index(double lambdamicron) const
 {
     switch(_formulaIndex){
 
@@ -144,12 +144,12 @@ double Glass::index(double lambdamicron)
 
 }
 
-double Glass::index(QString spectral)
+double Glass::index(QString spectral) const
 {
     return index(SpectralLine::wavelength(spectral)/1000); // unit:micron
 }
 
-QVector<double> Glass::index(QVector<double> vLambdamicron)
+QVector<double> Glass::index(QVector<double> vLambdamicron) const
 {
     int ndata = vLambdamicron.size();
     QVector<double> vInd(ndata);
@@ -190,21 +190,12 @@ void Glass::setStatus(int n)
 
 void Glass::setDispCoef(int n, double val)
 {
-    Q_ASSERT(SIZE_OF_DISPERSIONDATA == _dispersionData.size());
-
-    if(_dispersionData.isEmpty()){
-        _dispersionData.append(val);
-    }
-    else if(_dispersionData.size() <= n){
-        _dispersionData.append(val);
-    }
-    else{
-        _dispersionData[n] = val;
-    }
+    Q_ASSERT(_dispersion_data_size == _dispersionData.size());
+    _dispersionData[n] = val;
 }
 
 
-QString Glass::formulaName()
+QString Glass::formulaName() const
 {
     switch(_formulaIndex){
     case 1:
@@ -250,7 +241,7 @@ QString Glass::formulaName()
     }
 }
 
-double Glass::transmittance(double lambdamicron, double thi)
+double Glass::transmittance(double lambdamicron, double thi) const
 {
     double ref_thi = _thicknessData[0];
     int dataCount = _transmittanceData.size();
@@ -271,7 +262,7 @@ double Glass::transmittance(double lambdamicron, double thi)
     return s(lambdamicron);
 }
 
-QVector<double> Glass::transmittance(QVector<double> vLambdamicron, double thi)
+QVector<double> Glass::transmittance(QVector<double> vLambdamicron, double thi) const
 {
     // Spline interpolation is rewritten here to avoid being called many times.
     double ref_thi = _thicknessData[0];
@@ -311,7 +302,7 @@ void Glass::appendTransmittanceData(double lambdamicron, double trans, double th
 }
 
 
-double Glass::dn_dt_abs(double T, double lambdamicron)
+double Glass::dn_dt_abs(double T, double lambdamicron) const
 {
     double dT = (T - T0());
     double n = index(lambdamicron);
@@ -319,12 +310,12 @@ double Glass::dn_dt_abs(double T, double lambdamicron)
     return (n*n-1)/(2*n) * ( D0() + 2*D1()*dT + 3*D2()*dT*dT + (E0() + 2*E1()*dT)/(lambdamicron*lambdamicron - Ltk()*Ltk()) );
 }
 
-QVector<double> Glass::dn_dt_abs(QVector<double> vT, double lambdamicron)
+QVector<double> Glass::dn_dt_abs(QVector<double> vT, double lambdamicron) const
 {
-    int dataCount = vT.size();
-    QVector<double> vDndt(dataCount);
+    int ndata = vT.size();
+    QVector<double> vDndt(ndata);
 
-    for(int i = 0; i < dataCount; i++){
+    for(int i = 0; i < ndata; i++){
         vDndt[i] = dn_dt_abs(vT[i],lambdamicron);
     }
 
@@ -334,17 +325,8 @@ QVector<double> Glass::dn_dt_abs(QVector<double> vT, double lambdamicron)
 
 void Glass::setThermalData(int n, double val)
 {
-    Q_ASSERT( SIZE_OF_THERMALDATA == _thermalData.size() );
-
-    if(_thermalData.isEmpty()){
-        _thermalData.append(val);
-    }
-    else if(_thermalData.size() <= n){
-        _thermalData.append(val);
-    }
-    else{
-        _thermalData[n] = val;
-    }
+    Q_ASSERT( _thermal_data_size == _thermalData.size() );
+    _thermalData[n] = val;
 }
 
 
