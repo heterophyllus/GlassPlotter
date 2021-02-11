@@ -136,8 +136,8 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         }
         else if(linetext.startsWith("LD")){
             lineparts = linetext.simplified().split(" ");
-            _glasses.last()->setLambdaMin(lineparts[1].toDouble()*1000); // micron
-            _glasses.last()->setLambdaMax(lineparts[2].toDouble()*1000);
+            _glasses.last()->setLambdaMin(lineparts[1].toDouble()); // micron
+            _glasses.last()->setLambdaMax(lineparts[2].toDouble());
         }
         else if(linetext.startsWith("IT")){
             lineparts = linetext.simplified().split(" ");

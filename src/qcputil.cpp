@@ -16,13 +16,13 @@ QColor QCPUtil::getColorFromIndex(int index, int maxIndex)
 
 QVector<double> QCPUtil::scaleVector(QVector<double> v, double scale)
 {
-    QVector<double> vv = v;
     int len = v.size();
+    QVector<double> sv(len);
 
     for(int i = 0; i < len; i++){
-        vv[i] = v[i]*scale;
+        sv[i] = v[i]*scale;
     }
-    return vv;
+    return sv;
 }
 
 QVector<double> QCPUtil::getVectorFromRange(QCPRange range, double step)

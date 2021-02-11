@@ -29,6 +29,8 @@
 #include "spectral_line.h"
 #include "dispersion_formula.h"
 
+#include <QDebug>
+
 Glass::Glass()
 {
     _name     = "";
@@ -147,13 +149,13 @@ double Glass::index(QString spectral)
     return index(SpectralLine::wavelength(spectral)/1000); // unit:micron
 }
 
-QVector<double> Glass::index(QVector<double> vWvl)
+QVector<double> Glass::index(QVector<double> vLambdamicron)
 {
-    int dataCount = vWvl.size();
-    QVector<double> vInd(dataCount);
+    int ndata = vLambdamicron.size();
+    QVector<double> vInd(ndata);
 
-    for(int i = 0; i < dataCount; i++){
-        vInd[i] = index(vWvl[i]);
+    for(int i = 0; i < ndata; i++){
+        vInd[i] = index(vLambdamicron[i]);
     }
 
     return vInd;
@@ -261,7 +263,7 @@ double Glass::transmittance(double lambdamicron, double thi)
     }
 
     tk::spline s;
-    //s.set_points(sx.toStdVector(), sy.toStdVector());  // This method has been deprecated
+    //s.set_points(sx.toStdVector(), sy.toStdVector());
     std::vector<double> sx(qvx.begin(), qvx.end());
     std::vector<double> sy(qvy.begin(), qvy.end());
     s.set_points(sx,sy);
@@ -297,6 +299,7 @@ QVector<double> Glass::transmittance(QVector<double> vLambdamicron, double thi)
     {
         y[i] = s(vLambdamicron[i]);
     }
+
     return y;
 }
 

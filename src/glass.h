@@ -51,7 +51,7 @@ public:
 
     double          index(double lambdamicron);
     double          index(QString spectral);
-    QVector<double> index(QVector<double> vWvl);
+    QVector<double> index(QVector<double> vLambdamicron);
     QString         name() const { return _name;}
     QString         supplyer() const { return _supplyer;}
     QString         status() const { return _status;}
@@ -119,7 +119,7 @@ private:
     // transmittance data
     double        _lambdaMax;
     double        _lambdaMin;
-    QList<double> _wavelengthData;
+    QList<double> _wavelengthData; //micron
     QList<double> _transmittanceData;
     QList<double> _thicknessData;
 

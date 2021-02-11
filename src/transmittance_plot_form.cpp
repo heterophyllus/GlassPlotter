@@ -109,14 +109,15 @@ void TransmittancePlotForm::updateAll()
 
     double thickness = ui->lineEdit_Thickness->text().toDouble();
 
-    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep); // unit:nm
+    QVector<double> vLambdanano = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep); // unit:nm
+    QVector<double> vLambdamicron = QCPUtil::scaleVector(vLambdanano,0.001);
     QVector<double> ydata;
     QCPGraph* graph;
     QCPItemTracer* upperTracer;
     QCPItemTracer* lowerTracer;
 
     int i,j;
-    int rowCount = xdata.size();
+    int rowCount = vLambdanano.size();
     int columnCount = m_glassList.size() + 1+1; // lambda + glasses
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
@@ -133,10 +134,10 @@ void TransmittancePlotForm::updateAll()
         currentGlass = m_glassList[i];
 
         // graphs
-        ydata = currentGlass->transmittance(QCPUtil::scaleVector(xdata,1/1000), thickness);
+        ydata = currentGlass->transmittance(vLambdamicron, thickness);
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
-        graph->setData(xdata, ydata);
+        graph->setData(vLambdanano, ydata);
         setColorToGraph(graph, QCPUtil::getColorFromIndex(i, m_maxGraphCount));
         graph->setVisible(true);
 
@@ -147,7 +148,7 @@ void TransmittancePlotForm::updateAll()
         upperTracer->setStyle(QCPItemTracer::tsCircle);
         upperTracer->setSize(7);
         upperTracer->setPen(graph->pen());
-        upperTracer->setGraphKey(currentGlass->lambdaMax());
+        upperTracer->setGraphKey(currentGlass->lambdaMax()*(double)1000);
         upperTracer->updatePosition();
 
         lowerTracer = new QCPItemTracer(m_customPlot);
@@ -156,7 +157,7 @@ void TransmittancePlotForm::updateAll()
         lowerTracer->setStyle(QCPItemTracer::tsCircle);
         lowerTracer->setSize(7);
         lowerTracer->setPen(graph->pen());
-        lowerTracer->setGraphKey(currentGlass->lambdaMin());
+        lowerTracer->setGraphKey(currentGlass->lambdaMin()*(double)1000);
         lowerTracer->updatePosition();
 
         // table
@@ -165,7 +166,7 @@ void TransmittancePlotForm::updateAll()
         {
             // wavelength
             item = new QTableWidgetItem;
-            item->setText(QString::number(xdata[j] ) );
+            item->setText(QString::number(vLambdanano[j] ) );
             m_table->setItem(j, 0, item);
 
             // refractive indices
