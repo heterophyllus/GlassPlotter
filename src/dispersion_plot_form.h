@@ -80,6 +80,7 @@ private:
     void setColorToGraph(QCPGraph* graph, QColor color);
     QVector<double> computeUserDefined(QVector<double> xdata);
 
+    void addTableItem(int row, int col, QString str);
 };
 
 #endif // DISPERSION_PLOT_FORM_H

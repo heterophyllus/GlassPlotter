@@ -34,8 +34,10 @@ GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
+    this->setWindowTitle("DataSheet - " + glass->name());
+
     m_glass = glass;
-    setWindowTitle("DataSheet - " + m_glass->name());
 
     // set names
     ui->label_GlassName->setText( m_glass->name() + " (" + m_glass->supplyer() + ")" );
@@ -207,26 +209,33 @@ void GlassDataSheetForm::setUpTransmittanceTab()
     gridLayout->setObjectName(QString::fromUtf8("gridLayout_Transmittance"));
 
     int digit = 4;
+    int row;
 
     // set lambda max and min
-    addItem(0,0,tr("Lambda Min/Max"),                           gridLayout);
-    addItem(0,1,QString::number(m_glass->lambdaMin(),'f',digit),gridLayout);
-    addItem(0,2,QString::number(m_glass->lambdaMax(),'f',digit),gridLayout);
+    row = 0;
+    addItem(row, 0, tr("Lambda Min/Max"),                           gridLayout);
+    addItem(row, 1, QString::number(m_glass->lambdaMin(),'f',digit),gridLayout);
+    addItem(row, 2, QString::number(m_glass->lambdaMax(),'f',digit),gridLayout);
+
+    // insert space
+    ++row;
+    addItem(row, 0, "", gridLayout);
 
     // set header labels
-    addItem(1,0,tr("Wavelength(micron)"),gridLayout);
-    addItem(1,1,tr("Transmittance"),     gridLayout);
-    addItem(1,2,tr("Thickness"),         gridLayout);
+    ++row;
+    addItem(row, 0, tr("Wavelength(micron)"),gridLayout);
+    addItem(row, 1, tr("Transmittance"),     gridLayout);
+    addItem(row, 2, tr("Thickness"),         gridLayout);
 
     // set transmittance data
     QList<double> lambdamicrons, transmittances, thicknesses;
     m_glass->getTransmittanceData(lambdamicrons, transmittances, thicknesses);
     int ndata = lambdamicrons.size();
 
-    int row;
+    int rowOffset = row+1;
     for(int i = 0; i < ndata; i++)
     {
-        row = i + 3;
+        row = i + rowOffset;
 
         addItem(row,0,QString::number(lambdamicrons[i],  'f', digit),gridLayout);
         addItem(row,1,QString::number(transmittances[i], 'f', digit),gridLayout);

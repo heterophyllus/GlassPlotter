@@ -72,6 +72,8 @@ private:
 
     void setColorToGraph(QCPGraph* graph, QColor color);
     void setDefault();
+
+    void addTableItem(int row, int col, QString str);
 };
 
 #endif // TRANSMITTANCE_PLOT_FORM_H

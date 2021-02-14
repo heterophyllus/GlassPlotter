@@ -71,6 +71,13 @@ TransmittancePlotForm::~TransmittancePlotForm()
     delete ui;
 }
 
+void TransmittancePlotForm::addTableItem(int row, int col, QString str)
+{
+    QTableWidgetItem* item = new QTableWidgetItem();
+    item->setText(str);
+    m_table->setItem(row,col,item);
+}
+
 void TransmittancePlotForm::setColorToGraph(QCPGraph* graph, QColor color)
 {
     QPen pen;
@@ -89,6 +96,7 @@ void TransmittancePlotForm::addGraph()
     }
 
     GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
+
     if(dlg->exec() == QDialog::Accepted)
     {
         int catalogIndex = dlg->getCatalogIndex();
@@ -98,6 +106,14 @@ void TransmittancePlotForm::addGraph()
         m_glassList.append(newGlass);
         updateAll();
     }
+
+    try {
+        delete dlg;
+    }  catch (...) {
+        dlg = nullptr;
+    }
+    dlg = nullptr;
+
 }
 
 
@@ -123,10 +139,10 @@ void TransmittancePlotForm::updateAll()
     m_table->setColumnCount(columnCount);
 
     QStringList header = QStringList() << "WVL";
-    QTableWidgetItem* item;
 
     int glassCount = m_glassList.size();
     Glass* currentGlass;
+    int digit = 4;
 
     // replot all graphs and recreate tables
     for(i = 0; i < glassCount; i++)
@@ -165,14 +181,10 @@ void TransmittancePlotForm::updateAll()
         for(j = 0; j< rowCount; j++)
         {
             // wavelength
-            item = new QTableWidgetItem;
-            item->setText(QString::number(vLambdanano[j] ) );
-            m_table->setItem(j, 0, item);
+            addTableItem(j, 0, QString::number(vLambdanano[j]) );
 
             // refractive indices
-            item = new QTableWidgetItem;
-            item->setText( QString::number(ydata[j]) );
-            m_table->setItem(j, i+1, item);
+            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit) );
         }
     }
 
@@ -184,7 +196,7 @@ void TransmittancePlotForm::deleteGraph()
 {
     if(m_customPlot->selectedGraphs().size() > 0)
     {
-        QCPGraph* selectedGraph = m_customPlot->selectedGraphs()[0];
+        QCPGraph* selectedGraph = m_customPlot->selectedGraphs().at(0);
         QString graphName = selectedGraph->name();
         QStringList glass_supplyer = graphName.split("_");
 

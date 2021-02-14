@@ -60,78 +60,68 @@ CatalogViewForm::~CatalogViewForm()
     delete ui;
 }
 
+void CatalogViewForm::addTableItem(int row, int col, QString str)
+{
+    QTableWidgetItem* item = new QTableWidgetItem();
+    item->setText(str);
+    m_table->setItem(row,col,item);
+}
+
 void CatalogViewForm::setUpTable()
 {
     GlassCatalog* catalog = m_catalogList[ m_comboBox->currentIndex() ];
 
     QStringList headerLabels = QStringList() << tr("Glass") << tr("Nd" ) << tr("Vd") << tr("Ne") << tr("Ve") << tr("PgF") << tr("Status") << tr("Formula") << tr("Comment");
 
+    int rowCount    = catalog->glassCount();
+    int columnCount = headerLabels.size();
     m_table->setSortingEnabled(false);
     m_table->clear();
-    m_table->setColumnCount( headerLabels.size() );
-    m_table->setRowCount( catalog->glassCount() );
-    m_table->setHorizontalHeaderLabels( headerLabels );
+    m_table->setColumnCount(columnCount);
+    m_table->setRowCount(rowCount);
+    m_table->setHorizontalHeaderLabels(headerLabels);
 
     Glass* glass;
-    QTableWidgetItem* item;
     int j;
     int digit = 6;
 
-    for(int i = 0; i < catalog->glassCount(); i++)
+    for(int i = 0; i < rowCount; i++)
     {
         glass = catalog->glass(i);
         j = 0;
 
         // name
-        item = new QTableWidgetItem(glass->name());
-        m_table->setItem(i, j, item);
+        addTableItem(i,j,glass->name());
 
         // refractive index
-        if( tr("Unknown") == glass->formulaName() ){
-            item = new QTableWidgetItem("-");
-            m_table->setItem(i, ++j, item); // nd
-            m_table->setItem(i, ++j, item); // vd
-            m_table->setItem(i, ++j, item); // ne
-            m_table->setItem(i, ++j, item); // ve
-            m_table->setItem(i, ++j, item); // PgF
+        if( tr("Unknown") == glass->formulaName() )
+        {
+            addTableItem(i,++j,"-"); // nd
+            addTableItem(i,++j,"-"); // vd
+            addTableItem(i,++j,"-"); // ne
+            addTableItem(i,++j,"-"); // ve
+            addTableItem(i,++j,"-"); // PgF
         }
-        else{
-            // nd
-            item = new QTableWidgetItem(QString::number(glass->nd(), 'f', digit));
-            m_table->setItem(i, ++j, item);
-
-            // vd
-            item = new QTableWidgetItem(QString::number(glass->vd(), 'f', digit));
-            m_table->setItem(i, ++j, item);
-
-            // ne
-            item = new QTableWidgetItem(QString::number(glass->ne(), 'f', digit));
-            m_table->setItem(i, ++j, item);
-
-            // ve
-            item = new QTableWidgetItem(QString::number(glass->ve(), 'f', digit));
-            m_table->setItem(i, ++j, item);
-
-            // PgF
-            item = new QTableWidgetItem(QString::number(glass->PgF(), 'f', digit));
-            m_table->setItem(i, ++j, item);
+        else
+        {
+            addTableItem(i,++j,QString::number(glass->nd(),  'f', digit));
+            addTableItem(i,++j,QString::number(glass->vd(),  'f', digit));
+            addTableItem(i,++j,QString::number(glass->ne(),  'f', digit));
+            addTableItem(i,++j,QString::number(glass->ve(),  'f', digit));
+            addTableItem(i,++j,QString::number(glass->PgF(), 'f', digit));
         }
 
         // status
-        item = new QTableWidgetItem(glass->status());
-        m_table->setItem(i, ++j, item);
+        addTableItem(i,++j,glass->status());
 
         //formula
-        item = new QTableWidgetItem(glass->formulaName());
-        m_table->setItem(i, ++j, item);
+        addTableItem(i,++j,glass->formulaName());
 
         // individual comment
-        item = new QTableWidgetItem();
-        item->setText(glass->comment());
-        m_table->setItem(i, ++j, item);
+        addTableItem(i,++j,glass->comment());
     }
+
     glass = nullptr;
-    item  = nullptr;
     catalog = nullptr;
 
     m_table->setSortingEnabled(true);
@@ -143,6 +133,7 @@ void CatalogViewForm::showDatasheet()
     QString supplyername = m_comboBox->currentText();
     QString glassname = m_table->item(m_table->currentRow(),0)->text();
 
+    // show glass datasheet form
     Glass* glass = nullptr;
     for(int i = 0; i < m_catalogList.size(); i++)
     {

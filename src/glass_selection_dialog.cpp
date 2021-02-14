@@ -33,9 +33,12 @@ GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWi
     QDialog(parent),
     ui(new Ui::GlassSelectionDialog)
 {
+    if(catalogList.empty()) return;
+
     ui->setupUi(this);
 
-    if(catalogList.empty()) return;
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
+    this->setWindowTitle("Select Glass");
 
     m_catalogList = catalogList;
     m_comboBoxSupplyer = ui->comboBox_Supplyer;
@@ -52,7 +55,6 @@ GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWi
 
     createGlassNameList();
     updateGlassList();
-
 }
 
 GlassSelectionDialog::~GlassSelectionDialog()

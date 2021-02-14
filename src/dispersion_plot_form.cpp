@@ -75,6 +75,13 @@ DispersionPlotForm::~DispersionPlotForm()
     delete ui;
 }
 
+void DispersionPlotForm::addTableItem(int row, int col, QString str)
+{
+    QTableWidgetItem* item = new QTableWidgetItem();
+    item->setText(str);
+    m_table->setItem(row,col,item);
+}
+
 
 void DispersionPlotForm::setColorToGraph(QCPGraph* graph, QColor color)
 {
@@ -94,11 +101,11 @@ QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
     coefs[3] = ui->lineEdit_C3->text().toDouble();
     coefs[4] = ui->lineEdit_C4->text().toDouble();
 
+    int npts = xdata.size();
     double x,y;
-    QVector<double> ydata;
-    ydata.clear();
+    QVector<double> ydata(npts);
 
-    for(int i = 0; i < xdata.size(); i++)
+    for(int i = 0; i < npts; i++)
     {
         x = xdata[i];
         y = 0;
@@ -106,7 +113,7 @@ QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
         {
             y += coefs[j]*pow(x,j);
         }
-        ydata.append(y);
+        ydata[i] = y;
     }
 
     return ydata;
@@ -134,6 +141,13 @@ void DispersionPlotForm::addGraph()
         updateAll();
     }
 
+    try {
+        delete dlg;
+    }  catch (...) {
+        dlg = nullptr;
+    }
+    dlg = nullptr;
+
 }
 
 void DispersionPlotForm::updateAll()
@@ -154,12 +168,10 @@ void DispersionPlotForm::updateAll()
     m_table->setColumnCount(columnCount);
 
     QStringList header = QStringList() << "WVL";
-    QTableWidgetItem* item;
-
-    int i,j;
 
 
     // replot all graphs and recreate tables
+    int i,j;
     for(i = 0; i < m_glassList.size(); i++)
     {
         currentGlass = m_glassList[i];
@@ -177,14 +189,10 @@ void DispersionPlotForm::updateAll()
         for(j = 0; j< rowCount; j++)
         {
             // wavelength
-            item = new QTableWidgetItem;
-            item->setText(QString::number( vLambdanano.at(j) ) );
-            m_table->setItem(j, 0, item);
+            addTableItem(j, 0, QString::number(vLambdanano[j]) );
 
             // refractive indices
-            item = new QTableWidgetItem;
-            item->setText( QString::number(ydata[j]) );
-            m_table->setItem(j, i+1, item);
+            addTableItem(j, i+1, QString::number(ydata[j]) );
         }
     }
 
@@ -201,9 +209,7 @@ void DispersionPlotForm::updateAll()
 
         for(i = 0; i < vLambdanano.size(); i++)
         {
-            item = new QTableWidgetItem;
-            item->setText( QString::number(ydata[i]) );
-            m_table->setItem(i, columnCount-1, item);
+            addTableItem(i, columnCount-1, QString::number(ydata[i]) );
         }
     }
 
@@ -217,7 +223,7 @@ void DispersionPlotForm::deleteGraph()
 {
     if(m_customPlot->selectedGraphs().size() > 0)
     {
-        QCPGraph* selectedGraph = m_customPlot->selectedGraphs().first();
+        QCPGraph* selectedGraph = m_customPlot->selectedGraphs().at(0);
         QString graphName = selectedGraph->name();
         QStringList glass_supplyer = graphName.split("_");
 

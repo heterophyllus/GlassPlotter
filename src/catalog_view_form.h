@@ -57,6 +57,8 @@ private:
     QComboBox* m_comboBox;
 
     QList<GlassCatalog*> m_catalogList;
+
+    void addTableItem(int row, int col, QString str);
 };
 
 #endif // CATALOG_VIEW_FORM_H

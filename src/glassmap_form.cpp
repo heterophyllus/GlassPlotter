@@ -106,6 +106,9 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     // window title
     this->setWindowTitle( xdataname + " - " + ydataname + " Plot");
 
+    // Attribute
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
+
     setDefault();
     update();
 }
