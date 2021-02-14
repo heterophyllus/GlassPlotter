@@ -83,6 +83,7 @@ public:
     QVector<double> transmittance(QVector<double> vLambdamicron, double thi = 25) const;
     double          lambdaMin() const {return _lambdaMin;}
     double          lambdaMax() const {return _lambdaMax;}
+    void            getTransmittanceData(QList<double>& pvLambdamicron, QList<double>& pvTransmittance, QList<double>& pvThickness);
 
     void            appendTransmittanceData(double lambdamicron, double trans, double thick);
     void            setLambdaMin(double val){ _lambdaMin = val;}

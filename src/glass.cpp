@@ -294,6 +294,13 @@ QVector<double> Glass::transmittance(QVector<double> vLambdamicron, double thi) 
     return y;
 }
 
+void Glass::getTransmittanceData(QList<double>& pvLambdamicron, QList<double>& pvTransmittance, QList<double>& pvThickness)
+{
+    pvLambdamicron  = _wavelengthData;
+    pvTransmittance = _transmittanceData;
+    pvThickness     = _thicknessData;
+}
+
 void Glass::appendTransmittanceData(double lambdamicron, double trans, double thick)
 {
     _wavelengthData.append(lambdamicron);

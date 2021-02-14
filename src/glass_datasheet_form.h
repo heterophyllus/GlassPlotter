@@ -36,6 +36,7 @@ class GlassDataSheetForm;
 }
 
 class Glass;
+class QGridLayout;
 
 class GlassDataSheetForm : public QWidget
 {
@@ -49,30 +50,15 @@ private:
     Ui::GlassDataSheetForm *ui;
     Glass* m_glass;
 
-    /**
-     * @brief set up Basic Tab
-     */
+    // set up tabs
     void setUpBasicTab();
-
-    /**
-     * @brief set up Indices Tab
-     */
     void setUpIndicesTab();
-
-    /**
-     * @brief set up Partial Tab
-     */
     void setUpPartialTab();
-
-    /**
-     * @brief set up Dispersion Tab
-     */
     void setUpDispersionTab();
-
-    /**
-     * @brief set up Thermal Tab
-     */
     void setUpThermalTab();
+    void setUpTransmittanceTab();
+
+    void addItem(int row, int col, QString str, QGridLayout* gridLayout);
 };
 
 #endif // GLASS_DATASHEET_FORM_H

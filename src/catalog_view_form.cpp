@@ -27,6 +27,7 @@
 
 #include "glass.h"
 #include "glass_catalog.h"
+#include "glass_datasheet_form.h"
 
 CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *parent) :
     QWidget(parent),
@@ -35,6 +36,8 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
     ui->setupUi(this);
     this->setWindowTitle("Catalog");
 
+    m_parentMdiArea = parent;
+
     m_catalogList = catalogList;
 
     m_comboBox = ui->comboBox_Supplyer;
@@ -42,6 +45,8 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
         m_comboBox->addItem(m_catalogList.at(i)->supplyer());
     }
     QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(setUpTable()));
+
+    QObject::connect(ui->pushButton_showDatasheet,SIGNAL(clicked()), this, SLOT(showDatasheet()));
 
     m_table = ui->tableWidget;
     setUpTable();
@@ -70,6 +75,8 @@ void CatalogViewForm::setUpTable()
     Glass* glass;
     QTableWidgetItem* item;
     int j;
+    int digit = 6;
+
     for(int i = 0; i < catalog->glassCount(); i++)
     {
         glass = catalog->glass(i);
@@ -90,23 +97,23 @@ void CatalogViewForm::setUpTable()
         }
         else{
             // nd
-            item = new QTableWidgetItem(QString::number(glass->nd(), 'f', 6));
+            item = new QTableWidgetItem(QString::number(glass->nd(), 'f', digit));
             m_table->setItem(i, ++j, item);
 
             // vd
-            item = new QTableWidgetItem(QString::number(glass->vd(), 'f', 6));
+            item = new QTableWidgetItem(QString::number(glass->vd(), 'f', digit));
             m_table->setItem(i, ++j, item);
 
             // ne
-            item = new QTableWidgetItem(QString::number(glass->ne(), 'f', 6));
+            item = new QTableWidgetItem(QString::number(glass->ne(), 'f', digit));
             m_table->setItem(i, ++j, item);
 
             // ve
-            item = new QTableWidgetItem(QString::number(glass->ve(), 'f', 6));
+            item = new QTableWidgetItem(QString::number(glass->ve(), 'f', digit));
             m_table->setItem(i, ++j, item);
 
             // PgF
-            item = new QTableWidgetItem(QString::number(glass->PgF(), 'f', 6));
+            item = new QTableWidgetItem(QString::number(glass->PgF(), 'f', digit));
             m_table->setItem(i, ++j, item);
         }
 
@@ -128,4 +135,28 @@ void CatalogViewForm::setUpTable()
     catalog = nullptr;
 
     m_table->setSortingEnabled(true);
+}
+
+void CatalogViewForm::showDatasheet()
+{
+    // get catalog name and glass name of the current row
+    QString supplyername = m_comboBox->currentText();
+    QString glassname = m_table->item(m_table->currentRow(),0)->text();
+
+    Glass* glass = nullptr;
+    for(int i = 0; i < m_catalogList.size(); i++)
+    {
+        if(m_catalogList[i]->supplyer() == supplyername){
+            glass = m_catalogList[i]->glass(glassname);
+
+            GlassDataSheetForm* subwindow = new GlassDataSheetForm(glass, m_parentMdiArea);
+            m_parentMdiArea->addSubWindow(subwindow);
+            subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
+            subwindow->show();
+
+            break;
+        }
+    }
+
+    glass = nullptr;
 }

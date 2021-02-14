@@ -47,14 +47,16 @@ public:
 
 private slots:
     void setUpTable();
+    void showDatasheet();
 
 private:
     Ui::CatalogViewForm *ui;
 
-    QList<GlassCatalog*> m_catalogList;
-
+    QMdiArea* m_parentMdiArea;
     QTableWidget* m_table;
     QComboBox* m_comboBox;
+
+    QList<GlassCatalog*> m_catalogList;
 };
 
 #endif // CATALOG_VIEW_FORM_H
