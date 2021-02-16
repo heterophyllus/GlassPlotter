@@ -29,14 +29,12 @@
 
 #include "qcputil.h"
 
-
+class Glass;
+class GlassCatalog;
 
 namespace Ui {
 class DnDtPlotForm;
 }
-
-class Glass;
-class GlassCatalog;
 
 class DnDtPlotForm : public QWidget
 {
@@ -57,19 +55,19 @@ private slots:
 
 private:
     Ui::DnDtPlotForm *ui;
+    QCustomPlot*      m_customPlot;
+    QTableWidget*     m_table;
 
     QList<GlassCatalog*> m_catalogList;
-    QList<double> m_wvlList;
-
-    Glass* m_currentGlass = nullptr;
-    QCustomPlot* m_customPlot;
-    QTableWidget* m_table;
+    QList<double>        m_wvlList;
+    Glass*               m_currentGlass = nullptr;
 
     const int m_maxGraphCount = 7;
-    const double m_plotStep = 5;
 
     void setColorToGraph(QCPGraph* graph, QColor color);
     void setDefault();
+
+    void addTableItem(int row, int col, QString str);
 };
 
 #endif // DNDT_PLOT_FORM_H

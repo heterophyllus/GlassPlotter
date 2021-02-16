@@ -78,7 +78,7 @@ void GlassDataSheetForm::setUpBasicTab()
     addItem(0, 0, "Name",              gridLayout);
     addItem(0, 1, m_glass->name(),     gridLayout);
 
-    // Catalog
+    // catalog
     addItem(1, 0, "Catalog",           gridLayout);
     addItem(1, 1, m_glass->supplyer(), gridLayout);
 
@@ -89,6 +89,10 @@ void GlassDataSheetForm::setUpBasicTab()
     // status
     addItem(3, 0, "Status",            gridLayout);
     addItem(3, 1, m_glass->status(),   gridLayout);
+
+    // comment
+    addItem(4, 0, "Comment",           gridLayout);
+    addItem(4, 1, m_glass->comment(),  gridLayout);
 }
 
 void GlassDataSheetForm::setUpIndicesTab()
@@ -148,7 +152,8 @@ void GlassDataSheetForm::setUpPartialTab()
     firsts  = QStringList() << "s" << "C_" << "d" << "e" << "g" << "i";
     seconds = QStringList() << "t" << "s" << "C_" << "d" << "F_" << "h";
 
-    for(int j = 0; j < firsts.size(); j++){
+    for(int j = 0; j < firsts.size(); j++)
+    {
         row = j + rowOffset;
 
         addItem(row, 0, "P' " + firsts[j] + "," + seconds[j],                          gridLayout);

@@ -37,7 +37,6 @@ GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWi
 
     ui->setupUi(this);
 
-    this->setAttribute(Qt::WA_DeleteOnClose, true);
     this->setWindowTitle("Select Glass");
 
     m_catalogList = catalogList;

@@ -46,6 +46,23 @@
       <string>Setting</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="lineEdit_Xmin">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_Y">
+        <property name="text">
+         <string>Y:</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="0" colspan="3">
        <widget class="QPushButton" name="pushButton_DeleteGraph">
         <property name="sizePolicy">
@@ -59,44 +76,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="3">
-       <widget class="QPushButton" name="pushButton_AddGraph">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Add Wavelength</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="3">
-       <widget class="QPushButton" name="pushButton_SetAxis">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Set Axis</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QLineEdit" name="lineEdit_Xmax">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="lineEdit_Xmin">
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="lineEdit_Ymin">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -118,15 +99,8 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_Y">
-        <property name="text">
-         <string>Y:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLineEdit" name="lineEdit_Ymin">
+      <item row="5" column="2">
+       <widget class="QLineEdit" name="lineEdit_Ymax">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -135,8 +109,57 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="2">
-       <widget class="QLineEdit" name="lineEdit_Ymax">
+      <item row="3" column="0" colspan="3">
+       <widget class="QPushButton" name="pushButton_SetAxis">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Replot</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="lineEdit_Xmax">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="3">
+       <widget class="QPushButton" name="pushButton_AddGraph">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Add Wavelength</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>step(deg):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QLineEdit" name="lineEdit_PlotStep">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
           <horstretch>0</horstretch>

@@ -52,6 +52,9 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
     QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()),     this, SLOT(clearAll()));
     QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
 
+    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
+    ui->lineEdit_PlotStep->setText(QString::number(5));
+
     m_table = ui->tableWidget;
     setDefault();
 }
@@ -123,25 +126,26 @@ void TransmittancePlotForm::updateAll()
     m_customPlot->clearItems();
     m_table->clear();
 
-    double thickness = ui->lineEdit_Thickness->text().toDouble();
-
-    QVector<double> vLambdanano = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep); // unit:nm
+    double          thickness     = ui->lineEdit_Thickness->text().toDouble();
+    double          plotStep      = ui->lineEdit_PlotStep->text().toDouble();
+    QVector<double> vLambdanano   = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep); // unit:nm
     QVector<double> vLambdamicron = QCPUtil::scaleVector(vLambdanano,0.001);
     QVector<double> ydata;
-    QCPGraph* graph;
-    QCPItemTracer* upperTracer;
-    QCPItemTracer* lowerTracer;
+    QCPGraph*       graph;
+    QCPItemTracer*  upperTracer;
+    QCPItemTracer*  lowerTracer;
 
     int i,j;
-    int rowCount = vLambdanano.size();
+    int rowCount    = vLambdanano.size();
     int columnCount = m_glassList.size() + 1; // lambda + glasses
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
 
     QStringList header = QStringList() << "WVL";
 
-    int glassCount = m_glassList.size();
+    int    glassCount = m_glassList.size();
     Glass* currentGlass;
+
     int digit = 4;
 
     // replot all graphs and recreate tables
@@ -180,11 +184,8 @@ void TransmittancePlotForm::updateAll()
         header << currentGlass->name();
         for(j = 0; j< rowCount; j++)
         {
-            // wavelength
-            addTableItem(j, 0, QString::number(vLambdanano[j]) );
-
-            // refractive indices
-            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit) );
+            addTableItem(j, 0, QString::number(vLambdanano[j]) );         // wavelength
+            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit) ); // transmittance
         }
     }
 

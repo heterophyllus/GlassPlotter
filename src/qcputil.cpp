@@ -26,10 +26,10 @@ QVector<double> QCPUtil::getVectorFromRange(QCPRange range, double step)
 
     double xmin = range.lower;
     double xmax = range.upper;
-    QVector<double> xdata(floor((xmax - xmin)/step) + 1);
+    QVector<double> xdata(floor((xmax - xmin)/step) + 1 );
     double x = xmin;
     int i = 0;
-    while(x < xmax)
+    while(x <= xmax)
     {
         xdata[i] = x;
         x += step;

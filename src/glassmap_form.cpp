@@ -316,20 +316,33 @@ void GlassMapForm::showPresetDlg()
         setCurveCoefsToUI(dlg->getCoefs());
         update();
     }
+
+    try {
+        delete dlg;
+    }  catch (...) {
+        dlg = nullptr;
+    }
+    dlg = nullptr;
 }
 
 
 void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color)
 {
-    const int glassCount = catalog->glassCount();
+    int glassCount = catalog->glassCount();
     QVector<double> x(glassCount), y(glassCount);
     QVector<QString> str(glassCount);
+    Glass* g;
 
     for(int i = 0; i < glassCount; i++)
     {
-        x[i] = catalog->glass(i)->getValue(xlabel);
-        y[i] = catalog->glass(i)->getValue(ylabel);
-        str[i] = catalog->glass(i)->name();
+        g = catalog->glass(i);
+        if("Unknown" == g->formulaName()){
+            continue;
+        }else{
+            x[i]   = g->getValue(xlabel);
+            y[i]   = g->getValue(ylabel);
+            str[i] = g->name();
+        }
     }
 
     glassmap->setData(x,y,str);

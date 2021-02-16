@@ -59,6 +59,9 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     QObject::connect(ui->lineEdit_C3,          SIGNAL(textEdited(QString)), this, SLOT(updateAll()));
     QObject::connect(ui->lineEdit_C4,          SIGNAL(textEdited(QString)), this, SLOT(updateAll()));
 
+    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
+    ui->lineEdit_PlotStep->setText(QString::number(5));
+
     setDefault();
 }
 
@@ -132,13 +135,20 @@ void DispersionPlotForm::addGraph()
     GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
     if(dlg->exec() == QDialog::Accepted)
     {
-        int catalogIndex = dlg->getCatalogIndex();
+        // get glass
+        int catalogIndex  = dlg->getCatalogIndex();
         QString glassName = dlg->getGlassName();
-        Glass* newGlass = m_catalogList.at(catalogIndex)->glass(glassName);
+        Glass* newGlass   = m_catalogList.at(catalogIndex)->glass(glassName);
 
-        m_glassList.append(newGlass);
-
-        updateAll();
+        // check dispersion formula
+        if("Unknown" == newGlass->formulaName()){
+            QMessageBox::information(this,tr("Error"), "Unknown dispersion formula");
+        }
+        else{
+            m_glassList.append(newGlass);
+            updateAll();
+        }
+        newGlass = nullptr;
     }
 
     try {
@@ -155,14 +165,15 @@ void DispersionPlotForm::updateAll()
     m_customPlot->clearGraphs();
     m_table->clear();
 
-    QVector<double> vLambdanano = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), m_plotStep);
+    double          plotStep      = ui->lineEdit_PlotStep->text().toDouble();
+    QVector<double> vLambdanano   = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
     QVector<double> vLambdamicron = QCPUtil::scaleVector(vLambdanano, 0.001);
     QVector<double> ydata;
-    QCPGraph* graph;
+    QCPGraph*       graph;
 
     Glass* currentGlass;
 
-    int rowCount = vLambdanano.size();
+    int rowCount    = vLambdanano.size();
     int columnCount = m_glassList.size() + 1+1; // wvl + glasses + curve
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
@@ -188,11 +199,8 @@ void DispersionPlotForm::updateAll()
         header << currentGlass->name();
         for(j = 0; j< rowCount; j++)
         {
-            // wavelength
-            addTableItem(j, 0, QString::number(vLambdanano[j]) );
-
-            // refractive indices
-            addTableItem(j, i+1, QString::number(ydata[j]) );
+            addTableItem(j, 0,   QString::number(vLambdanano[j]) );   // wavelength
+            addTableItem(j, i+1, QString::number(ydata[j], 'f', 5) ); // refractive index
         }
     }
 
@@ -248,6 +256,8 @@ void DispersionPlotForm::setDefault()
     ui->lineEdit_Xmax->setText(QString::number(xrange.upper));
     ui->lineEdit_Ymin->setText(QString::number(yrange.lower));
     ui->lineEdit_Ymax->setText(QString::number(yrange.upper));
+
+    ui->lineEdit_PlotStep->setText(QString::number(5));
 }
 
 void DispersionPlotForm::setAxis()

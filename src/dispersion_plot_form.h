@@ -47,11 +47,6 @@ class DispersionPlotForm : public QWidget
     Q_OBJECT
 
 public:
-    /**
-     * @brief DispersionPlotForm
-     * @param catalogList Glass catalig list
-     * @param parent parent QWidget MDI area
-     */
     explicit DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
     ~DispersionPlotForm();
 
@@ -66,21 +61,19 @@ private slots:
 private:
     Ui::DispersionPlotForm *ui;
 
-    QCustomPlot* m_customPlot;
-    QList<GlassCatalog*> m_catalogList;
-    QList<Glass*> m_glassList;
-
-    QCheckBox* m_checkBox;
+    QCustomPlot*  m_customPlot;
+    QCheckBox*    m_checkBox;
     QTableWidget* m_table;
+    const int     m_maxGraphCount = 5;
 
-    const double m_plotStep = 5.0;
-    const int m_maxGraphCount = 5;
+    QList<GlassCatalog*> m_catalogList;
+    QList<Glass*>        m_glassList;
 
-    void setDefault();
-    void setColorToGraph(QCPGraph* graph, QColor color);
+
+    void            setDefault();
+    void            setColorToGraph(QCPGraph* graph, QColor color);
     QVector<double> computeUserDefined(QVector<double> xdata);
-
-    void addTableItem(int row, int col, QString str);
+    void            addTableItem(int row, int col, QString str);
 };
 
 #endif // DISPERSION_PLOT_FORM_H

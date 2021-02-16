@@ -53,6 +53,9 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()),     this, SLOT(clearAll()));
     QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
 
+    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
+    ui->lineEdit_PlotStep->setText(QString::number(5));
+
     m_table = ui->tableWidget;
     setDefault();
 }
@@ -82,25 +85,33 @@ void DnDtPlotForm::setGlass()
         if(!newGlass->hasThermalData){
             QMessageBox::information(this,tr("Error"), tr("This glass does not have thermal data."));
             newGlass = nullptr;
-            return;
         }
+        else{
+            clearAll();
+            m_currentGlass = newGlass;
+            ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
 
-        clearAll();
-        m_currentGlass = newGlass;
-        ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
+            m_wvlList  = QList<double>() << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0;
+            updateAll();
 
-        m_wvlList  = QList<double>() << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0;
-        updateAll();
+            // rescale y axis
+            m_customPlot->yAxis->rescale();
+            m_customPlot->replot();
 
-        // rescale y axis
-        m_customPlot->yAxis->rescale();
-        m_customPlot->replot();
-
-        ui->lineEdit_Xmin->setText(QString::number(m_customPlot->xAxis->range().lower));
-        ui->lineEdit_Xmax->setText(QString::number(m_customPlot->xAxis->range().upper));
-        ui->lineEdit_Ymin->setText(QString::number(m_customPlot->yAxis->range().lower));
-        ui->lineEdit_Ymax->setText(QString::number(m_customPlot->yAxis->range().upper));
+            int digit = 1;
+            ui->lineEdit_Xmin->setText(QString::number(m_customPlot->xAxis->range().lower, 'f', digit));
+            ui->lineEdit_Xmax->setText(QString::number(m_customPlot->xAxis->range().upper, 'f', digit));
+            ui->lineEdit_Ymin->setText(QString::number(m_customPlot->yAxis->range().lower, 'f', digit));
+            ui->lineEdit_Ymax->setText(QString::number(m_customPlot->yAxis->range().upper, 'f', digit));
+        }
     }
+
+    try {
+        delete dlg;
+    }  catch (...) {
+        dlg = nullptr;
+    }
+    dlg = nullptr;
 }
 
 void DnDtPlotForm::addGraph()
@@ -125,14 +136,13 @@ void DnDtPlotForm::addGraph()
 
     m_wvlList.append(wvl);
     updateAll();
-
 }
 
 void DnDtPlotForm::deleteGraph()
 {
     if(m_customPlot->selectedGraphs().size() > 0)
     {
-        QCPGraph* selectedGraph = m_customPlot->selectedGraphs().first();
+        QCPGraph* selectedGraph = m_customPlot->selectedGraphs().at(0);
         QString graphName = selectedGraph->name();
 
         for(int i = 0;i < m_wvlList.size(); i++){
@@ -180,18 +190,18 @@ void DnDtPlotForm::updateAll()
     m_customPlot->clearGraphs();
     m_table->clear();
 
-    QVector<double> xdata = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range());
+    double          plotStep = ui->lineEdit_PlotStep->text().toDouble();
+    QVector<double> xdata    = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
     QVector<double> ydata;
-    QCPGraph* graph;
+    QCPGraph*       graph;
 
     int i,j;
-    int rowCount = xdata.size();
+    int rowCount    = xdata.size();
     int columnCount = m_wvlList.size() + 1; // temperature + wavelengths
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
 
     QStringList header = QStringList() << "Temperature";
-    QTableWidgetItem* item;
 
     // replot all graphs and recreate tables
     double currentWvl;
@@ -200,7 +210,7 @@ void DnDtPlotForm::updateAll()
         currentWvl = m_wvlList[i]; // unit:nm
 
         // graphs
-        ydata = QCPUtil::scaleVector(m_currentGlass->dn_dt_abs(xdata, currentWvl/1000), pow(10,6)); //unit:micron
+        ydata = QCPUtil::scaleVector(m_currentGlass->dn_dt_abs(xdata, currentWvl/1000.0), pow(10,6)); //unit:micron
         graph = m_customPlot->addGraph();
         graph->setName(QString::number(currentWvl));
         graph->setData(xdata, ydata);
@@ -209,19 +219,11 @@ void DnDtPlotForm::updateAll()
 
         // table
         header << QString::number(currentWvl) + "nm";
-        for(j = 0; j< rowCount; j++){
-
-            // temperature
-            item = new QTableWidgetItem;
-            item->setText(QString::number(xdata[j]) );
-            m_table->setItem(j, 0, item);
-
-            // dn/dt(abs)
-            item = new QTableWidgetItem;
-            item->setText( QString::number(ydata[j]) );
-            m_table->setItem(j, i+1, item);
+        for(j = 0; j< rowCount; j++)
+        {
+            addTableItem(j, 0,   QString::number(xdata[j]));         // temperature
+            addTableItem(j, i+1, QString::number(ydata[j], 'f', 4)); // dn/dt(abs)
         }
-
     }
     m_customPlot->replot();
     m_table->setHorizontalHeaderLabels(header);
@@ -243,4 +245,11 @@ void DnDtPlotForm::setLegendVisible()
 {
     m_customPlot->legend->setVisible(ui->checkBox_Legend->checkState());
     m_customPlot->replot();
+}
+
+void DnDtPlotForm::addTableItem(int row, int col, QString str)
+{
+    QTableWidgetItem* item = new QTableWidgetItem();
+    item->setText(str);
+    m_table->setItem(row,col,item);
 }
