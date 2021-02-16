@@ -8,10 +8,10 @@ CONFIG += c++11
 
 # application icon
 win32{
-    RC_ICONS = GlassPlotterIcon.ico
+    RC_ICONS = icon/GlassPlotterIcon.ico
 }
 macx{
-    ICON = GlassPlotterIcon.icns
+    ICON = icon/GlassPlotterIcon.icns
 }
 
 # The following define makes your compiler emit warnings if you use
@@ -40,10 +40,10 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     preset_dialog.cpp \
-    pugixml.cpp \
+    pugixml/pugixml.cpp \
     qcpscatterchart.cpp \
     qcputil.cpp \
-    qcustomplot.cpp \
+    QCustomPlot/qcustomplot.cpp \
     spectral_line.cpp \
     transmittance_plot_form.cpp
 
@@ -61,13 +61,13 @@ HEADERS += \
     glassmap_form.h \
     mainwindow.h \
     preset_dialog.h \
-    pugiconfig.hpp \
-    pugixml.hpp \
+    pugixml/pugiconfig.hpp \
+    pugixml/pugixml.hpp \
     qcpscatterchart.h \
     qcputil.h \
-    qcustomplot.h \
+    QCustomPlot/qcustomplot.h \
     spectral_line.h \
-    spline.h \
+    spline/spline.h \
     transmittance_plot_form.h
 
 FORMS += \

@@ -29,7 +29,7 @@
 #ifndef QCPSCATTERCHART_H
 #define QCPSCATTERCHART_H
 
-#include "qcustomplot.h"
+#include "QCustomPlot/qcustomplot.h"
 
 class QCPScatterChart
 {

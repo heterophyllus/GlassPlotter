@@ -25,6 +25,7 @@
 #include "dispersion_plot_form.h"
 #include "ui_dispersion_plot_form.h"
 
+#include "qcputil.h"
 #include "glass.h"
 #include "glass_catalog.h"
 #include "glass_selection_dialog.h"

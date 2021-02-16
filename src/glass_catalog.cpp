@@ -25,7 +25,7 @@
 #include "glass_catalog.h"
 
 #include "glass.h"
-#include "pugixml.hpp" //https://pugixml.org
+#include "pugixml/pugixml.hpp" //https://pugixml.org
 
 #include <QFile>
 #include <QFileInfo>

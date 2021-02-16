@@ -27,7 +27,7 @@
 
 #include <QMainWindow>
 
-#include "qcustomplot.h"
+#include "QCustomPlot/qcustomplot.h"
 
 class GlassCatalog;
 
