@@ -1,7 +1,7 @@
 #ifndef QCPUTIL_H
 #define QCPUTIL_H
 
-#include "QCustomPlot/qcustomplot.h"
+#include "qcustomplot.h"
 
 class QCPUtil
 {

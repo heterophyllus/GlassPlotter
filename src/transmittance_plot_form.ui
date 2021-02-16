@@ -52,7 +52,7 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>GroupBox</string>
+      <string>Plot Control</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="5" column="0" colspan="2">

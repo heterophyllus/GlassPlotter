@@ -31,12 +31,12 @@
 
 #include <QWidget>
 
+class Glass;
+class QGridLayout;
+
 namespace Ui {
 class GlassDataSheetForm;
 }
-
-class Glass;
-class QGridLayout;
 
 class GlassDataSheetForm : public QWidget
 {

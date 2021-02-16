@@ -33,12 +33,12 @@
 
 #include "qcpscatterchart.h"
 
+class GlassCatalog;
+class Glass;
+
 namespace Ui {
 class GlassMapForm;
 }
-
-class GlassCatalog;
-class Glass;
 
 class GlassMapForm : public QWidget
 {
@@ -72,18 +72,18 @@ private:
 
     Ui::GlassMapForm *ui;
 
-    QMdiArea* m_parentMdiArea;
+    QMdiArea*    m_parentMdiArea;
     QCustomPlot* m_customPlot;
-    QCheckBox* m_checkBoxLegend;
-    QCheckBox* checkBoxCurve;
+    QCheckBox*   m_checkBoxLegend;
+    QCheckBox*   m_checkBoxCurve;
     QListWidget* m_listWidgetNeighbors;
 
     QList<GlassCatalog*> m_catalogList;
-    QList<GlassMapCtrl> m_glassMapCtrlList;
-    QList<QLineEdit*> m_lineEditList;
+    QList<GlassMapCtrl>  m_glassMapCtrlList;
+    QList<QLineEdit*>    m_lineEditList;
 
     QSettings* m_settings;
-    QString m_settingFile;
+    QString    m_settingFile;
 
     QString m_xDataName;
     QString m_yDataName;
@@ -92,9 +92,9 @@ private:
     QCPRange m_defaultYrange;
 
     Glass* getGlassFromName(QString glassName);
-    void setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
-    void setUpScrollArea();
-    void saveSetting();
+    void   setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
+    void   setUpScrollArea();
+    void   saveSetting();
     QList<double> getCurveCoefs();
     void setCurveCoefsToUI(QList<double> coefs);
     void setCurveData(QCPGraph* curveGraph, QList<double> coefs);

@@ -60,7 +60,7 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     m_customPlot->legend->setVisible(true);
 
     // user defined curve control
-    checkBoxCurve = ui->checkBox_Curve;
+    m_checkBoxCurve = ui->checkBox_Curve;
     QObject::connect(ui->checkBox_Curve,SIGNAL(toggled(bool)), this, SLOT(update()));
 
     m_lineEditList = QList<QLineEdit*>() << ui->lineEdit_C0 << ui->lineEdit_C1 << ui->lineEdit_C2 << ui->lineEdit_C3;
@@ -288,7 +288,7 @@ void GlassMapForm::update()
     }
 
     // replot user defined curve
-    if(checkBoxCurve->checkState()){
+    if(m_checkBoxCurve->checkState()){
         QCPGraph* curveGraph = m_customPlot->addGraph();
         setCurveData(curveGraph, getCurveCoefs());
         curveGraph->setVisible(true);

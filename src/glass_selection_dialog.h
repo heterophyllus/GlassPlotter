@@ -31,16 +31,17 @@
 #define GLASS_SELECTION_DIALOG_H
 
 #include <QDialog>
-#include <QListWidget>
-#include <QComboBox>
+#include <QList>
+#include <QStringList>
 
-
+class GlassCatalog;
+class QComboBox;
+class QLineEdit;
+class QListWidget;
 
 namespace Ui {
 class GlassSelectionDialog;
 }
-
-class GlassCatalog;
 
 class GlassSelectionDialog : public QDialog
 {
@@ -50,22 +51,8 @@ public:
     explicit GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
     ~GlassSelectionDialog();
 
-    /**
-     * @brief get selected catalog index
-     * @return
-     */
-    int getCatalogIndex();
-
-    /**
-     * @brief get selected supplyer name
-     * @return
-     */
+    int     getCatalogIndex();
     QString getSupplyerName();
-
-    /**
-     * @brief get selected glass name
-     * @return
-     */
     QString getGlassName();
 
 private slots:
@@ -76,12 +63,12 @@ private slots:
 private:
     Ui::GlassSelectionDialog *ui;
 
-    QComboBox *m_comboBoxSupplyer;
-    QLineEdit* m_lineEditFilter;
-    QListWidget *m_listWidgetGlass;
+    QComboBox*   m_comboBoxSupplyer;
+    QLineEdit*   m_lineEditFilter;
+    QListWidget* m_listWidgetGlass;
 
     QList<GlassCatalog*> m_catalogList;
-    QStringList m_glassNameList;
+    QStringList          m_glassNameList;
 
 };
 

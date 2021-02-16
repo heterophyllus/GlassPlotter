@@ -26,11 +26,14 @@
 #define DNDT_PLOT_FORM_H
 
 #include <QWidget>
-
-#include "qcputil.h"
+#include <QList>
 
 class Glass;
 class GlassCatalog;
+class QCustomPlot;
+class QCPGraph;
+class QTableWidget;
+class QCheckBox;
 
 namespace Ui {
 class DnDtPlotForm;

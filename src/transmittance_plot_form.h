@@ -33,10 +33,11 @@
 
 #include <QWidget>
 
-#include "qcputil.h"
-
 class Glass;
 class GlassCatalog;
+class QCustomPlot;
+class QCPGraph;
+class QTableWidget;
 
 namespace Ui {
 class TransmittancePlotForm;
@@ -62,9 +63,9 @@ private:
     Ui::TransmittancePlotForm *ui;
 
     QList<GlassCatalog*> m_catalogList;
-    QList<Glass*> m_glassList;
+    QList<Glass*>        m_glassList;
 
-    QCustomPlot* m_customPlot;
+    QCustomPlot*  m_customPlot;
     QTableWidget* m_table;
 
     const int  m_maxGraphCount = 5;

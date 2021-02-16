@@ -25,6 +25,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += $$PWD/QCustomPlot # QCustomPlot
+INCLUDEPATH += $$PWD/pugixml/src # pugixml
+INCLUDEPATH += $$PWD/spline/src  # spline
 
 SOURCES += \
     about_dialog.cpp \
@@ -40,12 +43,12 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     preset_dialog.cpp \
-    pugixml/pugixml.cpp \
     qcpscatterchart.cpp \
     qcputil.cpp \
-    QCustomPlot/qcustomplot.cpp \
     spectral_line.cpp \
-    transmittance_plot_form.cpp
+    transmittance_plot_form.cpp \
+    QCustomPlot/qcustomplot.cpp \ # QCustomPlot
+    pugixml/src/pugixml.cpp       # pugixml
 
 HEADERS += \
     about_dialog.h \
@@ -61,14 +64,14 @@ HEADERS += \
     glassmap_form.h \
     mainwindow.h \
     preset_dialog.h \
-    pugixml/pugiconfig.hpp \
-    pugixml/pugixml.hpp \
     qcpscatterchart.h \
     qcputil.h \
-    QCustomPlot/qcustomplot.h \
     spectral_line.h \
-    spline/spline.h \
-    transmittance_plot_form.h
+    transmittance_plot_form.h \
+    QCustomPlot/qcustomplot.h \    # QCustomPlot
+    pugixml/src/pugiconfig.hpp \   # pugixml
+    pugixml/src/pugixml.hpp \
+    spline/src/spline.h            # spline
 
 FORMS += \
     about_dialog.ui \

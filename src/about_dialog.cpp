@@ -57,7 +57,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     "    You should have received a copy of the GNU General Public License\n"
     "    along with this program.  If not, see <https://www.gnu.org/licenses/>.\n"
     "\n"
-    "    Additional information of this application is provided at:\n"
+    "    Additional information is provided at:\n"
     "    https://github.com/heterophyllus/glassplotter", nullptr));
 }
 

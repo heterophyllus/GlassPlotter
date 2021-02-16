@@ -1,0 +1,6 @@
+[submodule "src/pugixml"]
+	path = src/pugixml
+	url = https://github.com/zeux/pugixml.git
+[submodule "src/spline"]
+	path = src/spline
+	url = https://github.com/ttk592/spline.git

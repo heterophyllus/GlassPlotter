@@ -27,7 +27,7 @@
 
 #include <QMainWindow>
 
-#include "QCustomPlot/qcustomplot.h"
+#include "qcustomplot.h"
 
 class GlassCatalog;
 
@@ -49,10 +49,6 @@ private:
     void updateStatusBar();
 
 private slots:
-
-    /**
-     * @brief load AGF files
-     */
     void loadAGF();
     void loadXML();
 

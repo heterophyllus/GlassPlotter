@@ -30,6 +30,8 @@
 #include "glass_catalog.h"
 #include "glass_selection_dialog.h"
 
+#include "qcputil.h"
+
 DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::DnDtPlotForm)

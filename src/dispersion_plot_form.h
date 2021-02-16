@@ -22,18 +22,13 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Form class for dispersion plot
-  *
-  */
-
 
 #ifndef DISPERSION_PLOT_FORM_H
 #define DISPERSION_PLOT_FORM_H
 
 #include <QWidget>
-
-#include "qcputil.h"
+#include <QVector>
+#include <QList>
 
 namespace Ui {
 class DispersionPlotForm;
@@ -41,6 +36,10 @@ class DispersionPlotForm;
 
 class Glass;
 class GlassCatalog;
+class QCustomPlot;
+class QCPGraph;
+class QTableWidget;
+class QCheckBox;
 
 class DispersionPlotForm : public QWidget
 {
@@ -68,7 +67,6 @@ private:
 
     QList<GlassCatalog*> m_catalogList;
     QList<Glass*>        m_glassList;
-
 
     void            setDefault();
     void            setColorToGraph(QCPGraph* graph, QColor color);
