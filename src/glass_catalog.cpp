@@ -37,16 +37,22 @@ GlassCatalog::GlassCatalog()
     _supplyer = "";
 }
 
+
 GlassCatalog::~GlassCatalog()
+{
+    this->clear();
+}
+
+void GlassCatalog::clear()
 {
     if(!_glasses.isEmpty()){
         for(auto &g:_glasses){
             try {
                 delete g;
-                g = nullptr;
             } catch (...) {
                 g = nullptr;
             }
+            g = nullptr;
         }
         _glasses.clear();
     }
@@ -82,16 +88,16 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         return false;
     }
 
+    this->clear();
+
     int linecount = 0;
     QTextStream in(&file);
     QString linetext;
     QStringList lineparts;
 
-    Glass *g;
-
-    _glasses.clear();
     _supplyer = QFileInfo(AGFpath).baseName();
 
+    Glass *g;
     while (! in.atEnd()) {
         linetext = in.readLine();
         linecount++;
@@ -157,13 +163,15 @@ bool GlassCatalog::loadXml(QString xmlpath)
         return false;
     }
 
+    this->clear();
+
     _supplyer = doc.first_child().first_child().child_value();
 
     pugi::xml_node node_glasses = doc.child("Catalog").child("Glasses");
 
     int k;
     Glass *g;
-    _glasses.clear();
+
     for (pugi::xml_node_iterator glass_it = node_glasses.begin(); glass_it != node_glasses.end(); glass_it++ )
     {
         g = new Glass;
@@ -237,5 +245,4 @@ bool GlassCatalog::loadXml(QString xmlpath)
     g = nullptr;
 
     return true;
-
 }

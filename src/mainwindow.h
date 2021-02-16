@@ -46,7 +46,6 @@ public:
 private:
     template<class F> void showAnalysisForm();
     void showGlassMap(QString xdataname, QString ydataname,QCPRange xrange, QCPRange yrange);
-    void updateStatusBar();
 
 private slots:
     void loadAGF();
@@ -69,7 +68,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QString m_agfDir = "";
     QList<GlassCatalog*> m_catalogList;
 };
 #endif // MAINWINDOW_H

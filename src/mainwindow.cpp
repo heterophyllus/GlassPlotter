@@ -80,12 +80,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
-}
+    if(!m_catalogList.isEmpty()){
+        for(auto &cat: m_catalogList){
+            try {
+                delete cat;
+            }  catch (...) {
+                cat = nullptr;
+            }
+            cat = nullptr;
+        }
+    }
+    m_catalogList.clear();
 
-void MainWindow::updateStatusBar()
-{
-    ui->statusbar->showMessage(m_agfDir);
+    delete ui;
 }
 
 void MainWindow::loadAGF()
@@ -99,12 +106,17 @@ void MainWindow::loadAGF()
                                                           tr("AGF files(*.agf);;All Files(*.*)"));
     if(filePaths.empty()){
         QMessageBox::warning(this,tr("File"), tr("No AGF file is loaded"));
-        m_agfDir = "";
-        updateStatusBar();
+        ui->statusbar->showMessage("");
         return;
     }
 
-    m_catalogList.clear();
+    if(!m_catalogList.isEmpty())
+    {
+        for (auto &cat: m_catalogList) {
+            delete cat;
+        }
+        m_catalogList.clear();
+    }
 
     GlassCatalog* catalog;
     for(int i = 0; i < filePaths.size(); i++){
@@ -116,8 +128,7 @@ void MainWindow::loadAGF()
 
     // show path in statusbar
     QFileInfo finfo(filePaths.first());
-    m_agfDir = finfo.absolutePath();
-    updateStatusBar();
+    ui->statusbar->showMessage(finfo.absolutePath());
 
     QMessageBox::information(this,tr("Message"), tr("AGF files are successfully loaded"));
 }
@@ -133,12 +144,17 @@ void MainWindow::loadXML()
                                                           tr("XML files(*.xml);;All Files(*.*)"));
     if(filePaths.empty()){
         QMessageBox::warning(this,tr("File"), tr("No XML file is loaded"));
-        m_agfDir = "";
-        updateStatusBar();
+        ui->statusbar->showMessage("");
         return;
     }
 
-    m_catalogList.clear();
+    if(!m_catalogList.isEmpty())
+    {
+        for (auto &cat: m_catalogList) {
+            delete cat;
+        }
+        m_catalogList.clear();
+    }
 
     GlassCatalog* catalog;
     for(int i = 0; i < filePaths.size(); i++){
@@ -150,8 +166,7 @@ void MainWindow::loadXML()
 
     // show path in statusbar
     QFileInfo finfo(filePaths.first());
-    m_agfDir = finfo.absolutePath();
-    updateStatusBar();
+    ui->statusbar->showMessage(finfo.absolutePath());
 
     QMessageBox::information(this,tr("Message"), tr("XML files are successfully loaded"));
 }

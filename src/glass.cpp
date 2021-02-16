@@ -53,6 +53,7 @@ Glass::Glass()
     _thermalData = QVector<double>(_thermal_data_size, 0.0);
 }
 
+
 Glass::~Glass()
 {
     _dispersionData.clear();
@@ -243,6 +244,8 @@ QString Glass::formulaName() const
 
 double Glass::transmittance(double lambdamicron, double thi) const
 {
+    Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );
+
     double ref_thi = _thicknessData[0];
     int dataCount = _transmittanceData.size();
     QVector<double> qvx(dataCount), qvy(dataCount);
@@ -264,6 +267,8 @@ double Glass::transmittance(double lambdamicron, double thi) const
 
 QVector<double> Glass::transmittance(QVector<double> vLambdamicron, double thi) const
 {
+    Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );
+
     // Spline interpolation is rewritten here to avoid being called many times.
     double ref_thi = _thicknessData[0];
     int dataCount = _transmittanceData.size();

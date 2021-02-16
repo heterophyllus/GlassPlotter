@@ -52,8 +52,10 @@ public:
     bool loadAGF(QString AGFpath);
     bool loadXml(QString xmlpath);
 
+    void clear();
+
 private:
-    QString  _supplyer;
+    QString       _supplyer;
     QList<Glass*> _glasses;
 };
 
