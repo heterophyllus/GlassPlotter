@@ -34,13 +34,15 @@ QCPScatterChart::QCPScatterChart(QCustomPlot *customPlot)
 
 QCPScatterChart::~QCPScatterChart()
 {
+    // delete graph
     try {
         m_customPlot->removeGraph(m_graphPoints);
-        m_graphPoints = nullptr;
     }  catch (...) {
         m_graphPoints = nullptr;
     }
+    m_graphPoints = nullptr;
 
+    // delete text labels
     int labelCount = m_textlabels.size();
     for(int i = 0; i < labelCount; i++){
         try {
@@ -48,6 +50,7 @@ QCPScatterChart::~QCPScatterChart()
         }  catch (...) {
             m_textlabels[i] = nullptr;
         }
+        m_textlabels[i] = nullptr;
     }
     m_textlabels.clear();
 
@@ -56,9 +59,9 @@ QCPScatterChart::~QCPScatterChart()
 
 QCPScatterChart::QCPScatterChart(QCPScatterChart &other)
 {
-    m_customPlot = other.parentPlot();
+    m_customPlot  = other.parentPlot();
     m_graphPoints = other.graphPoints();
-    m_textlabels = other.textLabels();
+    m_textlabels  = other.textLabels();
 }
 
 void QCPScatterChart::setName(QString name)
@@ -95,23 +98,36 @@ QString QCPScatterChart::name()
 
 void QCPScatterChart::setData(QVector<double> x, QVector<double> y, QVector<QString> str)
 {   
-    if(!m_graphPoints) return;
-
     //set data to points
     m_graphPoints->setData(x,y);
     m_graphPoints->setLineStyle(QCPGraph::lsNone);
     m_graphPoints->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc,8));
 
+
     //set text to labels
+    if(!m_textlabels.isEmpty())
+    {
+        int labelCount = m_textlabels.size();
+        for(int i = 0; i < labelCount; i++){
+            try {
+                m_customPlot->removeItem(m_textlabels[i]);
+            }  catch (...) {
+                m_textlabels[i] = nullptr;
+            }
+            m_textlabels[i] = nullptr;
+        }
+    }
     m_textlabels.clear();
+
     QCPItemText *label;
-    for(int i = 0;i< str.size(); i++){
+    int nlabels = str.size();
+    for(int i = 0; i < nlabels; i++){
         label = new QCPItemText(m_customPlot);
+        label->position->setCoords(x[i],y[i]);
+        label->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
+        label->setText(str[i]);
+        label->setObjectName(str[i]); //used for mouse click
         m_textlabels.append(label);
-        m_textlabels.last()->position->setCoords(x[i],y[i]);
-        m_textlabels.last()->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
-        m_textlabels.last()->setText(str[i]);
-        m_textlabels.last()->setObjectName(str[i]); //used for mouse click
     }
 
 }
@@ -123,7 +139,8 @@ void QCPScatterChart::setVisiblePointSeries(bool state)
 
 void QCPScatterChart::setVisibleTextLabels(bool state)
 {
-    for(int i = 0; i < m_textlabels.size(); i++){
+    int nlabels = m_textlabels.size();
+    for(int i = 0; i < nlabels; i++){
         m_textlabels[i]->setVisible(state);
     }
 }
@@ -132,3 +149,5 @@ int QCPScatterChart::dataCount()
 {
     return m_textlabels.size();
 }
+
+

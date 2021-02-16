@@ -275,7 +275,7 @@ void GlassMapForm::update()
     QCPScatterChart* glassmap;
     bool plot_on, label_on;
 
-    for(int i = 0; i < m_glassMapCtrlList.size(); i++){
+    for(int i = 0; i < catalogCount; i++){
         plot_on  = m_glassMapCtrlList[i].checkBoxPlot->checkState();
         label_on = m_glassMapCtrlList[i].checkBoxLabel->checkState();
 

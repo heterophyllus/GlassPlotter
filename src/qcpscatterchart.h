@@ -29,7 +29,7 @@
 #ifndef QCPSCATTERCHART_H
 #define QCPSCATTERCHART_H
 
-#include "QCustomPlot/qcustomplot.h"
+#include "qcustomplot.h"
 
 class QCPScatterChart
 {
@@ -39,36 +39,11 @@ public:
     ~QCPScatterChart();
     QCPScatterChart(QCPScatterChart &other);
 
-    /**
-     * @brief parent QCustomPlot
-     * @return
-     */
-    QCustomPlot* parentPlot();
-
-    /**
-     * @brief get QCPGraph that expresses scatter points
-     * @return
-     */
-    QCPGraph* graphPoints();
-
-    /**
-     * @brief get QCPItemText list of glass name labels
-     * @return
-     */
+    QCustomPlot*        parentPlot();
+    QCPGraph*           graphPoints();
     QList<QCPItemText*> textLabels();
+    QString             name();
 
-    /**
-     * @brief chart name
-     * @return
-     */
-    QString name();
-
-    /**
-     * @brief set data to scatter chart
-     * @param x x coordinates of the point
-     * @param y y coordinates of the point
-     * @param str label text for every point
-     */
     void setData(QVector<double> x, QVector<double> y, QVector<QString> str);
     void setName(QString name);
     void setColor(QColor color);
@@ -78,8 +53,8 @@ public:
     int  dataCount();
 
 private:
-    QCustomPlot* m_customPlot;
-    QCPGraph* m_graphPoints; //points
+    QCustomPlot*        m_customPlot;
+    QCPGraph*           m_graphPoints; //points
     QList<QCPItemText*> m_textlabels; // text label for each point
 };
 

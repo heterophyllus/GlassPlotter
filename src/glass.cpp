@@ -316,8 +316,8 @@ void Glass::appendTransmittanceData(double lambdamicron, double trans, double th
 
 double Glass::dn_dt_abs(double T, double lambdamicron) const
 {
-    double dT = (T - T0());
-    double n = index(lambdamicron);
+    double dT = T - T0();
+    double n  = index(lambdamicron);
 
     return (n*n-1)/(2*n) * ( D0() + 2*D1()*dT + 3*D2()*dT*dT + (E0() + 2*E1()*dT)/(lambdamicron*lambdamicron - Ltk()*Ltk()) );
 }
