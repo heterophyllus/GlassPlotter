@@ -25,6 +25,8 @@
 #include "curve_fitting_dialog.h"
 #include "ui_curve_fitting_dialog.h"
 
+#include <QListWidget>
+#include <QComboBox>
 #include <QMessageBox>
 
 #include "glass.h"
@@ -47,7 +49,7 @@ CurveFittingDialog::CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget
 
     m_comboBoxOrder = ui->comboBox_Order;
     m_comboBoxOrder->clear();
-    for (int i = 1; i <= MAX_FITTING_ORDER;i++){
+    for (int i = 1; i <= m_maxFittingOrder;i++){
         m_comboBoxOrder->addItem(QString::number(i));
     }
 
@@ -98,6 +100,12 @@ void CurveFittingDialog::addGlass()
 
         m_listWidget->addItem(glassName + "_" + catalogName);
     }
+    try {
+        delete dlg;
+    }  catch (...) {
+
+    }
+    dlg = nullptr;
 }
 
 void CurveFittingDialog::deleteSelectedGlass()

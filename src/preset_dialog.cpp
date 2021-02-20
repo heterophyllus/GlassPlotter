@@ -79,7 +79,6 @@ void PresetDialog::saveAsNew()
         m_settings->sync();
 
         updateList();
-        //this->accept();
     }
 }
 

@@ -22,25 +22,21 @@
  **  Date    : 2020-5-25                                                    **
  *****************************************************************************/
 
-/**
-  * Qt Form Class for Curve Fitting
-  */
 
 #ifndef CURVE_FITTING_DIALOG_H
 #define CURVE_FITTING_DIALOG_H
 
-#define MAX_FITTING_ORDER 3
-
 #include <QDialog>
-#include <QComboBox>
-#include <QListWidget>
+#include <QList>
+
+class QListWidget;
+class QComboBox;
+class Glass;
+class GlassCatalog;
 
 namespace Ui {
 class CurveFittingDialog;
 }
-
-class Glass;
-class GlassCatalog;
 
 class CurveFittingDialog : public QDialog
 {
@@ -75,8 +71,11 @@ private:
     QList<double> m_fittingResult;
     QList<GlassCatalog*> m_catalogList;
     QList<Glass*> m_targetGlassList;
+
     QComboBox* m_comboBoxOrder;
     QListWidget* m_listWidget;
+
+    const int m_maxFittingOrder = 3;
 
     /**
      * @brief update m_targetGlassList from m_listWidget

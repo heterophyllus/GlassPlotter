@@ -235,8 +235,8 @@ void DispersionPlotForm::deleteGraph()
         QCPGraph* selectedGraph = m_customPlot->selectedGraphs().at(0);
         QString graphName = selectedGraph->name();
         QStringList glass_supplyer = graphName.split("_");
-
-        for(int i = 0;i < m_glassList.size(); i++){
+        int glassCount = m_glassList.size();
+        for(int i = 0;i < glassCount; i++){
             if(m_glassList[i]->name() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
                 m_glassList.removeAt(i);
                 break;
@@ -278,6 +278,8 @@ void DispersionPlotForm::clearAll()
 {
     m_glassList.clear();
     m_customPlot->clearGraphs();
+    m_customPlot->clearItems();
+    m_customPlot->clearPlottables();
     m_customPlot->replot();
     m_table->clear();
     m_table->update();

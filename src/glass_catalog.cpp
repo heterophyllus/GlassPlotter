@@ -59,6 +59,14 @@ void GlassCatalog::clear()
     _supplyer = "";
 }
 
+Glass* GlassCatalog::glass(int n) const
+{
+    if(n < _glasses.size()){
+        return _glasses[n];
+    }
+    return nullptr;
+}
+
 Glass* GlassCatalog::glass(QString glassname) const
 {
     for(auto &g : _glasses)
@@ -218,15 +226,16 @@ bool GlassCatalog::loadXml(QString xmlpath)
 
         for(pugi::xml_node_iterator td_it = glass_it->child("TransmissionCurves").child("Curve").begin(); td_it != glass_it->child("TransmissionCurves").child("Curve").end(); td_it++)
         {
-            double t=10;
+            double t = 10;
             QString nodename = td_it->name();
             if(nodename.compare("Thickness")==0) {
                 t = td_it->text().as_double();
             }
-            else if(nodename.compare("Transmission")==0){
+
+            if(nodename.compare("Transmission")==0){
                 double w = td_it->child("Wavelength").text().as_double();
                 double v = td_it->child("Value").text().as_double();
-                g->appendTransmittanceData(w/1000, v, t);
+                g->appendTransmittanceData(w/1000.0, v, t);
             }
         }
 

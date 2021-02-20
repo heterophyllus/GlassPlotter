@@ -110,7 +110,6 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     this->setAttribute(Qt::WA_DeleteOnClose, true);
 
     setDefault();
-    update();
 }
 
 GlassMapForm::~GlassMapForm()
@@ -162,7 +161,7 @@ void GlassMapForm::setUpScrollArea()
 
         // plot on/off
         checkBox1 = new QCheckBox(ui->scrollAreaWidgetContents);
-        checkBox1->setObjectName("checkBox_plot_"+QString::number(i));
+        checkBox1->setObjectName("chkPlot_"+QString::number(i));
         checkBox1->setText("P"); // point
         gridLayout->addWidget(checkBox1, i, 1, 1, 1);
         QObject::connect(checkBox1,SIGNAL(toggled(bool)), this, SLOT(update()));
@@ -170,10 +169,11 @@ void GlassMapForm::setUpScrollArea()
 
         // label on/off
         checkBox2 = new QCheckBox(ui->scrollAreaWidgetContents);
-        checkBox2->setObjectName("checkBox_label_"+QString::number(i));
+        checkBox2->setObjectName("chkLabel_"+QString::number(i));
         checkBox2->setText("T"); // text label
-        QObject::connect(checkBox2,SIGNAL(toggled(bool)), this, SLOT(update()));
         gridLayout->addWidget(checkBox2, i, 2, 1, 1);
+        QObject::connect(checkBox2,SIGNAL(toggled(bool)), this, SLOT(update()));
+
         m_glassMapCtrlList.append(GlassMapCtrl(checkBox1,checkBox2));
     }
     ui->scrollArea->setWidgetResizable(true);
@@ -198,7 +198,7 @@ void GlassMapForm::showNeighbors(QCPAbstractItem* item)
         double yThreshold = (m_customPlot->yAxis->range().upper - m_customPlot->yAxis->range().lower)/10;
         double dx,dy;
 
-        for(int i = 0;i<m_catalogList.size();i++){
+        for(int i = 0; i < m_catalogList.size(); i++){
 
             if(m_glassMapCtrlList[i].checkBoxPlot->checkState()){ //plot
                 cat = m_catalogList[i];
@@ -250,6 +250,13 @@ void GlassMapForm::showCurveFittingDlg()
         }
         update();
     }
+
+    try {
+        delete dlg;
+    }  catch (...) {
+
+    }
+    dlg = nullptr;
 }
 
 
@@ -300,7 +307,7 @@ void GlassMapForm::update()
 
 Glass* GlassMapForm::getGlassFromName(QString glassName)
 {
-    for(auto cat : m_catalogList){
+    for(auto &cat : m_catalogList){
         if(cat->hasGlass(glassName)){
             return cat->glass(glassName);
         }

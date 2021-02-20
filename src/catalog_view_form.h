@@ -27,10 +27,11 @@
 #define CATALOG_VIEW_FORM_H
 
 #include <QWidget>
-#include <QMdiArea>
-#include <QComboBox>
-#include <QTableWidget>
+#include <QList>
 
+class QMdiArea;
+class QComboBox;
+class QTableWidget;
 class GlassCatalog;
 
 namespace Ui {

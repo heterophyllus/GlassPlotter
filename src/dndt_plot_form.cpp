@@ -69,6 +69,8 @@ DnDtPlotForm::~DnDtPlotForm()
     m_wvlList.clear();
     m_table->clear();
     m_table = nullptr;
+    m_customPlot->clearGraphs();
+    m_customPlot->clearItems();
     m_customPlot->clearPlottables();
     m_customPlot = nullptr;
 
@@ -146,8 +148,8 @@ void DnDtPlotForm::deleteGraph()
     {
         QCPGraph* selectedGraph = m_customPlot->selectedGraphs().at(0);
         QString graphName = selectedGraph->name();
-
-        for(int i = 0;i < m_wvlList.size(); i++){
+        int wvlCount = m_wvlList.size();
+        for(int i = 0;i < wvlCount; i++){
             if(abs(m_wvlList[i] - graphName.toDouble()) < 0.1 ){
                 m_wvlList.removeAt(i);
                 break;
@@ -190,6 +192,8 @@ void DnDtPlotForm::updateAll()
     if(!m_currentGlass) return;
 
     m_customPlot->clearGraphs();
+    m_customPlot->clearItems();
+    m_customPlot->clearPlottables();
     m_table->clear();
 
     double          plotStep = ui->lineEdit_PlotStep->text().toDouble();
@@ -237,6 +241,7 @@ void DnDtPlotForm::clearAll()
 
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
+    m_customPlot->clearPlottables();
     m_customPlot->replot();
 
     m_table->clear();

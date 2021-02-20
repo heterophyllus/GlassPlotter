@@ -25,6 +25,9 @@
 #include "about_dialog.h"
 #include "ui_about_dialog.h"
 
+#include <QGridLayout>
+#include <QLabel>
+
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AboutDialog)
@@ -32,13 +35,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle("About");
 
-    gridLayout = new QGridLayout(this);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-    label = new QLabel(this);
+    QLabel *label = new QLabel(this);
     label->setObjectName(QString::fromUtf8("label"));
-
-    gridLayout->addWidget(label, 0, 0, 1, 1);
-
     label->setText(QApplication::translate("AboutDlg",
     "GlassPlotter - Simple Glassmap Viewer\n"
     "\n"
@@ -59,6 +57,11 @@ AboutDialog::AboutDialog(QWidget *parent) :
     "\n"
     "    Additional information is provided at:\n"
     "    https://github.com/heterophyllus/glassplotter", nullptr));
+
+
+    QGridLayout *gridLayout = new QGridLayout(this);
+    gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+    gridLayout->addWidget(label, 0, 0, 1, 1);
 }
 
 AboutDialog::~AboutDialog()

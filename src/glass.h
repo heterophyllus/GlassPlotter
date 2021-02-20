@@ -72,7 +72,7 @@ public:
     int     formulaIndex() const {return _formulaIndex;};
     QString formulaName() const;
     int     dispersionCoefCount() const { return _dispersionData.size(); }
-    double  dispersionCoef(int n) const { return _dispersionData[n]; }
+    double  dispersionCoef(int n) const;
 
     void    setDispForm(int n){ _formulaIndex = n;}
     void    setDispCoef(int n, double val);
@@ -91,13 +91,13 @@ public:
 
 
     // thermal data
-    double          D0() const {  return _thermalData[0]; }
-    double          D1() const {  return _thermalData[1]; }
-    double          D2() const {  return _thermalData[2]; }
-    double          E0() const {  return _thermalData[3]; }
-    double          E1() const {  return _thermalData[4]; }
-    double          Ltk() const{  return _thermalData[5]; }
-    double          T0() const {  return _thermalData[6]; }
+    double          D0()  const { return _thermalData[0]; }
+    double          D1()  const { return _thermalData[1]; }
+    double          D2()  const { return _thermalData[2]; }
+    double          E0()  const { return _thermalData[3]; }
+    double          E1()  const { return _thermalData[4]; }
+    double          Ltk() const { return _thermalData[5]; }
+    double          T0()  const { return _thermalData[6]; }
     double          dn_dt_abs(double T, double lambdamicron) const;
     QVector<double> dn_dt_abs(QVector<double> vT, double lambdamicron) const;
     void            setThermalData(int n, double val);

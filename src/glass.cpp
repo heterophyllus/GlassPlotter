@@ -147,7 +147,7 @@ double Glass::index(double lambdamicron) const
 
 double Glass::index(QString spectral) const
 {
-    return index(SpectralLine::wavelength(spectral)/1000); // unit:micron
+    return index(SpectralLine::wavelength(spectral)/1000.0); // unit:micron
 }
 
 QVector<double> Glass::index(QVector<double> vLambdamicron) const
@@ -189,10 +189,23 @@ void Glass::setStatus(int n)
 }
 
 
+double Glass::dispersionCoef(int n) const
+{
+    Q_ASSERT(_dispersion_data_size == _dispersionData.size());
+
+    if( n < _dispersionData.size() ){
+        return _dispersionData[n];
+    }
+    return 0;
+}
+
 void Glass::setDispCoef(int n, double val)
 {
     Q_ASSERT(_dispersion_data_size == _dispersionData.size());
-    _dispersionData[n] = val;
+
+    if( n < _dispersionData.size() ){
+        _dispersionData[n] = val;
+    }
 }
 
 
@@ -338,7 +351,11 @@ QVector<double> Glass::dn_dt_abs(QVector<double> vT, double lambdamicron) const
 void Glass::setThermalData(int n, double val)
 {
     Q_ASSERT( _thermal_data_size == _thermalData.size() );
-    _thermalData[n] = val;
+
+    if( n < _thermalData.size() ){
+        _thermalData[n] = val;
+    }
+
 }
 
 

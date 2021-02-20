@@ -25,6 +25,10 @@
 #include "catalog_view_form.h"
 #include "ui_catalog_view_form.h"
 
+#include <QMdiArea>
+#include <QComboBox>
+#include <QTableWidget>
+
 #include "glass.h"
 #include "glass_catalog.h"
 #include "glass_datasheet_form.h"
@@ -131,16 +135,14 @@ void CatalogViewForm::showDatasheet()
 {
     // get catalog name and glass name of the current row
     QString supplyername = m_comboBox->currentText();
-    QString glassname = m_table->item(m_table->currentRow(),0)->text();
+    QString glassname    = m_table->item(m_table->currentRow(),0)->text();
 
     // show glass datasheet form
-    Glass* glass = nullptr;
-    for(int i = 0; i < m_catalogList.size(); i++)
+    for(auto &cat: m_catalogList)
     {
-        if(m_catalogList[i]->supplyer() == supplyername){
-            glass = m_catalogList[i]->glass(glassname);
-
-            GlassDataSheetForm* subwindow = new GlassDataSheetForm(glass, m_parentMdiArea);
+        if(cat->supplyer() == supplyername)
+        {
+            GlassDataSheetForm* subwindow = new GlassDataSheetForm(cat->glass(glassname), m_parentMdiArea);
             m_parentMdiArea->addSubWindow(subwindow);
             subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
             subwindow->show();
@@ -148,6 +150,4 @@ void CatalogViewForm::showDatasheet()
             break;
         }
     }
-
-    glass = nullptr;
 }

@@ -44,7 +44,8 @@ public:
     ~GlassCatalog();
 
     QString supplyer() const { return _supplyer;}
-    Glass*  glass(int n) const {return _glasses[n];}
+
+    Glass*  glass(int n) const;
     Glass*  glass(QString glassname) const;
     int     glassCount() const {return _glasses.size();}
     bool    hasGlass(QString glassname) const;

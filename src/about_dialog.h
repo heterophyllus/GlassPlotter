@@ -27,8 +27,6 @@
 #define ABOUT_DIALOG_H
 
 #include <QDialog>
-#include <QGridLayout>
-#include <QLabel>
 
 namespace Ui {
 class AboutDialog;
@@ -41,8 +39,6 @@ class AboutDialog : public QDialog
 public:
     explicit AboutDialog(QWidget *parent = nullptr);
     ~AboutDialog();
-    QGridLayout *gridLayout;
-    QLabel *label;
 
 private:
     Ui::AboutDialog *ui;
