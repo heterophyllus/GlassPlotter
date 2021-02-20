@@ -34,6 +34,7 @@
 
 #include <QString>
 #include <QList>
+#include <QMap>
 
 class Glass;
 
@@ -58,6 +59,8 @@ public:
 private:
     QString       _supplyer;
     QList<Glass*> _glasses;
+
+    QMap<QString, int> _name_to_int_map;
 };
 
 #endif // GLASSCATALOGUE_H

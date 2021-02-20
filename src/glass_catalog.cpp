@@ -34,6 +34,7 @@
 GlassCatalog::GlassCatalog()
 {
     _glasses.clear();
+    _name_to_int_map.clear();
     _supplyer = "";
 }
 
@@ -57,6 +58,7 @@ void GlassCatalog::clear()
         _glasses.clear();
     }
     _supplyer = "";
+    _name_to_int_map.clear();
 }
 
 Glass* GlassCatalog::glass(int n) const
@@ -69,24 +71,15 @@ Glass* GlassCatalog::glass(int n) const
 
 Glass* GlassCatalog::glass(QString glassname) const
 {
-    for(auto &g : _glasses)
-    {
-        if(glassname == g->name()){
-            return g;
-        }
+    if(_name_to_int_map.contains(glassname)){
+        return _glasses[_name_to_int_map[glassname]];
     }
     return nullptr;
 }
 
 bool GlassCatalog::hasGlass(QString glassname) const
 {
-    for(auto &g : _glasses)
-    {
-        if(glassname == g->name()){
-            return true;
-        }
-    }
-    return false;
+    return _name_to_int_map.contains(glassname);
 }
 
 bool GlassCatalog::loadAGF(QString AGFpath)
@@ -106,6 +99,7 @@ bool GlassCatalog::loadAGF(QString AGFpath)
     _supplyer = QFileInfo(AGFpath).baseName();
 
     Glass *g;
+    int glassNumber = 0;
     while (! in.atEnd()) {
         linetext = in.readLine();
         linecount++;
@@ -118,6 +112,9 @@ bool GlassCatalog::loadAGF(QString AGFpath)
             _glasses.last()->setSupplyer(_supplyer);
             _glasses.last()->setDispForm(lineparts[2].toInt());
             _glasses.last()->setMIL(lineparts[3]);
+
+            _name_to_int_map.insert(_glasses.last()->name(),glassNumber);
+            glassNumber += 1;
 
             if(lineparts.size() > 7){
                 _glasses.last()->setStatus(lineparts[7].toUInt());
@@ -179,6 +176,7 @@ bool GlassCatalog::loadXml(QString xmlpath)
 
     int k;
     Glass *g;
+    int glassNumber = 0;
 
     for (pugi::xml_node_iterator glass_it = node_glasses.begin(); glass_it != node_glasses.end(); glass_it++ )
     {
@@ -250,6 +248,10 @@ bool GlassCatalog::loadXml(QString xmlpath)
         g->setThermalData( 6, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Temperature").text().as_double() );
 
         _glasses.append(g);
+
+        // add glass name to map
+        _name_to_int_map.insert(g->name(), glassNumber);
+        glassNumber += 1;
     }
     g = nullptr;
 
