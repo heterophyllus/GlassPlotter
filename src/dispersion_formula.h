@@ -27,6 +27,7 @@
 #define DISPERSION_FORMULA_H
 
 #include <QVector>
+#include <QStringList>
 
 class DispersionFormula
 {
@@ -85,6 +86,39 @@ public:
     }
     static double Hartman(double lambdamicron, QVector<double> c){
         return c[0] + c[1]/pow((c[2]-lambdamicron), 1.2);
+    }
+
+    /**
+     * @brief get dispersion formula name list
+     */
+    static QStringList formulaNames()
+    {
+        QStringList names;
+        names.reserve(18);
+
+        // Zemax AGF
+        names.append("Schott");
+        names.append("Sellmeier1");
+        names.append("Herzberger");
+        names.append("Sellmeier2");
+        names.append("Conrady");
+        names.append("Sellmeier3");
+        names.append("HandbookOfOptics1");
+        names.append("HandbookOfOptics2");
+        names.append("Sellmeier4");
+        names.append("Extended1");
+        names.append("Sellmeier5");
+        names.append("Extended2");
+
+        // CODEV XML
+        names.append("Laurent");
+        names.append("Glass Manufacturer Laurent");
+        names.append("Glass Manufacturer Sellmeier");
+        names.append("Standard Sellmeier");
+        names.append("Cauchy");
+        names.append("Hartman");
+
+        return names;
     }
 };
 

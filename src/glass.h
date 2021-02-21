@@ -71,10 +71,10 @@ public:
 
 
     // dispersion data
-    int     formulaIndex() const {return _formulaIndex;};
-    QString formulaName() const;
-    int     dispersionCoefCount() const { return _dispersionData.size(); }
-    double  dispersionCoef(int n) const;
+    int         formulaIndex() const {return _formulaIndex;};
+    QString     formulaName() const;
+    int         dispersionCoefCount() const { return _dispersionData.size(); }
+    double      dispersionCoef(int n) const;
 
     void    setDispForm(int n){ _formulaIndex = n;}
     void    setDispCoef(int n, double val);

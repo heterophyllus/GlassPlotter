@@ -26,9 +26,11 @@
 #include "ui_dispersion_plot_form.h"
 
 #include "qcputil.h"
+#include "dispersion_formula.h"
 #include "glass.h"
 #include "glass_catalog.h"
 #include "glass_selection_dialog.h"
+
 
 DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QWidget(parent),
@@ -37,6 +39,7 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     ui->setupUi(this);
     this->setWindowTitle("Dispersion Plot");
 
+    // plot
     m_catalogList = catalogList;
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
@@ -44,22 +47,49 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     m_customPlot->yAxis->setLabel("Refractive Index");
     m_customPlot->legend->setVisible(true);
 
-    m_table = ui->tableWidget;
+    // plot data table
+    m_tablePlotData = ui->tableWidget;
 
+    // buttons
     QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()), this, SLOT(addGraph()));
     QObject::connect(ui->pushButton_DeleteGraph,SIGNAL(clicked()), this, SLOT(deleteGraph()));
     QObject::connect(ui->pushButton_SetAxis,    SIGNAL(clicked()), this, SLOT(setAxis()));
     QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()), this, SLOT(clearAll()));
+
+    // legend on/off
     QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
 
+    // user defined curve on/off
     m_checkBox = ui->checkBox_Curve;
     QObject::connect(ui->checkBox_Curve,       SIGNAL(toggled(bool)), this, SLOT(updateAll()));
-    QObject::connect(ui->lineEdit_C0,          SIGNAL(textEdited(QString)), this, SLOT(updateAll()));
-    QObject::connect(ui->lineEdit_C1,          SIGNAL(textEdited(QString)), this, SLOT(updateAll()));
-    QObject::connect(ui->lineEdit_C2,          SIGNAL(textEdited(QString)), this, SLOT(updateAll()));
-    QObject::connect(ui->lineEdit_C3,          SIGNAL(textEdited(QString)), this, SLOT(updateAll()));
-    QObject::connect(ui->lineEdit_C4,          SIGNAL(textEdited(QString)), this, SLOT(updateAll()));
 
+    // select formula for user defined curve
+    QStringList formulaNames;
+    formulaNames.append("Polynomial");
+    formulaNames.append(DispersionFormula::formulaNames());
+
+    m_comboBoxFormula = ui->comboBox_Formula;
+    m_comboBoxFormula->addItems(formulaNames);
+    QObject::connect(m_comboBoxFormula,       SIGNAL(currentIndexChanged(int)), this, SLOT(updateAll()));
+
+    // table widget to list up the coefficients
+    m_tableCoefs = ui->tableWidget_Coefs;
+    m_tableCoefs->setColumnCount(1);
+    m_tableCoefs->setRowCount(12);
+    m_tableCoefs->setHorizontalHeaderLabels(QStringList() << "val");
+    QStringList vHeaderLabels;
+    QTableWidgetItem* item;
+    for(int i = 0; i < 12; i++){
+        vHeaderLabels << "C" + QString::number(i);
+        item = new QTableWidgetItem;
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
+        m_tableCoefs->setItem(i,0,item);
+        QObject::connect(m_tableCoefs,       SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
+    }
+    m_tableCoefs->setVerticalHeaderLabels(vHeaderLabels);
+    m_tableCoefs->update();
+
+    // plot step
     ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
     ui->lineEdit_PlotStep->setText(QString::number(5));
 
@@ -74,7 +104,8 @@ DispersionPlotForm::~DispersionPlotForm()
     m_customPlot->clearItems();
     m_customPlot = nullptr;
     m_checkBox = nullptr;
-    m_table = nullptr;
+    m_tablePlotData->clear();
+    m_tableCoefs->clear();
 
     delete ui;
 }
@@ -83,7 +114,7 @@ void DispersionPlotForm::addTableItem(int row, int col, QString str)
 {
     QTableWidgetItem* item = new QTableWidgetItem();
     item->setText(str);
-    m_table->setItem(row,col,item);
+    m_tablePlotData->setItem(row,col,item);
 }
 
 
@@ -98,26 +129,60 @@ void DispersionPlotForm::setColorToGraph(QCPGraph* graph, QColor color)
 
 QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
 {
-    QVector<double> coefs(5);
-    coefs[0] = ui->lineEdit_C0->text().toDouble();
-    coefs[1] = ui->lineEdit_C1->text().toDouble();
-    coefs[2] = ui->lineEdit_C2->text().toDouble();
-    coefs[3] = ui->lineEdit_C3->text().toDouble();
-    coefs[4] = ui->lineEdit_C4->text().toDouble();
+    // get coefficients
+    QVector<double> coefs(12);
+    for(int i = 0; i < 12; i++){
+        coefs[i] = m_tableCoefs->item(i,0)->text().toDouble();
+    }
 
+
+    // compute y data
     int npts = xdata.size();
-    double x,y;
     QVector<double> ydata(npts);
 
-    for(int i = 0; i < npts; i++)
+    int formulaNumber = m_comboBoxFormula->currentIndex();
+
+    if(formulaNumber == 0) // polynomial
     {
-        x = xdata[i];
-        y = 0;
-        for(int j = 0;j < coefs.size(); j ++)
+        double x,y;
+        for(int i = 0; i < npts; i++)
         {
-            y += coefs[j]*pow(x,j);
+            x = xdata[i];
+            y = 0;
+            for(int j = 0;j < coefs.size(); j ++)
+            {
+                y += coefs[j]*pow(x,j);
+            }
+            ydata[i] = y;
         }
-        ydata[i] = y;
+
+    }
+    else if(formulaNumber < 13) // formula in Zemax format
+    {
+        /*
+         * This implementation is a bit tricky.
+         *
+         * A "dummy" glass object is created in order to utilize dispersion curve
+         * without calling directly their definition.
+         */
+
+        Glass dummyGlass;
+        dummyGlass.setDispForm(formulaNumber);
+        for(int i = 0; i < m_tableCoefs->rowCount(); i++) {
+            dummyGlass.setDispCoef(i,m_tableCoefs->item(i,0)->text().toDouble());
+        }
+
+        ydata = dummyGlass.index(xdata);
+    }
+    else // formula in CODEV format
+    {
+        Glass dummyGlass;
+        dummyGlass.setDispForm(formulaNumber - 12 + 100 );
+        for(int i = 0; i < m_tableCoefs->rowCount(); i++) {
+            dummyGlass.setDispCoef(i,m_tableCoefs->item(i,0)->text().toDouble());
+        }
+
+        ydata = dummyGlass.index(xdata);
     }
 
     return ydata;
@@ -141,7 +206,7 @@ void DispersionPlotForm::addGraph()
         QString glassName = dlg->getGlassName();
         Glass* newGlass   = m_catalogList.at(catalogIndex)->glass(glassName);
 
-        // check dispersion formula
+        // check dispersion formula of the glass
         if("Unknown" == newGlass->formulaName()){
             QMessageBox::information(this,tr("Error"), "Unknown dispersion formula");
         }
@@ -164,7 +229,7 @@ void DispersionPlotForm::addGraph()
 void DispersionPlotForm::updateAll()
 {
     m_customPlot->clearGraphs();
-    m_table->clear();
+    m_tablePlotData->clear();
 
     double          plotStep      = ui->lineEdit_PlotStep->text().toDouble();
     QVector<double> vLambdanano   = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
@@ -176,13 +241,14 @@ void DispersionPlotForm::updateAll()
 
     int rowCount    = vLambdanano.size();
     int columnCount = m_glassList.size() + 1+1; // wvl + glasses + curve
-    m_table->setRowCount(rowCount);
-    m_table->setColumnCount(columnCount);
+    m_tablePlotData->setRowCount(rowCount);
+    m_tablePlotData->setColumnCount(columnCount);
 
     QStringList header = QStringList() << "WVL";
 
 
     // replot all graphs and recreate tables
+    int digit = 5;
     int i,j;
     for(i = 0; i < m_glassList.size(); i++)
     {
@@ -201,7 +267,7 @@ void DispersionPlotForm::updateAll()
         for(j = 0; j< rowCount; j++)
         {
             addTableItem(j, 0,   QString::number(vLambdanano[j]) );   // wavelength
-            addTableItem(j, i+1, QString::number(ydata[j], 'f', 5) ); // refractive index
+            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit) ); // refractive index
         }
     }
 
@@ -209,7 +275,8 @@ void DispersionPlotForm::updateAll()
     header << "curve";
     if(m_checkBox->checkState())
     {
-        ydata = computeUserDefined(vLambdanano);
+        //ydata = computeUserDefined(vLambdanano);
+        ydata = computeUserDefined(vLambdamicron);
         graph = m_customPlot->addGraph();
         graph->setName("User Defined Curve");
         graph->setData(vLambdanano, ydata);
@@ -218,11 +285,11 @@ void DispersionPlotForm::updateAll()
 
         for(i = 0; i < vLambdanano.size(); i++)
         {
-            addTableItem(i, columnCount-1, QString::number(ydata[i]) );
+            addTableItem(i, columnCount-1, QString::number(ydata[i], 'f', digit) );
         }
     }
 
-    m_table->setHorizontalHeaderLabels(header);
+    m_tablePlotData->setHorizontalHeaderLabels(header);
 
     m_customPlot->replot();
 
@@ -235,8 +302,11 @@ void DispersionPlotForm::deleteGraph()
         QCPGraph* selectedGraph = m_customPlot->selectedGraphs().at(0);
         QString graphName = selectedGraph->name();
         QStringList glass_supplyer = graphName.split("_");
+
         int glassCount = m_glassList.size();
-        for(int i = 0;i < glassCount; i++){
+
+        for(int i = 0;i < glassCount; i++)
+        {
             if(m_glassList[i]->name() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
                 m_glassList.removeAt(i);
                 break;
@@ -281,8 +351,13 @@ void DispersionPlotForm::clearAll()
     m_customPlot->clearItems();
     m_customPlot->clearPlottables();
     m_customPlot->replot();
-    m_table->clear();
-    m_table->update();
+    m_tablePlotData->clear();
+
+    for(int i = 0;i < m_tableCoefs->rowCount(); i++){
+        QObject::disconnect(m_tableCoefs,       SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
+        m_tableCoefs->item(i,0)->setText("");
+        QObject::connect(m_tableCoefs,       SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
+    }
 }
 
 void DispersionPlotForm::setLegendVisible()

@@ -40,6 +40,8 @@ class QCustomPlot;
 class QCPGraph;
 class QTableWidget;
 class QCheckBox;
+class QComboBox;
+class QListWidget;
 
 class DispersionPlotForm : public QWidget
 {
@@ -62,8 +64,11 @@ private:
 
     QCustomPlot*  m_customPlot;
     QCheckBox*    m_checkBox;
-    QTableWidget* m_table;
+    QTableWidget* m_tablePlotData;
     const int     m_maxGraphCount = 5;
+
+    QComboBox* m_comboBoxFormula;
+    QTableWidget* m_tableCoefs;
 
     QList<GlassCatalog*> m_catalogList;
     QList<Glass*>        m_glassList;
