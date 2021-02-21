@@ -43,7 +43,7 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     m_catalogList = catalogList;
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
-    m_customPlot->xAxis->setLabel("Wavelength(nm)");
+    m_customPlot->xAxis->setLabel("Wavelength(micron)");
     m_customPlot->yAxis->setLabel("Refractive Index");
     m_customPlot->legend->setVisible(true);
 
@@ -61,7 +61,7 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
 
     // user defined curve on/off
     m_checkBox = ui->checkBox_Curve;
-    QObject::connect(ui->checkBox_Curve,       SIGNAL(toggled(bool)), this, SLOT(updateAll()));
+    QObject::connect(ui->checkBox_Curve,        SIGNAL(toggled(bool)), this, SLOT(updateAll()));
 
     // select formula for user defined curve
     QStringList formulaNames;
@@ -90,8 +90,7 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     m_tableCoefs->update();
 
     // plot step
-    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
-    ui->lineEdit_PlotStep->setText(QString::number(5));
+    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 5, this));
 
     setDefault();
 }
@@ -232,14 +231,14 @@ void DispersionPlotForm::updateAll()
     m_tablePlotData->clear();
 
     double          plotStep      = ui->lineEdit_PlotStep->text().toDouble();
-    QVector<double> vLambdanano   = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
-    QVector<double> vLambdamicron = QCPUtil::scaleVector(vLambdanano, 0.001);
+    QVector<double> vLambdamicron = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
+    int             dataCount     = vLambdamicron.size();
     QVector<double> ydata;
     QCPGraph*       graph;
 
     Glass* currentGlass;
 
-    int rowCount    = vLambdanano.size();
+    int rowCount    = dataCount;
     int columnCount = m_glassList.size() + 1+1; // wvl + glasses + curve
     m_tablePlotData->setRowCount(rowCount);
     m_tablePlotData->setColumnCount(columnCount);
@@ -258,7 +257,7 @@ void DispersionPlotForm::updateAll()
         ydata = currentGlass->index(vLambdamicron);
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
-        graph->setData(vLambdanano, ydata);
+        graph->setData(vLambdamicron, ydata);
         setColorToGraph(graph, QCPUtil::getColorFromIndex(i, m_maxGraphCount));
         graph->setVisible(true);
 
@@ -266,8 +265,8 @@ void DispersionPlotForm::updateAll()
         header << currentGlass->name();
         for(j = 0; j< rowCount; j++)
         {
-            addTableItem(j, 0,   QString::number(vLambdanano[j]) );   // wavelength
-            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit) ); // refractive index
+            addTableItem(j, 0,   QString::number(vLambdamicron[j], 'f', digit) );  // wavelength
+            addTableItem(j, i+1, QString::number(ydata[j],         'f', digit) );  // refractive index
         }
     }
 
@@ -275,15 +274,14 @@ void DispersionPlotForm::updateAll()
     header << "curve";
     if(m_checkBox->checkState())
     {
-        //ydata = computeUserDefined(vLambdanano);
         ydata = computeUserDefined(vLambdamicron);
         graph = m_customPlot->addGraph();
         graph->setName("User Defined Curve");
-        graph->setData(vLambdanano, ydata);
+        graph->setData(vLambdamicron, ydata);
         graph->setVisible(true);
         setColorToGraph(graph,Qt::black);
 
-        for(i = 0; i < vLambdanano.size(); i++)
+        for(i = 0; i < dataCount; i++)
         {
             addTableItem(i, columnCount-1, QString::number(ydata[i], 'f', digit) );
         }
@@ -292,7 +290,6 @@ void DispersionPlotForm::updateAll()
     m_tablePlotData->setHorizontalHeaderLabels(header);
 
     m_customPlot->replot();
-
 }
 
 void DispersionPlotForm::deleteGraph()
@@ -318,7 +315,7 @@ void DispersionPlotForm::deleteGraph()
 
 void DispersionPlotForm::setDefault()
 {
-    QCPRange xrange = QCPRange(300,1000);
+    QCPRange xrange = QCPRange(0.3,1.0); // micron
     QCPRange yrange = QCPRange(0.9,2.1);
     m_customPlot->xAxis->setRange(xrange);
     m_customPlot->yAxis->setRange(yrange);
@@ -328,7 +325,7 @@ void DispersionPlotForm::setDefault()
     ui->lineEdit_Ymin->setText(QString::number(yrange.lower));
     ui->lineEdit_Ymax->setText(QString::number(yrange.upper));
 
-    ui->lineEdit_PlotStep->setText(QString::number(5));
+    ui->lineEdit_PlotStep->setText(QString::number(0.005));
 }
 
 void DispersionPlotForm::setAxis()

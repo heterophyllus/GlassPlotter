@@ -60,7 +60,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>259</width>
+        <width>280</width>
         <height>381</height>
        </rect>
       </property>
@@ -99,7 +99,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>step(nm):</string>
+             <string>step(micron):</string>
             </property>
            </widget>
           </item>
@@ -112,7 +112,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>5</string>
+             <string>0.005</string>
             </property>
            </widget>
           </item>

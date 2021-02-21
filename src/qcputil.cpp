@@ -23,17 +23,15 @@ QVector<double> QCPUtil::scaleVector(QVector<double> v, double scale)
 
 QVector<double> QCPUtil::getVectorFromRange(QCPRange range, double step)
 {
-
     double xmin = range.lower;
     double xmax = range.upper;
-    QVector<double> xdata(floor((xmax - xmin)/step) + 1 );
+    QVector<double> xdata;
+    xdata.reserve(floor((xmax - xmin)/step) + 1 );
     double x = xmin;
-    int i = 0;
     while(x <= xmax)
     {
-        xdata[i] = x;
+        xdata.append(x);
         x += step;
-        i++;
     }
     return xdata;
 }
