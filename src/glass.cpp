@@ -67,11 +67,11 @@ double Glass::getValue(QString dname) const
 {
     if(dname == "nd"){
         //return nd();
-        return index(SpectralLine::d/1000.0);
+        return index("d");
     }
     else if(dname == "ne"){
         //return ne();
-        return index(SpectralLine::e/1000.0);
+        return index("e");
     }
     else if(dname == "vd"){
         // return vd();
@@ -305,8 +305,8 @@ double Glass::transmittance(double lambdamicron, double thi) const
 {
     Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );
 
-    double ref_thi = _thicknessData[0];
-    int dataCount = _transmittanceData.size();
+    double ref_thi   = _thicknessData[0];
+    int    dataCount = _transmittanceData.size();
     QVector<double> qvx(dataCount), qvy(dataCount);
 
     for(int i = 0; i < dataCount; i++)
@@ -316,7 +316,6 @@ double Glass::transmittance(double lambdamicron, double thi) const
     }
 
     tk::spline s;
-    //s.set_points(sx.toStdVector(), sy.toStdVector());
     std::vector<double> sx(qvx.begin(), qvx.end());
     std::vector<double> sy(qvy.begin(), qvy.end());
     s.set_points(sx,sy);
@@ -330,7 +329,7 @@ QVector<double> Glass::transmittance(QVector<double> vLambdamicron, double thi) 
 
     // Spline interpolation is rewritten here to avoid being called many times.
     double ref_thi = _thicknessData[0];
-    int dataCount = _transmittanceData.size();
+    int  dataCount = _transmittanceData.size();
     QVector<double> qvx(dataCount), qvy(dataCount);
 
     for(int i = 0; i < dataCount; i++)
@@ -401,8 +400,5 @@ void Glass::setThermalData(int n, double val)
     if( n < _thermalData.size() ){
         _thermalData[n] = val;
     }
-
 }
-
-
 

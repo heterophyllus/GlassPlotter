@@ -28,7 +28,6 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QDebug>
 
 #include "glass.h"
 #include "glass_catalog.h"

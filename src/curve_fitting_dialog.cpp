@@ -73,26 +73,26 @@ CurveFittingDialog::~CurveFittingDialog()
 
 void CurveFittingDialog::addRow()
 {
-    //m_table->setColumnCount(3);
-
     int nRow = m_table->rowCount();
     m_table->insertRow(nRow);
 
+    // X
     QTableWidgetItem* item;
     item = new QTableWidgetItem;
     item->setText("");
     m_table->setItem(nRow,0,item);
 
+    // Y
     item = new QTableWidgetItem;
     item->setText("");
     m_table->setItem(nRow,1,item);
 
+    // comment
     item = new QTableWidgetItem;
     item->setText("");
     m_table->setItem(nRow,2,item);
 
     m_table->update();
-
 }
 
 void CurveFittingDialog::deleteSelectedRow()
@@ -107,36 +107,26 @@ bool CurveFittingDialog::getFittingResult(QList<double>& result)
 {
     //https://en.wikipedia.org/wiki/Polynomial_regression
 
-    int N = m_comboBoxOrder->currentIndex() + 1; //order
-    int M = m_table->rowCount(); //samples
+    int N = m_comboBoxOrder->currentIndex() + 1; // order
+    int M = m_table->rowCount();                 // number of samples
 
     // check
-    if(M == 0){
-        QMessageBox::warning(this,tr("File"), tr("No point has been added"));
+    if(M == 0){ // no input
         return false;
-    }
-
-    if(m_table->rowCount() == 0){
-        QMessageBox::warning(this,tr("File"), tr("Invalid table row"));
-        return false;
-    }
-
-    double tempval;
-    for(int i = 0; i < m_table->rowCount(); i++){
-        for(int j = 0; j < 2; j++)
-        {
-            if(!m_table->item(i,j)){
-                try{
-                    tempval = m_table->item(i,j)->text().toDouble();
-                }  catch (...) {
-                    QMessageBox::warning(this,tr("File"), tr("Invalid input"));
+    }else{
+        double d;
+        bool ok;
+        for(int i = 0; i < m_table->rowCount(); i++){
+            for(int j = 0; j < 2; j++){
+                d = m_table->item(i,j)->text().toDouble(&ok);
+                if(!ok){ // invalid input
                     return false;
                 }
             }
         }
     }
 
-    // sampling points
+    // get coords of sampling points
     MatrixXd X = MatrixXd::Zero(M, N+1);
     VectorXd y(M);
 
