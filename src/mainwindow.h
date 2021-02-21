@@ -45,7 +45,7 @@ public:
 
 private:
     template<class F> void showAnalysisForm();
-    void showGlassMap(QString xdataname, QString ydataname,QCPRange xrange, QCPRange yrange);
+    void showGlassMap(QString xdataname, QString ydataname,QCPRange xrange, QCPRange yrange, bool xreversed=true);
 
 private slots:
     void loadAGF();
@@ -55,6 +55,7 @@ private slots:
     void showGlassMapNeVe();
     void showGlassMapVdPgF();
     void showGlassMapVdPCt();
+    void showGlassMapBuchdahl();
     void showDispersionPlot();
     void showTransmittancePlot();
     void showDnDtabsPlot();

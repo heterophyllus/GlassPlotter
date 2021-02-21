@@ -60,6 +60,8 @@ public:
     double Pxy_(QString x, QString y) const {return (index(x) - index(y)) / ( index("F_") - index("C_") );}
     double PgF() const {return Pxy("g","F");}
 
+    double BuchdahlDispCoef(int n) const;
+
     void setName(QString str){ _name = str;}
     void setSupplyer(QString str){ _supplyer = str;}
     void setMIL(QString str) {_MIL = str;}

@@ -29,7 +29,7 @@
 #include "spectral_line.h"
 #include "dispersion_formula.h"
 
-#include <QDebug>
+#include "Eigen/Dense"
 
 Glass::Glass()
 {
@@ -67,27 +67,32 @@ double Glass::getValue(QString dname) const
 {
     if(dname == "nd"){
         //return nd();
-        return index("d");
+        return index(SpectralLine::d/1000.0);
     }
     else if(dname == "ne"){
         //return ne();
-        return index("e");
+        return index(SpectralLine::e/1000.0);
     }
     else if(dname == "vd"){
-        //return vd();
+        // return vd();
         return (index("d") - 1)/(index("F") - index("C"));
     }
     else if(dname == "ve"){
-        //return ve();
+        // return ve();
         return (index("e") - 1)/(index("F_") - index("C_"));
     }
     else if(dname == "PgF"){
-        //return PgF();
+        // return PgF();
         return (index("g") - index("F")) / ( index("F") - index("C") );
     }
     else if(dname == "PCt"){
-        //return Pxy_("C","t");
         return (index("C") - index("t")) / ( index("F_") - index("C_") );
+    }
+    else if(dname == "eta1"){ // Buchdahl dispersion coefficients
+        return BuchdahlDispCoef(0);
+    }
+    else if(dname == "eta2"){ // Buchdahl dispersion coefficients
+        return BuchdahlDispCoef(1);
     }
     else{
         return 0;
@@ -98,7 +103,7 @@ double Glass::index(double lambdamicron) const
 {
     switch(_formulaIndex){
 
-    // ---> Zemax AGF
+    // Zemax AGF
     case 1:
         return DispersionFormula::Schott(lambdamicron,_dispersionData);
     case 2:
@@ -126,7 +131,7 @@ double Glass::index(double lambdamicron) const
     case 13: // Unknown
         return 0;
 
-    // ---> CODEV XML
+    // CODEV XML
     case 101:
         return DispersionFormula::Laurent(lambdamicron,_dispersionData);
     case 102:
@@ -160,6 +165,47 @@ QVector<double> Glass::index(QVector<double> vLambdamicron) const
     }
 
     return vInd;
+}
+
+double Glass::BuchdahlDispCoef(int n) const
+{
+    /* This is a test function.
+     *
+     * This function calculates Buchdahl dispersion coefficients.
+     * The implementation referred:
+     * https://github.com/mjhoptics/opticalglass/blob/master/opticalglass/buchdahl.py
+     *
+     * Input:
+     *      -n : coefficients index (0,1)
+     */
+
+    Q_ASSERT(n <= 1);
+
+    double nd = index(SpectralLine::d/1000.0);
+    double nF = index(SpectralLine::F/1000.0);
+    double nC = index(SpectralLine::C/1000.0);
+    double wd = SpectralLine::d/1000.0;
+    double wF = SpectralLine::F/1000.0;
+    double wC = SpectralLine::C/1000.0;
+
+    double omegaF = ( wF-wd )/( 1 + 2.5*(wF-wd) );
+    double omegaC = ( wC-wd )/( 1 + 2.5*(wC-wd) );
+
+    Eigen::MatrixXd A(2,2);
+    A(0,0) = omegaF;
+    A(0,1) = omegaF*omegaF;
+    A(1,0) = omegaC;
+    A(1,1) = omegaC*omegaC;
+
+    Eigen::VectorXd b(2);
+    b(0) = nF-nd;
+    b(1) = nC-nd;
+
+    Eigen::VectorXd x = A.colPivHouseholderQr().solve(b);
+
+    x /= (nd-1);
+
+    return (double)x(n);
 }
 
 void Glass::setStatus(QString str)

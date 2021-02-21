@@ -52,6 +52,7 @@
      <addaction name="action_NeVe"/>
      <addaction name="action_VdPgF"/>
      <addaction name="action_VdPCt"/>
+     <addaction name="action_Buchdahl"/>
     </widget>
     <addaction name="menuGlass_Map"/>
     <addaction name="action_DispersionPlot"/>
@@ -80,7 +81,7 @@
   </widget>
   <action name="action_loadAGF">
    <property name="text">
-    <string>load AGF</string>
+    <string>Load AGF</string>
    </property>
   </action>
   <action name="action_DispersionPlot">
@@ -145,12 +146,17 @@
   </action>
   <action name="action_loadXML">
    <property name="text">
-    <string>load XML</string>
+    <string>Load XML</string>
    </property>
   </action>
   <action name="action_DnDtabsPlot">
    <property name="text">
     <string>Dn/Dt(abs) Plot</string>
+   </property>
+  </action>
+  <action name="action_Buchdahl">
+   <property name="text">
+    <string>Buchdahl</string>
    </property>
   </action>
  </widget>

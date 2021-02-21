@@ -32,7 +32,7 @@
 #include "curve_fitting_dialog.h"
 #include "preset_dialog.h"
 
-GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, QMdiArea *parent) :
+GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed, QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::GlassMapForm)
 {
@@ -49,6 +49,8 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     m_yDataName = ydataname;
     m_defaultXrange = xrange;
     m_defaultYrange = yrange;
+
+    m_xReversed = xreversed;
 
     // plot widget
     m_customPlot = ui->widget;
@@ -226,7 +228,8 @@ void GlassMapForm::clearNeighbors()
 
 void GlassMapForm::showGlassDataSheet()
 {
-    if(m_listWidgetNeighbors->selectedItems().size() > 0){
+    if(m_listWidgetNeighbors->selectedItems().size() > 0)
+    {
         QString selectedText = m_listWidgetNeighbors->currentItem()->text();
         QStringList splitedText = selectedText.split("_");
         QString glassName = splitedText[0];
@@ -264,7 +267,7 @@ void GlassMapForm::setDefault()
 {
     m_customPlot->xAxis->setLabel(m_xDataName);
     m_customPlot->xAxis->setRange(m_defaultXrange);
-    m_customPlot->xAxis->setRangeReversed(true);
+    m_customPlot->xAxis->setRangeReversed(m_xReversed);
 
     m_customPlot->yAxis->setLabel(m_yDataName);
     m_customPlot->yAxis->setRange(m_defaultYrange);
@@ -336,8 +339,13 @@ void GlassMapForm::showPresetDlg()
 void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color)
 {
     int glassCount = catalog->glassCount();
-    QVector<double> x(glassCount), y(glassCount);
-    QVector<QString> str(glassCount);
+
+    QVector<double> x, y;
+    QVector<QString> s;
+    x.reserve(glassCount);
+    y.reserve(glassCount);
+    s.reserve(glassCount);
+
     Glass* g;
 
     for(int i = 0; i < glassCount; i++)
@@ -346,13 +354,13 @@ void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catal
         if("Unknown" == g->formulaName()){
             continue;
         }else{
-            x[i]   = g->getValue(xlabel);
-            y[i]   = g->getValue(ylabel);
-            str[i] = g->name();
+            x.append(g->getValue(xlabel));
+            y.append(g->getValue(ylabel));
+            s.append(g->name());
         }
     }
 
-    glassmap->setData(x,y,str);
+    glassmap->setData(x,y,s);
     glassmap->setName(catalog->supplyer());
     glassmap->setColor(color);
 }

@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->action_NeVe,              SIGNAL(triggered()),this, SLOT(showGlassMapNeVe()));
     QObject::connect(ui->action_VdPgF,             SIGNAL(triggered()),this, SLOT(showGlassMapVdPgF()));
     QObject::connect(ui->action_VdPCt,             SIGNAL(triggered()),this, SLOT(showGlassMapVdPCt()));
+    QObject::connect(ui->action_Buchdahl,          SIGNAL(triggered()),this, SLOT(showGlassMapBuchdahl()));
     QObject::connect(ui->action_DispersionPlot,    SIGNAL(triggered()),this, SLOT(showDispersionPlot()));
     QObject::connect(ui->action_TransmittancePlot, SIGNAL(triggered()),this, SLOT(showTransmittancePlot()));
     QObject::connect(ui->action_DnDtabsPlot,       SIGNAL(triggered()),this, SLOT(showDnDtabsPlot()));
@@ -172,14 +173,14 @@ void MainWindow::loadXML()
 }
 
 
-void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange)
+void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed)
 {
     if(m_catalogList.empty()){
         QMessageBox::warning(this,tr("File"), tr("No catalog has been loaded"));
         return;
     }
 
-    GlassMapForm *subwindow = new GlassMapForm(m_catalogList, xdataname, ydataname, xrange, yrange, ui->mdiArea);
+    GlassMapForm *subwindow = new GlassMapForm(m_catalogList, xdataname, ydataname, xrange, yrange, xreversed, ui->mdiArea);
     ui->mdiArea->addSubWindow(subwindow);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->parentWidget()->setGeometry(0,10,this->width()*3/4,this->height()*3/4);
@@ -204,6 +205,11 @@ void MainWindow::showGlassMapVdPgF()
 void MainWindow::showGlassMapVdPCt()
 {
     showGlassMap("vd", "PCt",QCPRange(10,100), QCPRange(0.6,0.9));
+}
+
+void MainWindow::showGlassMapBuchdahl()
+{
+    showGlassMap("eta2", "eta1",QCPRange(-0.025,0.175), QCPRange(-0.25,0.0), false);
 }
 
 template<class F> void MainWindow::showAnalysisForm()

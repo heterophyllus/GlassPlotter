@@ -45,7 +45,7 @@ class GlassMapForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, QMdiArea *parent = nullptr);
+    explicit GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed = true, QMdiArea *parent = nullptr);
     ~GlassMapForm();
 
 private slots:
@@ -90,6 +90,8 @@ private:
 
     QCPRange m_defaultXrange;
     QCPRange m_defaultYrange;
+
+    bool m_xReversed;
 
     Glass* getGlassFromName(QString glassName);
     void   setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
