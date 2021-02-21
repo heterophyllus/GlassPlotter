@@ -246,12 +246,17 @@ void GlassMapForm::showCurveFittingDlg()
     CurveFittingDialog* dlg = new CurveFittingDialog(m_catalogList, this);
     if(dlg->exec() == QDialog::Accepted)
     {
-        if(!dlg->calculateFitting(m_xDataName, m_yDataName)) return;
-        QList<double> coefs = dlg->fittingResult();
-        for(int i = 0; i < m_lineEditList.size(); i++){
-            m_lineEditList[i]->setText(QString::number(coefs[i]));
+        QList<double> coefs;
+        coefs = {0.0, 0.0, 0.0, 0.0};
+
+        if(dlg->getFittingResult(coefs))
+        {
+            for(int i = 0; i < m_lineEditList.size(); i++){
+                m_lineEditList[i]->setText(QString::number(coefs[i]));
+            }
+            update();
         }
-        update();
+        coefs.clear();
     }
 
     try {
@@ -370,10 +375,9 @@ void GlassMapForm::setCurveData(QCPGraph* curveGraph, QList<double> coefs)
 {
     const int dataCount = 100;
     QVector<double> x(dataCount),y(dataCount);
-    //double xmin = m_customPlot->xAxis->range().lower;
-    //double xmax = m_customPlot->xAxis->range().upper;
-    double xmin = 10;
-    double xmax = 100;
+
+    double xmin = std::min(10.0,  m_customPlot->xAxis->range().lower);
+    double xmax = std::min(100.0, m_customPlot->xAxis->range().upper);
 
     for(int i = 0; i < dataCount; i++)
     {

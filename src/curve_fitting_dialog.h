@@ -29,7 +29,7 @@
 #include <QDialog>
 #include <QList>
 
-class QListWidget;
+class QTableWidget;
 class QComboBox;
 class Glass;
 class GlassCatalog;
@@ -46,41 +46,28 @@ public:
     explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
     ~CurveFittingDialog();
 
-
     /**
-     * @brief Calculate coefficients of fitting curve. Called from the parent Glassmapform.
-     * @param plotType
-     * @return success/failed
-     * @note coefficients data are stored in m_fittingResult;
+     * @brief calculateFitting
+     * @param result vector
+     * @return true: calculation was successfully done
      */
-    bool calculateFitting(QString xdataname, QString ydataname);
+    bool getFittingResult(QList<double>& result);
 
-    /**
-     * @brief get fitting result
-     * @return fitting result
-     */
-    QList<double> fittingResult();
 
 private slots:
-    void addGlass();
-    void deleteSelectedGlass();
+    void addRow();
+    void deleteSelectedRow();
 
 private:
     Ui::CurveFittingDialog *ui;
 
-    QList<double> m_fittingResult;
     QList<GlassCatalog*> m_catalogList;
-    QList<Glass*> m_targetGlassList;
 
-    QComboBox* m_comboBoxOrder;
-    QListWidget* m_listWidget;
+    QComboBox*    m_comboBoxOrder;
+    QTableWidget* m_table;
 
     const int m_maxFittingOrder = 3;
 
-    /**
-     * @brief update m_targetGlassList from m_listWidget
-     */
-    void updateGlassList();
 };
 
 #endif // CURVE_FITTING_DIALOG_H
