@@ -9,6 +9,7 @@ GlassPlotter is an open source glassmap viewer which aims to be useful for daily
 - Comprehensive functionality
 - User defined curve
 - Rich GUI
+- Open source
 
 ## Getting Started 
 The binaries for Windows/Mac can be downloaded from [Release page](https://github.com/heterophyllus/glassplotter/releases/latest).
@@ -28,11 +29,13 @@ Note that the AGF/XML files in this repository are not always up to date.
 
 ## Development
 This application is built with:
-- [Qt and QtCreator](https://www.qt.io) : GUI library and IDE
-- [QCustomPlot](https://www.qcustomplot.com) : Graph plotting library
-- [spline](https://github.com/ttk592/spline) : Cubic spline interpolation library
-- [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) : Template library for linear algebra
-- [pugixml](https://github.com/zeux/pugixml) : Simple XML parser
+|Library|Description|
+|---|---|
+|[Qt](https://www.qt.io)|GUI library|
+|[QCustomPlot](https://www.qcustomplot.com)|Graph plotting library|
+|[spline](https://github.com/ttk592/spline)|Cubic spline interpolation library|
+|[Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) | Template library for linear algebra|
+|[pugixml](https://github.com/zeux/pugixml)|Simple XML parser|
 
 
 ## License
