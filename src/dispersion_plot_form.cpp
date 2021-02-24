@@ -247,7 +247,8 @@ void DispersionPlotForm::updateAll()
 
 
     // replot all graphs and recreate tables
-    int digit = 5;
+    int digit = ui->spinBox_Digit->value();
+
     int i,j;
     for(i = 0; i < m_glassList.size(); i++)
     {

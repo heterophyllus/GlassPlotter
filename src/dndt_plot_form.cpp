@@ -207,6 +207,8 @@ void DnDtPlotForm::updateAll()
     m_table->setRowCount(rowCount);
     m_table->setColumnCount(columnCount);
 
+    int digit = ui->spinBox_Digit->value();
+
     QStringList header = QStringList() << "Temperature";
 
     // replot all graphs and recreate tables
@@ -228,7 +230,7 @@ void DnDtPlotForm::updateAll()
         for(j = 0; j< rowCount; j++)
         {
             addTableItem(j, 0,   QString::number(xdata[j]));         // temperature
-            addTableItem(j, i+1, QString::number(ydata[j], 'f', 4)); // dn/dt(abs)
+            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit)); // dn/dt(abs)
         }
     }
     m_customPlot->replot();

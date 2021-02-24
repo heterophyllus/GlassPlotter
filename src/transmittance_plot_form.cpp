@@ -150,7 +150,7 @@ void TransmittancePlotForm::updateAll()
     int    glassCount = m_glassList.size();
     Glass* currentGlass;
 
-    int digit = 4;
+    int digit = ui->spinBox_Digit->value();
 
     // replot all graphs and recreate tables
     for(i = 0; i < glassCount; i++)
