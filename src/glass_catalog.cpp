@@ -30,6 +30,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include <QDebug>
 
 GlassCatalog::GlassCatalog()
 {
@@ -104,7 +105,9 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         linetext = in.readLine();
         linecount++;
 
-        if(linetext.startsWith("NM")){
+        //NM <glass name> <dispersion formula #> <MIL#> <N(d)> <V(d)> <Exclude Sub> <status> <melt freq>
+        if(linetext.startsWith("NM"))
+        {
             lineparts = linetext.simplified().split(" ");
             g = new Glass;
             _glasses.append(g);
@@ -120,16 +123,33 @@ bool GlassCatalog::loadAGF(QString AGFpath)
                 _glasses.last()->setStatus(lineparts[7].toUInt());
             }
         }
-        else if (linetext.startsWith("GC")){
+
+         // GC <Individual Glass Comment>
+        else if (linetext.startsWith("GC"))
+        {
             _glasses.last()->setComment(linetext.remove(0,2).simplified());
         }
-        else if(linetext.startsWith("CD")){ // CD <dispersion coefficients 1 - 10>
+
+        // ED <TCE (-30 to 70)> <TCE (100 to 300)> <density> <dPgF> <Ignore Thermal Exp>
+        else if(linetext.startsWith("ED"))
+        {
+            lineparts = linetext.simplified().split(" ");
+            _glasses.last()->setLowTCE(lineparts[1].toDouble());
+            _glasses.last()->setHighTCE(lineparts[2].toDouble());
+        }
+
+        // CD <dispersion coefficients 1 - 10>
+        else if(linetext.startsWith("CD"))
+        {
             lineparts = linetext.simplified().split(" ");
             for(int i = 1;i<lineparts.size();i++){
                 _glasses.last()->setDispCoef(i-1,lineparts[i].toDouble());
             }
         }
-        else if(linetext.startsWith("TD")){ // TD <D0> <D1> <D2> <E0> <E1> <Ltk> <Temp>
+
+        // TD <D0> <D1> <D2> <E0> <E1> <Ltk> <Temp>
+        else if(linetext.startsWith("TD"))
+        {
             lineparts = linetext.simplified().split(" ");
             if(lineparts.size() > 7){
                 _glasses.last()->hasThermalData = true;
@@ -137,17 +157,72 @@ bool GlassCatalog::loadAGF(QString AGFpath)
                     _glasses.last()->setThermalData(i-1, lineparts[i].toDouble());
                 }
             }else{
+                qDebug() << "Invalid TD line: "<< _glasses.last()->name();
                 _glasses.last()->hasThermalData = false;
             }
         }
-        else if(linetext.startsWith("LD")){
+
+        // OD <rel cost> <CR> <FR> <SR> <AR> <PR>
+        else if(linetext.startsWith("OD"))
+        {
+            lineparts = linetext.simplified().split(" ");
+            if(lineparts.size() < 7){
+                qDebug() << "Invalid OD line: " << _glasses.last()->name();
+            }
+            else{
+                /*For these values, -1 should be specified if the data is not available.
+                  Some manufactureres use "-" instead of "-1.00000".*/
+
+                double dval;
+                bool ok;
+
+                dval = lineparts[1].toDouble(&ok);
+                if(ok && (dval != -1.0)){
+                    _glasses.last()->setRelCost(dval);
+                }
+
+                dval = lineparts[2].toDouble(&ok);
+                if(ok && (dval != -1.0)){
+                    _glasses.last()->setClimateResist(dval);
+                }
+
+                dval = lineparts[3].toDouble(&ok);
+                if(ok && (dval != -1.0)){
+                    _glasses.last()->setStainResist(dval);
+                }
+
+                dval = lineparts[4].toDouble(&ok);
+                if(ok && (dval != -1.0)){
+                    _glasses.last()->setAcidResist(dval);
+                }
+
+                dval = lineparts[5].toDouble(&ok);
+                if(ok && (dval != -1.0)){
+                    _glasses.last()->setAlkaliResist(dval);
+                }
+
+                dval = lineparts[6].toDouble(&ok);
+                if(ok && (dval != -1.0)){
+                    _glasses.last()->setPhosphateResist(dval);
+                }
+            }
+
+        }
+
+        // LD <min lambda> <max lambda>
+        else if(linetext.startsWith("LD"))
+        {
             lineparts = linetext.simplified().split(" ");
             _glasses.last()->setLambdaMin(lineparts[1].toDouble()); // micron
             _glasses.last()->setLambdaMax(lineparts[2].toDouble());
         }
-        else if(linetext.startsWith("IT")){
+
+        // IT <lambda> <transmission> <thickness>
+        else if(linetext.startsWith("IT"))
+        {
             lineparts = linetext.simplified().split(" ");
             if(lineparts.size() < 4){
+                qDebug() << "Invalid IT line: " << _glasses.last()->name();
                 continue; //eg. NIHON_KESSHO_KOGAKU CaF2
             }
             else{
@@ -210,12 +285,34 @@ bool GlassCatalog::loadXml(QString xmlpath)
         }
 
 
-        // dispersion coefs
+        // dispersion coefficients
         k = 0;
         for(pugi::xml_node_iterator dc_it = glass_it->child("DispersionCoefficients").begin(); dc_it != glass_it->child("DispersionCoefficients").end(); dc_it++)
         {
             g->setDispCoef(k,dc_it->text().as_double());
             k++;
+        }
+
+        // high/low TCE(CTE)
+        g->setLowTCE(glass_it->child("LowTCE").attribute("Value").as_double());
+        g->setHighTCE(glass_it->child("HighTCE").attribute("Value").as_double());
+
+        // Manufacturer's properties
+        for(pugi::xml_node_iterator mp_it = glass_it->child("ManufacturersProperties").begin(); mp_it != glass_it->child("ManufacturersProperties").end(); mp_it++)
+        {
+            QString propertyname = QString(mp_it->child("Name").text().as_string());
+            if(propertyname.compare("Acid_resist") == 0){
+                g->setAcidResist(mp_it->child("Value").text().as_double());
+            }
+            else if(propertyname.compare("Climatic_resist") == 0){
+                g->setClimateResist(mp_it->child("Value").text().as_double());
+            }
+            else if(propertyname.compare("Stain_resist") == 0){
+                g->setStainResist(mp_it->child("Value").text().as_double());
+            }
+            else if(propertyname.compare("Alkali_resist") == 0){
+                g->setAlkaliResist(mp_it->child("Value").text().as_double());
+            }
         }
 
         // transmittance
@@ -246,6 +343,7 @@ bool GlassCatalog::loadXml(QString xmlpath)
         g->setThermalData( 4, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E1").text().as_double() );
         g->setThermalData( 5, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Lambda").text().as_double() );
         g->setThermalData( 6, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Temperature").text().as_double() );
+
 
         _glasses.append(g);
 

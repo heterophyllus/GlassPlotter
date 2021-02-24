@@ -28,6 +28,7 @@
 
 #include <QWidget>
 #include <QList>
+#include <QtMath>
 
 class QMdiArea;
 class QComboBox;
@@ -47,19 +48,36 @@ public:
     ~CatalogViewForm();
 
 private slots:
-    void setUpTable();
+    void update();
+    void setUpTable(QStringList properties,GlassCatalog* catalog, int digit=6);
     void showDatasheet();
+    void showSettingDlg();
 
 private:
     Ui::CatalogViewForm *ui;
 
-    QMdiArea* m_parentMdiArea;
+    QMdiArea*     m_parentMdiArea;
     QTableWidget* m_table;
-    QComboBox* m_comboBox;
+    QComboBox*    m_comboBox;
 
     QList<GlassCatalog*> m_catalogList;
 
+    QStringList m_allPropertyList;
+    QStringList m_currentPropertyList;
+    int         m_currentDigit;
+
     void addTableItem(int row, int col, QString str);
+    inline QString numToQString(double val, char fmt='f', int digit=6);
 };
+
+QString CatalogViewForm::numToQString(double val, char fmt, int digit)
+{
+    if(qIsNaN(val)){
+        return "-";
+    }
+    else{
+        return QString::number(val,fmt,digit);
+    }
+}
 
 #endif // CATALOG_VIEW_FORM_H

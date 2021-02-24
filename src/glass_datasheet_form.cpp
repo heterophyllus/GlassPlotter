@@ -50,6 +50,7 @@ GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
     setUpDispersionTab();
     setUpThermalTab();
     setUpTransmittanceTab();
+    setUpOtherDataTab();
 }
 
 GlassDataSheetForm::~GlassDataSheetForm()
@@ -248,3 +249,30 @@ void GlassDataSheetForm::setUpTransmittanceTab()
     }
 
 }
+
+
+void GlassDataSheetForm::setUpOtherDataTab()
+{
+    QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_OtherData;
+    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
+    gridLayout->setObjectName(QString::fromUtf8("gridLayout_otherdata"));
+
+    addItem(0, 0, "Relative Cost",              gridLayout);
+    addItem(0, 1, QString::number(m_glass->relCost()),     gridLayout);
+
+    addItem(1, 0, "Climate Resist",           gridLayout);
+    addItem(1, 1, QString::number(m_glass->climateResist()), gridLayout);
+
+    addItem(2, 0, "Stain Resist",           gridLayout);
+    addItem(2, 1, QString::number(m_glass->stainResist()), gridLayout);
+
+    addItem(3, 0, "Acid Resist",           gridLayout);
+    addItem(3, 1, QString::number(m_glass->acidResist()), gridLayout);
+
+    addItem(4, 0, "Alkali Resist",           gridLayout);
+    addItem(4, 1, QString::number(m_glass->alkaliResist()), gridLayout);
+
+    addItem(5, 0, "Phosphate Resist",           gridLayout);
+    addItem(5, 1, QString::number(m_glass->phosphateResist()), gridLayout);
+}
+

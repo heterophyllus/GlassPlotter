@@ -39,18 +39,26 @@ Glass::Glass()
     _comment  = "";
     _MIL      = "";
 
+    //_lowTCE = nan();
+    _relCost         = NAN;
+    _climateResist   = NAN;
+    _stainResist     = NAN;
+    _acidResist      = NAN;
+    _alkaliResist    = NAN;
+    _phosphateResist = NAN;
+
     _formulaIndex = 1;
+    _dispersionData = QVector<double>(_dispersion_data_size, 0.0);
+
+    _thermalData = QVector<double>(_thermal_data_size, NAN);
 
     _lambdaMax = 0;
     _lambdaMin = 0;
-
-    _dispersionData = QVector<double>(_dispersion_data_size, 0.0);
-
     _wavelengthData.clear();
     _transmittanceData.clear();
     _thicknessData.clear();
 
-    _thermalData = QVector<double>(_thermal_data_size, 0.0);
+
 }
 
 
@@ -97,6 +105,41 @@ double Glass::getValue(QString dname) const
     else{
         return 0;
     }
+}
+
+double Glass::nd() const
+{
+    return index("d");
+}
+
+double Glass::ne() const
+{
+    return index("e");
+}
+
+double Glass::vd() const
+{
+    return (index("d") - 1)/(index("F") - index("C"));
+}
+
+double Glass::ve() const
+{
+    return (index("e") - 1)/(index("F_") - index("C_"));
+}
+
+double Glass::Pxy(QString x, QString y) const
+{
+    return (index(x) - index(y)) / ( index("F") - index("C") );
+}
+
+double Glass::Pxy_(QString x, QString y) const
+{
+    return (index(x) - index(y)) / ( index("F_") - index("C_") );
+}
+
+double Glass::PgF() const
+{
+    return Pxy("g","F");
 }
 
 double Glass::index(double lambdamicron) const

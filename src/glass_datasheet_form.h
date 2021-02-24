@@ -57,8 +57,11 @@ private:
     void setUpDispersionTab();
     void setUpThermalTab();
     void setUpTransmittanceTab();
+    void setUpOtherDataTab();
 
     void addItem(int row, int col, QString str, QGridLayout* gridLayout);
+
+    //QString numberToQString(double val);
 };
 
 #endif // GLASS_DATASHEET_FORM_H

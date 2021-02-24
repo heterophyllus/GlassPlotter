@@ -34,6 +34,7 @@
 #include <QString>
 #include <QList>
 #include <QVector>
+#include <QtMath>
 
 class Glass
 {
@@ -52,13 +53,13 @@ public:
     QString         comment() const { return _comment; }
 
     double getValue(QString dname) const;
-    double nd() const {return index("d");}
-    double ne() const {return index("e");}
-    double vd() const {return (index("d") - 1)/(index("F") - index("C"));}
-    double ve() const {return (index("e") - 1)/(index("F_") - index("C_"));}
-    double Pxy(QString x, QString y) const {return (index(x) - index(y)) / ( index("F") - index("C") );}
-    double Pxy_(QString x, QString y) const {return (index(x) - index(y)) / ( index("F_") - index("C_") );}
-    double PgF() const {return Pxy("g","F");}
+    double nd() const;
+    double ne() const;
+    double vd() const;
+    double ve() const;
+    double Pxy(QString x, QString y) const;
+    double Pxy_(QString x, QString y) const;
+    double PgF() const;
 
     double BuchdahlDispCoef(int n) const;
 
@@ -70,6 +71,14 @@ public:
     void setComment(QString str){ _comment = str; }
 
 
+    // extra data
+    double lowTCE() const { return _lowTCE; }
+    double highTCE() const { return _highTCE; }
+
+    void setLowTCE(double val) { _lowTCE = val; }
+    void setHighTCE(double val) { _highTCE = val; }
+
+
     // dispersion data
     int         formulaIndex() const {return _formulaIndex;};
     QString     formulaName() const;
@@ -78,18 +87,6 @@ public:
 
     void    setDispForm(int n){ _formulaIndex = n;}
     void    setDispCoef(int n, double val);
-
-
-    // transmittance data
-    double          transmittance(double lambdamicron, double thi = 25) const;
-    QVector<double> transmittance(QVector<double> vLambdamicron, double thi = 25) const;
-    double          lambdaMin() const {return _lambdaMin;}
-    double          lambdaMax() const {return _lambdaMax;}
-    void            getTransmittanceData(QList<double>& pvLambdamicron, QList<double>& pvTransmittance, QList<double>& pvThickness);
-
-    void            appendTransmittanceData(double lambdamicron, double trans, double thick);
-    void            setLambdaMin(double val){ _lambdaMin = val;}
-    void            setLambdaMax(double val){ _lambdaMax = val;}
 
 
     // thermal data
@@ -105,6 +102,34 @@ public:
     void            setThermalData(int n, double val);
     bool            hasThermalData = false;
 
+
+    // other data
+    qreal relCost() const { return _relCost; }
+    qreal climateResist() const {return _climateResist;}
+    qreal stainResist() const {return _stainResist;}
+    qreal acidResist() const {return _acidResist;}
+    qreal alkaliResist() const {return _alkaliResist;}
+    qreal phosphateResist() const {return _phosphateResist;}
+
+    void setRelCost(qreal val) {_relCost = val;}
+    void setClimateResist(qreal val){_climateResist = val;}
+    void setStainResist(qreal val){_stainResist = val;}
+    void setAcidResist(qreal val){_acidResist = val;}
+    void setAlkaliResist(qreal val){_alkaliResist = val;}
+    void setPhosphateResist(qreal val){_phosphateResist = val;}
+
+    // transmittance data
+    double          transmittance(double lambdamicron, double thi = 25) const;
+    QVector<double> transmittance(QVector<double> vLambdamicron, double thi = 25) const;
+    double          lambdaMin() const {return _lambdaMin;}
+    double          lambdaMax() const {return _lambdaMax;}
+    void            getTransmittanceData(QList<double>& pvLambdamicron, QList<double>& pvTransmittance, QList<double>& pvThickness);
+
+    void            appendTransmittanceData(double lambdamicron, double trans, double thick);
+    void            setLambdaMin(double val){ _lambdaMin = val;}
+    void            setLambdaMax(double val){ _lambdaMax = val;}
+
+
 private:
     QString _name;
     QString _supplyer;
@@ -112,10 +137,27 @@ private:
     QString _MIL;
     QString _comment;
 
+    // extra data
+    qreal _lowTCE; // TCE: thermal coefficient of expansion
+    qreal _highTCE;
+
     // dispersion data
     const int       _dispersion_data_size = 12;
     QVector<double> _dispersionData;
     int             _formulaIndex;
+
+    // thermal data
+    const int       _thermal_data_size = 7;
+    QVector<double> _thermalData; //<D0> <D1> <D2> <E0> <E1> <Ltk> <temp>
+
+    // other data
+    // Many glasses does not have valid data in OD line, so their default value should be NaN as "no data".
+    qreal _relCost;
+    qreal _climateResist;
+    qreal _stainResist;
+    qreal _acidResist;
+    qreal _alkaliResist;
+    qreal _phosphateResist;
 
     // transmittance data
     double        _lambdaMax;
@@ -123,11 +165,6 @@ private:
     QList<double> _wavelengthData; //micron
     QList<double> _transmittanceData;
     QList<double> _thicknessData;
-
-    // thermal data
-    const int       _thermal_data_size = 7;
-    QVector<double> _thermalData; //<D0> <D1> <D2> <E0> <E1> <Ltk> <temp>
-
 };
 
 #endif // GLASS_H

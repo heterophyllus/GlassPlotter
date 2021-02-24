@@ -32,6 +32,7 @@ INCLUDEPATH += $$PWD/spline/src  # spline
 SOURCES += \
     about_dialog.cpp \
     catalog_view_form.cpp \
+    catalog_view_setting_dialog.cpp \
     curve_fitting_dialog.cpp \
     dispersion_plot_form.cpp \
     dndt_plot_form.cpp \
@@ -53,6 +54,7 @@ SOURCES += \
 HEADERS += \
     about_dialog.h \
     catalog_view_form.h \
+    catalog_view_setting_dialog.h \
     curve_fitting_dialog.h \
     dispersion_formula.h \
     dispersion_plot_form.h \
@@ -76,6 +78,7 @@ HEADERS += \
 FORMS += \
     about_dialog.ui \
     catalog_view_form.ui \
+    catalog_view_setting_dialog.ui \
     curve_fitting_dialog.ui \
     dispersion_plot_form.ui \
     dndt_plot_form.ui \
