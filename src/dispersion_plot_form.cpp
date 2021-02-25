@@ -355,6 +355,7 @@ void DispersionPlotForm::clearAll()
     m_customPlot->replot();
     m_tablePlotData->clear();
 
+    m_checkBox->setCheckState(Qt::Unchecked);
     for(int i = 0;i < m_tableCoefs->rowCount(); i++){
         QObject::disconnect(m_tableCoefs,       SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
         m_tableCoefs->item(i,0)->setText("");
