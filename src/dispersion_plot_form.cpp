@@ -87,6 +87,10 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
         QObject::connect(m_tableCoefs,       SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
     }
     m_tableCoefs->setVerticalHeaderLabels(vHeaderLabels);
+    m_tableCoefs->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    //m_tableCoefs->resizeColumnsToContents();
+    int whole_width = m_tableCoefs->width();
+    m_tableCoefs->setColumnWidth(0, whole_width);
     m_tableCoefs->update();
 
     // plot step

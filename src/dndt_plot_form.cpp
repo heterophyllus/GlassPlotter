@@ -86,28 +86,34 @@ void DnDtPlotForm::setGlass()
         QString glassName = dlg->getGlassName();
         Glass* newGlass = m_catalogList[catalogIndex]->glass(glassName);
 
-        if(!newGlass->hasThermalData){
-            QMessageBox::information(this,tr("Error"), tr("This glass does not have thermal data."));
-            newGlass = nullptr;
+        // check whether the glass contains valid thermal data
+        QVector<double> vTemp = newGlass->getThermalData();
+        for(int i = 0; i < vTemp.size(); i++){
+            if(qIsNaN(vTemp[i])){
+                QMessageBox::information(this,tr("Error"), tr("This glass does not have thermal data."));
+                newGlass = nullptr;
+
+                return;
+            }
         }
-        else{
-            clearAll();
-            m_currentGlass = newGlass;
-            ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
 
-            m_wvlList  = QList<double>() << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0;
-            updateAll();
+        clearAll();
+        m_currentGlass = newGlass;
+        ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
 
-            // rescale y axis
-            m_customPlot->yAxis->rescale();
-            m_customPlot->replot();
+        m_wvlList  = QList<double>() << 435.8 << 546.1 << 587.0 << 852.1 << 1060.0;
+        updateAll();
 
-            int digit = 1;
-            ui->lineEdit_Xmin->setText(QString::number(m_customPlot->xAxis->range().lower, 'f', digit));
-            ui->lineEdit_Xmax->setText(QString::number(m_customPlot->xAxis->range().upper, 'f', digit));
-            ui->lineEdit_Ymin->setText(QString::number(m_customPlot->yAxis->range().lower, 'f', digit));
-            ui->lineEdit_Ymax->setText(QString::number(m_customPlot->yAxis->range().upper, 'f', digit));
-        }
+        // rescale y axis
+        m_customPlot->yAxis->rescale();
+        m_customPlot->replot();
+
+        int digit = 1;
+        ui->lineEdit_Xmin->setText(QString::number(m_customPlot->xAxis->range().lower, 'f', digit));
+        ui->lineEdit_Xmax->setText(QString::number(m_customPlot->xAxis->range().upper, 'f', digit));
+        ui->lineEdit_Ymin->setText(QString::number(m_customPlot->yAxis->range().lower, 'f', digit));
+        ui->lineEdit_Ymax->setText(QString::number(m_customPlot->yAxis->range().upper, 'f', digit));
+
     }
 
     try {

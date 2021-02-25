@@ -61,7 +61,17 @@ private:
 
     void addItem(int row, int col, QString str, QGridLayout* gridLayout);
 
-    //QString numberToQString(double val);
+    inline QString numToQString(double val, char fmt='f', int digit=6);
 };
+
+QString GlassDataSheetForm::numToQString(double val, char fmt, int digit)
+{
+    if(qIsNaN(val)){
+        return "-";
+    }
+    else{
+        return QString::number(val,fmt,digit);
+    }
+}
 
 #endif // GLASS_DATASHEET_FORM_H

@@ -39,7 +39,9 @@ Glass::Glass()
     _comment  = "";
     _MIL      = "";
 
-    //_lowTCE = nan();
+    _lowTCE  = NAN;
+    _highTCE = NAN;
+
     _relCost         = NAN;
     _climateResist   = NAN;
     _stainResist     = NAN;
@@ -93,7 +95,7 @@ double Glass::getValue(QString dname) const
         // return PgF();
         return (index("g") - index("F")) / ( index("F") - index("C") );
     }
-    else if(dname == "PCt"){
+    else if(dname == "PCt_"){
         return (index("C") - index("t")) / ( index("F_") - index("C_") );
     }
     else if(dname == "eta1"){ // Buchdahl dispersion coefficients
@@ -142,6 +144,11 @@ double Glass::PgF() const
     return Pxy("g","F");
 }
 
+double Glass::PCt_() const
+{
+    return Pxy_("C","t");
+}
+
 double Glass::index(double lambdamicron) const
 {
     switch(_formulaIndex){
@@ -172,7 +179,7 @@ double Glass::index(double lambdamicron) const
     case 12:
         return DispersionFormula::Extended2(lambdamicron,_dispersionData);
     case 13: // Unknown
-        return 0;
+        return NAN;
 
     // CODEV XML
     case 101:
@@ -188,7 +195,7 @@ double Glass::index(double lambdamicron) const
     case 106:
         return DispersionFormula::Hartman(lambdamicron,_dispersionData);
     default:
-        return 0;
+        return NAN;
     }
 
 }
@@ -215,11 +222,11 @@ double Glass::BuchdahlDispCoef(int n) const
     /* This is a test function.
      *
      * This function calculates Buchdahl dispersion coefficients.
-     * The implementation referred:
-     * https://github.com/mjhoptics/opticalglass/blob/master/opticalglass/buchdahl.py
+     * The implementation refers remarkable github repository: mjhoptics/opticalglass
+     *      source:https://github.com/mjhoptics/opticalglass/blob/master/opticalglass/buchdahl.py
      *
      * Input:
-     *      -n : coefficients index (0,1)
+     *      n : coefficients index (0,1)
      */
 
     Q_ASSERT(n <= 1);
@@ -273,7 +280,7 @@ void Glass::setStatus(int n)
         _status = "Melt";
         break;
     default:
-        _status = "No Data";
+        _status = "-";
     }
 }
 

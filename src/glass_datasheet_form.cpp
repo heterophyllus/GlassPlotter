@@ -124,7 +124,7 @@ void GlassDataSheetForm::setUpIndicesTab()
         addItem(row, 1, QString::number(SpectralLine::wavelength(spectralLineName), 'f', 3), gridLayout);
 
         // refractive index
-        addItem(row, 2, QString::number(m_glass->index(spectralLineName), 'f', 6), gridLayout);
+        addItem(row, 2, numToQString(m_glass->index(spectralLineName), 'f', 6), gridLayout);
     }
 }
 
@@ -145,7 +145,7 @@ void GlassDataSheetForm::setUpPartialTab()
     for(int i = 0; i < firsts.size(); i++){
         row = i;
         addItem(row, 0, "P " + firsts[i] + "," + seconds[i], gridLayout);
-        addItem(row, 1, QString::number(m_glass->Pxy(firsts[i], seconds[i]), 'f', 6), gridLayout);
+        addItem(row, 1, numToQString(m_glass->Pxy(firsts[i], seconds[i]), 'f', 6), gridLayout);
     }
 
     // P'x,y
@@ -158,7 +158,7 @@ void GlassDataSheetForm::setUpPartialTab()
         row = j + rowOffset;
 
         addItem(row, 0, "P' " + firsts[j] + "," + seconds[j],                          gridLayout);
-        addItem(row, 1, QString::number(m_glass->Pxy_(firsts[j], seconds[j]), 'f', 6), gridLayout);
+        addItem(row, 1, numToQString(m_glass->Pxy_(firsts[j], seconds[j]), 'f', 6), gridLayout);
     }
 
 }
@@ -183,7 +183,7 @@ void GlassDataSheetForm::setUpDispersionTab()
         row = i + 1;
 
         addItem(row, 0, "C" + QString::number(i),                          gridLayout); // C0, C1, C2...
-        addItem(row, 1, QString::number(m_glass->dispersionCoef(i),'g',5), gridLayout); // coefficient value
+        addItem(row, 1, numToQString(m_glass->dispersionCoef(i),'g',5),    gridLayout); // coefficient value
     }
 }
 
@@ -197,14 +197,11 @@ void GlassDataSheetForm::setUpThermalTab()
     QStringList coefNames = QStringList() << "D0" << "D1" << "D2" << "E0" << "E1" << "Ltk" << "T0";
     QList<double> coefValues = QList<double>() << m_glass->D0() << m_glass->D1() << m_glass->D2() << m_glass->E0() << m_glass->E1() << m_glass->Ltk() << m_glass->T0();
 
-    if(m_glass->hasThermalData){
-        for(int i = 0; i < coefNames.size(); i++){
-            addItem(i, 0, coefNames[i],                   gridLayout);
-            addItem(i, 1, QString::number(coefValues[i]), gridLayout);
-        }
-    }else{
-        addItem(0, 0, tr("No Data"), gridLayout);
+    for(int i = 0; i < coefNames.size(); i++){
+        addItem(i, 0, coefNames[i],                   gridLayout);
+        addItem(i, 1, numToQString(coefValues[i]), gridLayout);
     }
+
 }
 
 
@@ -220,8 +217,8 @@ void GlassDataSheetForm::setUpTransmittanceTab()
     // set lambda max and min
     row = 0;
     addItem(row, 0, tr("Lambda Min/Max"),                           gridLayout);
-    addItem(row, 1, QString::number(m_glass->lambdaMin(),'f',digit),gridLayout);
-    addItem(row, 2, QString::number(m_glass->lambdaMax(),'f',digit),gridLayout);
+    addItem(row, 1, numToQString(m_glass->lambdaMin(),'f',digit),gridLayout);
+    addItem(row, 2, numToQString(m_glass->lambdaMax(),'f',digit),gridLayout);
 
     // insert space
     ++row;
@@ -243,9 +240,9 @@ void GlassDataSheetForm::setUpTransmittanceTab()
     {
         row = i + rowOffset;
 
-        addItem(row,0,QString::number(lambdamicrons[i],  'f', digit),gridLayout);
-        addItem(row,1,QString::number(transmittances[i], 'f', digit),gridLayout);
-        addItem(row,2,QString::number(thicknesses[i],    'f', digit),gridLayout);
+        addItem(row, 0, numToQString(lambdamicrons[i],  'f', digit), gridLayout);
+        addItem(row, 1, numToQString(transmittances[i], 'f', digit), gridLayout);
+        addItem(row, 2, numToQString(thicknesses[i],    'f', digit), gridLayout);
     }
 
 }
@@ -258,21 +255,21 @@ void GlassDataSheetForm::setUpOtherDataTab()
     gridLayout->setObjectName(QString::fromUtf8("gridLayout_otherdata"));
 
     addItem(0, 0, "Relative Cost",              gridLayout);
-    addItem(0, 1, QString::number(m_glass->relCost()),     gridLayout);
+    addItem(0, 1, numToQString(m_glass->relCost()),     gridLayout);
 
     addItem(1, 0, "Climate Resist",           gridLayout);
-    addItem(1, 1, QString::number(m_glass->climateResist()), gridLayout);
+    addItem(1, 1, numToQString(m_glass->climateResist()), gridLayout);
 
     addItem(2, 0, "Stain Resist",           gridLayout);
-    addItem(2, 1, QString::number(m_glass->stainResist()), gridLayout);
+    addItem(2, 1, numToQString(m_glass->stainResist()), gridLayout);
 
     addItem(3, 0, "Acid Resist",           gridLayout);
-    addItem(3, 1, QString::number(m_glass->acidResist()), gridLayout);
+    addItem(3, 1, numToQString(m_glass->acidResist()), gridLayout);
 
     addItem(4, 0, "Alkali Resist",           gridLayout);
-    addItem(4, 1, QString::number(m_glass->alkaliResist()), gridLayout);
+    addItem(4, 1, numToQString(m_glass->alkaliResist()), gridLayout);
 
     addItem(5, 0, "Phosphate Resist",           gridLayout);
-    addItem(5, 1, QString::number(m_glass->phosphateResist()), gridLayout);
+    addItem(5, 1, numToQString(m_glass->phosphateResist()), gridLayout);
 }
 

@@ -3,7 +3,7 @@
 
 #include <QListWidget>
 
-CatalogViewSettingDialog::CatalogViewSettingDialog(QStringList allPropertyList, QWidget *parent) :
+CatalogViewSettingDialog::CatalogViewSettingDialog(QStringList allPropertyList, QStringList currentCheckedList, int currentDigit, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CatalogViewSettingDialog)
 {
@@ -21,7 +21,13 @@ CatalogViewSettingDialog::CatalogViewSettingDialog(QStringList allPropertyList, 
         item = new QListWidgetItem(m_listWidget);
         item->setText(allPropertyList[i]);
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-        item->setCheckState(Qt::Unchecked);
+
+        if(currentCheckedList.contains(item->text())){
+            item->setCheckState(Qt::Checked);
+        }
+        else{
+            item->setCheckState(Qt::Unchecked);
+        }
         m_listWidget->addItem(item);
     }
 
@@ -30,6 +36,9 @@ CatalogViewSettingDialog::CatalogViewSettingDialog(QStringList allPropertyList, 
     m_listWidget->setDragEnabled( true );
     m_listWidget->setDragDropMode( QAbstractItemView::DragDropMode::InternalMove );
     m_listWidget->update();
+
+    // spinbox
+    ui->spinBox_Digit->setValue(currentDigit);
 }
 
 CatalogViewSettingDialog::~CatalogViewSettingDialog()

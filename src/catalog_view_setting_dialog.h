@@ -14,7 +14,7 @@ class CatalogViewSettingDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CatalogViewSettingDialog(QStringList allPropertyList ,QWidget *parent = nullptr);
+    explicit CatalogViewSettingDialog(QStringList allPropertyList, QStringList currentCheckedList, int currentDigit, QWidget *parent = nullptr);
     ~CatalogViewSettingDialog();
 
     void getSettings(QStringList& checkedList, int& digit);

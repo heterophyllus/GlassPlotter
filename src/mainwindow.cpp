@@ -75,7 +75,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     //setAttribute(Qt::WA_DeleteOnClose);
     setUnifiedTitleAndToolBarOnMac(true);
-
 }
 
 MainWindow::~MainWindow()
@@ -97,19 +96,21 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadAGF()
 {
-    // clear before reload
     ui->mdiArea->closeAllSubWindows();
 
+    // open file selection dialog
     QStringList filePaths = QFileDialog::getOpenFileNames(this,
                                                           tr("select AGF"),
                                                           QApplication::applicationDirPath(),
                                                           tr("AGF files(*.agf);;All Files(*.*)"));
     if(filePaths.empty()){
-        QMessageBox::warning(this,tr("File"), tr("No AGF file is loaded"));
+        QMessageBox::warning(this,tr("Canceled"), tr("No AGF file was loaded"));
         ui->statusbar->showMessage("");
         return;
     }
 
+
+    // clear old catalogs
     if(!m_catalogList.isEmpty())
     {
         for (auto &cat: m_catalogList) {
@@ -118,6 +119,7 @@ void MainWindow::loadAGF()
         m_catalogList.clear();
     }
 
+    // load catalogs
     GlassCatalog* catalog;
     for(int i = 0; i < filePaths.size(); i++){
         catalog = new GlassCatalog;
@@ -130,24 +132,25 @@ void MainWindow::loadAGF()
     QFileInfo finfo(filePaths.first());
     ui->statusbar->showMessage(finfo.absolutePath());
 
-    QMessageBox::information(this,tr("Message"), tr("AGF files are successfully loaded"));
+    QMessageBox::information(this,tr("Message"), tr("AGF files have been successfully loaded."));
 }
 
 void MainWindow::loadXML()
 {
-    // clear before reload
     ui->mdiArea->closeAllSubWindows();
 
+    // open file selection dialog
     QStringList filePaths = QFileDialog::getOpenFileNames(this,
                                                           tr("select XML"),
                                                           QApplication::applicationDirPath(),
                                                           tr("XML files(*.xml);;All Files(*.*)"));
     if(filePaths.empty()){
-        QMessageBox::warning(this,tr("File"), tr("No XML file is loaded"));
+        QMessageBox::warning(this,tr("Canceled"), tr("No XML file was loaded"));
         ui->statusbar->showMessage("");
         return;
     }
 
+    // clear old catalogs
     if(!m_catalogList.isEmpty())
     {
         for (auto &cat: m_catalogList) {
@@ -156,6 +159,7 @@ void MainWindow::loadXML()
         m_catalogList.clear();
     }
 
+    // load catalogs
     GlassCatalog* catalog;
     for(int i = 0; i < filePaths.size(); i++){
         catalog = new GlassCatalog;
@@ -168,14 +172,21 @@ void MainWindow::loadXML()
     QFileInfo finfo(filePaths.first());
     ui->statusbar->showMessage(finfo.absolutePath());
 
-    QMessageBox::information(this,tr("Message"), tr("XML files are successfully loaded"));
+    QMessageBox::information(this,tr("Message"), tr("XML files have been successfully loaded."));
 }
 
-
+/**
+ * @brief Base function to show glassmap form
+ * @param xdataname property to be plotted for x axis
+ * @param ydataname property to be plotted for y axis
+ * @param xrange default x axis range
+ * @param yrange default y axis range
+ * @param xreversed if true, x axis is reversed
+ */
 void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed)
 {
     if(m_catalogList.empty()){
-        QMessageBox::warning(this,tr("File"), tr("No catalog has been loaded"));
+        QMessageBox::warning(this,tr("Error"), tr("No catalog has been loaded."));
         return;
     }
 
@@ -203,7 +214,7 @@ void MainWindow::showGlassMapVdPgF()
 
 void MainWindow::showGlassMapVdPCt()
 {
-    showGlassMap("vd", "PCt",QCPRange(10,100), QCPRange(0.6,0.9));
+    showGlassMap("vd", "PCt_",QCPRange(10,100), QCPRange(0.6,0.9));
 }
 
 void MainWindow::showGlassMapBuchdahl()
@@ -211,6 +222,10 @@ void MainWindow::showGlassMapBuchdahl()
     showGlassMap("eta2", "eta1",QCPRange(-0.025,0.175), QCPRange(-0.25,0.0), false);
 }
 
+
+/**
+ * @brief Base function to show plot form
+ */
 template<class F> void MainWindow::showAnalysisForm()
 {
     if(m_catalogList.empty()){

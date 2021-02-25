@@ -51,32 +51,33 @@ public:
     QString         status() const { return _status;}
     QString         MIL() const {return _MIL;}
     QString         comment() const { return _comment; }
+    double          Pxy(QString x, QString y) const;
+    double          Pxy_(QString x, QString y) const;
 
-    double getValue(QString dname) const;
-    double nd() const;
-    double ne() const;
-    double vd() const;
-    double ve() const;
-    double Pxy(QString x, QString y) const;
-    double Pxy_(QString x, QString y) const;
-    double PgF() const;
+    double          getValue(QString dname) const;
+    double          nd() const;
+    double          ne() const;
+    double          vd() const;
+    double          ve() const;
+    double          PgF() const;
+    double          PCt_() const;
 
     double BuchdahlDispCoef(int n) const;
 
-    void setName(QString str){ _name = str;}
-    void setSupplyer(QString str){ _supplyer = str;}
-    void setMIL(QString str) {_MIL = str;}
-    void setStatus(QString str);
-    void setStatus(int n);
-    void setComment(QString str){ _comment = str; }
+    void   setName(QString str){ _name = str;}
+    void   setSupplyer(QString str){ _supplyer = str;}
+    void   setMIL(QString str) {_MIL = str;}
+    void   setStatus(QString str);
+    void   setStatus(int n);
+    void   setComment(QString str){ _comment = str; }
 
 
     // extra data
     double lowTCE() const { return _lowTCE; }
     double highTCE() const { return _highTCE; }
 
-    void setLowTCE(double val) { _lowTCE = val; }
-    void setHighTCE(double val) { _highTCE = val; }
+    void   setLowTCE(double val) { _lowTCE = val; }
+    void   setHighTCE(double val) { _highTCE = val; }
 
 
     // dispersion data
@@ -85,8 +86,8 @@ public:
     int         dispersionCoefCount() const { return _dispersionData.size(); }
     double      dispersionCoef(int n) const;
 
-    void    setDispForm(int n){ _formulaIndex = n;}
-    void    setDispCoef(int n, double val);
+    void        setDispForm(int n){ _formulaIndex = n;}
+    void        setDispCoef(int n, double val);
 
 
     // thermal data
@@ -97,26 +98,27 @@ public:
     double          E1()  const { return _thermalData[4]; }
     double          Ltk() const { return _thermalData[5]; }
     double          T0()  const { return _thermalData[6]; }
+    QVector<double> getThermalData() const { return _thermalData; }
     double          dn_dt_abs(double T, double lambdamicron) const;
     QVector<double> dn_dt_abs(QVector<double> vT, double lambdamicron) const;
+
     void            setThermalData(int n, double val);
-    bool            hasThermalData = false;
 
 
     // other data
-    qreal relCost() const { return _relCost; }
-    qreal climateResist() const {return _climateResist;}
-    qreal stainResist() const {return _stainResist;}
-    qreal acidResist() const {return _acidResist;}
-    qreal alkaliResist() const {return _alkaliResist;}
-    qreal phosphateResist() const {return _phosphateResist;}
+    double relCost() const { return _relCost; }
+    double climateResist() const {return _climateResist;}
+    double stainResist() const {return _stainResist;}
+    double acidResist() const {return _acidResist;}
+    double alkaliResist() const {return _alkaliResist;}
+    double phosphateResist() const {return _phosphateResist;}
 
-    void setRelCost(qreal val) {_relCost = val;}
-    void setClimateResist(qreal val){_climateResist = val;}
-    void setStainResist(qreal val){_stainResist = val;}
-    void setAcidResist(qreal val){_acidResist = val;}
-    void setAlkaliResist(qreal val){_alkaliResist = val;}
-    void setPhosphateResist(qreal val){_phosphateResist = val;}
+    void  setRelCost(double val) {_relCost = val;}
+    void  setClimateResist(double val){_climateResist = val;}
+    void  setStainResist(double val){_stainResist = val;}
+    void  setAcidResist(double val){_acidResist = val;}
+    void  setAlkaliResist(double val){_alkaliResist = val;}
+    void  setPhosphateResist(double val){_phosphateResist = val;}
 
     // transmittance data
     double          transmittance(double lambdamicron, double thi = 25) const;
@@ -138,8 +140,8 @@ private:
     QString _comment;
 
     // extra data
-    qreal _lowTCE; // TCE: thermal coefficient of expansion
-    qreal _highTCE;
+    double _lowTCE; // TCE: thermal coefficient of expansion
+    double _highTCE;
 
     // dispersion data
     const int       _dispersion_data_size = 12;
@@ -151,13 +153,13 @@ private:
     QVector<double> _thermalData; //<D0> <D1> <D2> <E0> <E1> <Ltk> <temp>
 
     // other data
-    // Many glasses does not have valid data in OD line, so their default value should be NaN as "no data".
-    qreal _relCost;
-    qreal _climateResist;
-    qreal _stainResist;
-    qreal _acidResist;
-    qreal _alkaliResist;
-    qreal _phosphateResist;
+    // Many glasses does not have valid data in OD line, so their default value should be NaN for "no data".
+    double _relCost;
+    double _climateResist;
+    double _stainResist;
+    double _acidResist;
+    double _alkaliResist;
+    double _phosphateResist;
 
     // transmittance data
     double        _lambdaMax;

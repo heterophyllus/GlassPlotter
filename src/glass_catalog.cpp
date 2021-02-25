@@ -151,14 +151,12 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         else if(linetext.startsWith("TD"))
         {
             lineparts = linetext.simplified().split(" ");
-            if(lineparts.size() > 7){
-                _glasses.last()->hasThermalData = true;
+            if(lineparts.size() == 8){
                 for(int i = 1;i<8;i++){
                     _glasses.last()->setThermalData(i-1, lineparts[i].toDouble());
                 }
             }else{
-                qDebug() << "Invalid TD line: "<< _glasses.last()->name();
-                _glasses.last()->hasThermalData = false;
+                qDebug() << "Invalid line(TD): "<< _glasses.last()->name();
             }
         }
 
@@ -166,10 +164,8 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         else if(linetext.startsWith("OD"))
         {
             lineparts = linetext.simplified().split(" ");
-            if(lineparts.size() < 7){
-                qDebug() << "Invalid OD line: " << _glasses.last()->name();
-            }
-            else{
+            if(lineparts.size() == 7)
+            {
                 /*For these values, -1 should be specified if the data is not available.
                   Some manufactureres use "-" instead of "-1.00000".*/
 
@@ -206,6 +202,9 @@ bool GlassCatalog::loadAGF(QString AGFpath)
                     _glasses.last()->setPhosphateResist(dval);
                 }
             }
+            else{
+                qDebug() << "Invalid line(OD): " << _glasses.last()->name();
+            }
 
         }
 
@@ -221,12 +220,11 @@ bool GlassCatalog::loadAGF(QString AGFpath)
         else if(linetext.startsWith("IT"))
         {
             lineparts = linetext.simplified().split(" ");
-            if(lineparts.size() < 4){
-                qDebug() << "Invalid IT line: " << _glasses.last()->name();
-                continue; //eg. NIHON_KESSHO_KOGAKU CaF2
-            }
-            else{
+            if(lineparts.size() == 4){
                 _glasses.last()->appendTransmittanceData(lineparts[1].toDouble(), lineparts[2].toDouble(), lineparts[3].toDouble());
+            }
+            else{  //eg. NIHON_KESSHO_KOGAKU CaF2
+                qDebug() << "Invalid line (IT): " << _glasses.last()->name();
             }
         }
     }
@@ -294,8 +292,12 @@ bool GlassCatalog::loadXml(QString xmlpath)
         }
 
         // high/low TCE(CTE)
-        g->setLowTCE(glass_it->child("LowTCE").attribute("Value").as_double());
-        g->setHighTCE(glass_it->child("HighTCE").attribute("Value").as_double());
+        if(glass_it->child("LowCTE")){
+            g->setLowTCE(glass_it->child("LowCTE").child("Value").text().as_double());
+        }
+        if(glass_it->child("HighCTE")){
+            g->setHighTCE(glass_it->child("HighCTE").child("Value").text().as_double());
+        }
 
         // Manufacturer's properties
         for(pugi::xml_node_iterator mp_it = glass_it->child("ManufacturersProperties").begin(); mp_it != glass_it->child("ManufacturersProperties").end(); mp_it++)
@@ -335,22 +337,25 @@ bool GlassCatalog::loadXml(QString xmlpath)
         }
 
         // DnDt data
-        g->hasThermalData = true;
-        g->setThermalData( 0, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D0").text().as_double() );
-        g->setThermalData( 1, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D1").text().as_double() );
-        g->setThermalData( 2, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D2").text().as_double() );
-        g->setThermalData( 3, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E0").text().as_double() );
-        g->setThermalData( 4, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E1").text().as_double() );
-        g->setThermalData( 5, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Lambda").text().as_double() );
-        g->setThermalData( 6, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Temperature").text().as_double() );
+        if(glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants"))
+        {
+            g->setThermalData( 0, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D0").text().as_double() );
+            g->setThermalData( 1, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D1").text().as_double() );
+            g->setThermalData( 2, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D2").text().as_double() );
+            g->setThermalData( 3, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E0").text().as_double() );
+            g->setThermalData( 4, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E1").text().as_double() );
+            g->setThermalData( 5, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Lambda").text().as_double() );
+            g->setThermalData( 6, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Temperature").text().as_double() );
+        }
 
-
+        // append to list
         _glasses.append(g);
 
         // add glass name to map
         _name_to_int_map.insert(g->name(), glassNumber);
         glassNumber += 1;
     }
+
     g = nullptr;
 
     return true;

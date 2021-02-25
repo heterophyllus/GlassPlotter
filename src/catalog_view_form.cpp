@@ -55,33 +55,32 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
     QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 
     QObject::connect(ui->pushButton_showDatasheet,SIGNAL(clicked()), this, SLOT(showDatasheet()));
-    QObject::connect(ui->pushButton_Setting,SIGNAL(clicked()), this, SLOT(showSettingDlg()));
+    QObject::connect(ui->pushButton_Setting,SIGNAL(clicked()),       this, SLOT(showSettingDlg()));
 
     m_table = ui->tableWidget;
 
-    m_allPropertyList.clear();
-    m_allPropertyList.reserve(29);
-    m_allPropertyList.append("status");
-    m_allPropertyList.append("individual comment");
-    m_allPropertyList.append("MIL");
-    m_allPropertyList.append("nd");
-    m_allPropertyList.append("ne");
-    m_allPropertyList.append("vd");
-    m_allPropertyList.append("ve");
-    m_allPropertyList.append("PgF");
-    m_allPropertyList.append("Dispersion Formula");
-    m_allPropertyList.append("Dispersion Coefficients");
-    m_allPropertyList.append("Thermal Coefficients");
-    m_allPropertyList.append("Low TCE");
-    m_allPropertyList.append("High TCE");
-    m_allPropertyList.append("Relative Cost");
-    m_allPropertyList.append("Climate Resist");
-    m_allPropertyList.append("Acid Resist");
-    m_allPropertyList.append("Alkali Resist");
-    m_allPropertyList.append("Phosphate Resist");
+    m_allPropertyList = QStringList({"nd",
+                                     "ne",
+                                     "vd",
+                                     "ve",
+                                     "PgF",
+                                     "PCt_",
+                                     "status",
+                                     "individual comment",
+                                     "MIL",
+                                     "Dispersion Formula",
+                                     "Dispersion Coefficients",
+                                     "Thermal Coefficients",
+                                     "Low TCE",
+                                     "High TCE",
+                                     "Relative Cost",
+                                     "Climate Resist",
+                                     "Acid Resist",
+                                     "Alkali Resist",
+                                     "Phosphate Resist"
+                                    });
 
-
-    // default table
+    // set up default table
     m_currentPropertyList << "nd" << "ne" << "vd" << "ve" << "PgF";
     m_currentDigit = 5;
     this->update();
@@ -143,6 +142,9 @@ void CatalogViewForm::setUpTable(QStringList properties, GlassCatalog* catalog, 
         }
         else if("PgF" == properties[j]){
             headerLabels.append("PgF");
+        }
+        else if("PCt_" == properties[j]){
+            headerLabels.append("PCt_");
         }
         else if("Dispersion Formula" == properties[j]){
             headerLabels.append("Dispersion Formula");
@@ -235,6 +237,9 @@ void CatalogViewForm::setUpTable(QStringList properties, GlassCatalog* catalog, 
             else if("PgF" == properties[j]){
                 addTableItem(row,col,numToQString(glass->PgF(), 'f', digit));
             }
+            else if("PCt_" == properties[j]){
+                addTableItem(row,col,numToQString(glass->PCt_(), 'f', digit));
+            }
             else if("Dispersion Formula" == properties[j]){
                 addTableItem(row,col,glass->formulaName());
             }
@@ -304,7 +309,7 @@ void CatalogViewForm::showDatasheet()
 
 void CatalogViewForm::showSettingDlg()
 {
-    CatalogViewSettingDialog *dlg = new CatalogViewSettingDialog(m_allPropertyList, this);
+    CatalogViewSettingDialog *dlg = new CatalogViewSettingDialog(m_allPropertyList, m_currentPropertyList, m_currentDigit, this);
 
     if(dlg->exec() == QDialog::Accepted){
         dlg->getSettings(m_currentPropertyList, m_currentDigit);
