@@ -1,7 +1,6 @@
 #include "load_catalog_result_dialog.h"
 #include "ui_load_catalog_result_dialog.h"
 
-#include <QTextEdit>
 
 LoadCatalogResultDialog::LoadCatalogResultDialog(QWidget *parent) :
     QDialog(parent),

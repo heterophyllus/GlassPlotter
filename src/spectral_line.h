@@ -36,17 +36,9 @@
 class SpectralLine
 {
 public:
-    /**
-     * @brief Get wavelength of the line
-     * @param spectralname
-     * @return
-     */
+
     static double wavelength(QString spectralname);
 
-    /**
-     * @brief Get line name list
-     * @return
-     */
     static QStringList spectralLineList();
 
     static const double t;

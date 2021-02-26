@@ -30,7 +30,6 @@
 #include <QTableWidget>
 #include <QListWidget>
 #include <QDialog>
-#include <QDebug>
 
 #include "glass.h"
 #include "glass_catalog.h"
