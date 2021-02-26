@@ -70,6 +70,7 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
         QObject::connect(m_lineEditList[i],SIGNAL(textEdited(QString)),this, SLOT(update()));
     }
 
+
     // glassmap control
     setUpScrollArea();
 
@@ -251,7 +252,7 @@ void GlassMapForm::showGlassDataSheet()
 
 void GlassMapForm::showCurveFittingDlg()
 {
-    CurveFittingDialog* dlg = new CurveFittingDialog(m_catalogList, this);
+    CurveFittingDialog* dlg = new CurveFittingDialog(m_catalogList, m_xDataName, m_yDataName, this);
     if(dlg->exec() == QDialog::Accepted)
     {
         QList<double> coefs;

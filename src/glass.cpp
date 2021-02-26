@@ -73,6 +73,10 @@ Glass::~Glass()
     _thermalData.clear();
 }
 
+/**
+ * @brief Get value of specified property
+ * @param dname property name
+ */
 double Glass::getValue(QString dname) const
 {
     if(dname == "nd"){
@@ -109,6 +113,7 @@ double Glass::getValue(QString dname) const
     }
 }
 
+// useful aliases
 double Glass::nd() const
 {
     return index("d");
@@ -149,6 +154,11 @@ double Glass::PCt_() const
     return Pxy_("C","t");
 }
 
+/**
+ * @brief Fundamental function to compute refractive index.
+ * @param lambdamicron wavelength in micron
+ * @return refractive index
+ */
 double Glass::index(double lambdamicron) const
 {
     switch(_formulaIndex){
@@ -200,6 +210,11 @@ double Glass::index(double lambdamicron) const
 
 }
 
+/**
+ * @brief Compute refractive index for spectral line
+ * @param spectral spectral line name
+ * @return
+ */
 double Glass::index(QString spectral) const
 {
     return index(SpectralLine::wavelength(spectral)/1000.0); // unit:micron
@@ -217,6 +232,12 @@ QVector<double> Glass::index(QVector<double> vLambdamicron) const
     return vInd;
 }
 
+/**
+ * @brief Compute Buchdahl dispersion coefficient
+ * @note This is a test function.  The implementation refers the github repository: mjhoptics/opticalglass (https://github.com/mjhoptics/opticalglass/blob/master/opticalglass/buchdahl.py)
+ * @param n coefficient index
+ * @return
+ */
 double Glass::BuchdahlDispCoef(int n) const
 {
     /* This is a test function.

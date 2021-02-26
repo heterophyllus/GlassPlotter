@@ -32,12 +32,13 @@
 
 #include "glass.h"
 #include "glass_catalog.h"
+#include "glass_selection_dialog.h"
 
 #include "Eigen/Dense"
 
 using namespace Eigen;
 
-CurveFittingDialog::CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget *parent) :
+CurveFittingDialog::CurveFittingDialog(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CurveFittingDialog)
 {
@@ -45,6 +46,8 @@ CurveFittingDialog::CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget
     this->setWindowTitle("Curve Fitting");
 
     m_catalogList = catalogList;
+    m_xDataName   = xdataname;
+    m_yDataName   = ydataname;
 
     m_table = ui->tableWidget;
     m_table->clear();
@@ -57,7 +60,8 @@ CurveFittingDialog::CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget
         m_comboBoxOrder->addItem(QString::number(i));
     }
 
-    QObject::connect(ui->pushButton_AddRow,    SIGNAL(clicked()), this, SLOT(addRow()));
+    QObject::connect(ui->pushButton_AddRow,    SIGNAL(clicked()), this, SLOT(addNewRow()));
+    QObject::connect(ui->pushButton_AddGlass,    SIGNAL(clicked()), this, SLOT(addGlassForNewRow()));
     QObject::connect(ui->pushButton_DeleteRow, SIGNAL(clicked()), this, SLOT(deleteSelectedRow()));
 
 }
@@ -71,7 +75,13 @@ CurveFittingDialog::~CurveFittingDialog()
     delete ui;
 }
 
-void CurveFittingDialog::addRow()
+/**
+ * @brief Add new row to the table
+ * @param s1 string value for X cell
+ * @param s2 string value for Y cell
+ * @param s3 string value for Comment cell
+ */
+void CurveFittingDialog::addNewRow(QString s1, QString s2, QString s3)
 {
     int nRow = m_table->rowCount();
     m_table->insertRow(nRow);
@@ -79,22 +89,62 @@ void CurveFittingDialog::addRow()
     // X
     QTableWidgetItem* item;
     item = new QTableWidgetItem;
-    item->setText("");
+    item->setText(s1);
     m_table->setItem(nRow,0,item);
 
     // Y
     item = new QTableWidgetItem;
-    item->setText("");
+    item->setText(s2);
     m_table->setItem(nRow,1,item);
 
     // comment
     item = new QTableWidgetItem;
-    item->setText("");
+    item->setText(s3);
     m_table->setItem(nRow,2,item);
 
     m_table->update();
 }
 
+
+/**
+ * @brief Add coordinates for new row by selecting glass
+ */
+void CurveFittingDialog::addGlassForNewRow()
+{
+    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
+    if(dlg->exec() == QDialog::Accepted)
+    {
+        // get glass
+        int catalogIndex  = dlg->getCatalogIndex();
+        QString glassName = dlg->getGlassName();
+        Glass* glass   = m_catalogList.at(catalogIndex)->glass(glassName);
+
+        // check dispersion formula of the glass
+        if("Unknown" == glass->formulaName()){
+            QMessageBox::warning(this,tr("Error"), "Could not get coordinates due to unknown dispersion formula");
+        }
+        // add glass property for new row
+        else{
+            QString s1 = QString::number(glass->getValue(m_xDataName));
+            QString s2 = QString::number(glass->getValue(m_yDataName));
+            QString s3 = glass->name() + "_" + glass->supplyer();
+            addNewRow(s1, s2, s3);
+        }
+        glass = nullptr;
+    }
+
+    try {
+        delete dlg;
+    }  catch (...) {
+        dlg = nullptr;
+    }
+    dlg = nullptr;
+
+}
+
+/**
+ * @brief Delete currently selected row
+ */
 void CurveFittingDialog::deleteSelectedRow()
 {
     int row = m_table->currentRow();
@@ -103,6 +153,11 @@ void CurveFittingDialog::deleteSelectedRow()
     m_table->update();
 }
 
+/**
+ * @brief Get fitting result using simple polynomial regression.  The result will be contained the parameter "result"
+ * @param result
+ * @return if true, successfully computed
+ */
 bool CurveFittingDialog::getFittingResult(QList<double>& result)
 {
     //https://en.wikipedia.org/wiki/Polynomial_regression

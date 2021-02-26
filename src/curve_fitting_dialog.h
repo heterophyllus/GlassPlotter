@@ -43,25 +43,23 @@ class CurveFittingDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QWidget *parent = nullptr);
     ~CurveFittingDialog();
 
-    /**
-     * @brief calculateFitting
-     * @param result vector
-     * @return true: calculation was successfully done
-     */
     bool getFittingResult(QList<double>& result);
 
-
 private slots:
-    void addRow();
+    void addNewRow(QString s1="", QString s2="", QString s3="");
+    void addGlassForNewRow();
     void deleteSelectedRow();
 
 private:
     Ui::CurveFittingDialog *ui;
 
     QList<GlassCatalog*> m_catalogList;
+
+    QString m_xDataName;
+    QString m_yDataName;
 
     QComboBox*    m_comboBoxOrder;
     QTableWidget* m_table;
