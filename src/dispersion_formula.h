@@ -29,6 +29,11 @@
 #include <QVector>
 #include <QStringList>
 
+/**
+ * @class DispersionFormula
+ * @brief This class defines dispersion formula function to compute glass refractive index.
+ * @note  Read Zemax/CODEV user manual for technical reference.
+ */
 class DispersionFormula
 {
 public:
@@ -88,32 +93,6 @@ public:
         return c[0] + c[1]/pow((c[2]-lambdamicron), 1.2);
     }
 
-    /**
-     * @brief get dispersion formula name list
-     */
-    static QStringList formulaNames()
-    {
-        QStringList names = {"Schott",
-                             "Sellmeier 1",
-                             "Herzberger",
-                             "Sellmeier 2",
-                             "Conrady",
-                             "Sellmeier 3",
-                             "Handbook of Optics 1",
-                             "Handbook of Optics 2",
-                             "Sellmeier 4",
-                             "Extended 1",
-                             "Sellmeier 5",
-                             "Extended 2",
-                             "Laurent",
-                             "Glass Manufacturer Laurent",
-                             "Glass Manufacturer Sellmeier",
-                             "Cauchy",
-                             "Hartman"
-                            };
-
-        return names;
-    }
 };
 
 #endif // DISPERSION_FORMULA_H

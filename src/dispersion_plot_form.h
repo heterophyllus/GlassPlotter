@@ -52,6 +52,7 @@ public:
     ~DispersionPlotForm();
 
 private slots:
+    void on_comboBoxChanged();
     void addGraph();
     void deleteGraph();
     void setAxis();

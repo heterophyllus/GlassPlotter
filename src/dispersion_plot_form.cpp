@@ -64,13 +64,29 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     QObject::connect(ui->checkBox_Curve,        SIGNAL(toggled(bool)), this, SLOT(updateAll()));
 
     // select formula for user defined curve
-    QStringList formulaNames;
-    formulaNames.append("Polynomial");
-    formulaNames.append(DispersionFormula::formulaNames());
+    QStringList formulaNames = {"Polynomial",
+                                "Schott",
+                                "Sellmeier 1",
+                                "Herzberger",
+                                "Sellmeier 2",
+                                "Conrady",
+                                "Sellmeier 3",
+                                "Handbook of Optics 1",
+                                "Handbook of Optics 2",
+                                "Sellmeier 4",
+                                "Extended 1",
+                                "Sellmeier 5",
+                                "Extended 2",
+                                "Laurent",
+                                "Glass Manufacturer Laurent",
+                                "Glass Manufacturer Sellmeier",
+                                "Cauchy",
+                                "Hartman"};
 
     m_comboBoxFormula = ui->comboBox_Formula;
     m_comboBoxFormula->addItems(formulaNames);
-    QObject::connect(m_comboBoxFormula,       SIGNAL(currentIndexChanged(int)), this, SLOT(updateAll()));
+    QObject::connect(m_comboBoxFormula,       SIGNAL(currentIndexChanged(int)), this, SLOT(on_comboBoxChanged()));
+
 
     // table widget to list up the coefficients
     m_tableCoefs = ui->tableWidget_Coefs;
@@ -84,14 +100,14 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
         item = new QTableWidgetItem;
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
         m_tableCoefs->setItem(i,0,item);
-        QObject::connect(m_tableCoefs,       SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
     }
     m_tableCoefs->setVerticalHeaderLabels(vHeaderLabels);
-    m_tableCoefs->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    //m_tableCoefs->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     //m_tableCoefs->resizeColumnsToContents();
     int whole_width = m_tableCoefs->width();
     m_tableCoefs->setColumnWidth(0, whole_width);
     m_tableCoefs->update();
+    QObject::connect(m_tableCoefs, SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
 
     // plot step
     ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 5, this));
@@ -129,6 +145,97 @@ void DispersionPlotForm::setColorToGraph(QCPGraph* graph, QColor color)
     graph->setPen(pen);
 }
 
+void DispersionPlotForm::on_comboBoxChanged()
+{
+    QTableWidgetItem *item;
+    int rowCount = m_tableCoefs->rowCount();
+
+    QObject::disconnect(m_tableCoefs, SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
+
+    // initialize all cells
+    for(int i = 0; i < rowCount; i++)
+    {
+        item = m_tableCoefs->item(i,0);
+        item->setText("");
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        //item->setFlags(item->flags() | Qt::ItemIsEnabled);
+        item->setData(Qt::BackgroundRole, QColor("white"));
+    }
+
+
+    // get unused coefficients
+    int invalid_start = m_tableCoefs->rowCount();
+
+    switch (ui->comboBox_Formula->currentIndex()) {
+    case 0:
+        break;
+    case 1: // Schott
+        invalid_start = 6;
+        break;
+    case 2: // Sellmeier 1
+        invalid_start = 6;
+        break;
+    case 3: // Herzberger
+        invalid_start = 6;
+        break;
+    case 4: // Sellmeier 2
+        invalid_start = 5;
+        break;
+    case 5: // Conrady
+        invalid_start = 3;
+        break;
+    case 6: // Sellmeier 3
+        invalid_start = 8;
+        break;
+    case 7: // Handbook of Optics 1
+        invalid_start = 4;
+        break;
+    case 8: // Handbook of Optics 2
+        invalid_start = 4;
+        break;
+    case 9: // Sellmeier 4
+        invalid_start = 5;
+        break;
+    case 10: // Extended 1
+        invalid_start = 8;
+        break;
+    case 11: // Sellmeier 5
+        invalid_start = 9;
+        break;
+    case 12: // Extended 2
+        invalid_start = 8;
+        break;
+    case 13: // Laurent
+        invalid_start = 12;
+        break;
+    case 14: // Glass Manufacturer Laurent
+        invalid_start = 7;
+        break;
+    case 15: // Glass Manufacturer Sellmeier
+        invalid_start = 12;
+        break;
+    case 16: // Cauchy
+        invalid_start = 3;
+        break;
+    case 17: // Hartman
+        invalid_start = 3;
+        break;
+    }
+
+
+    // disable and encolor invalid cells
+    for(int row = invalid_start; row < rowCount; row++)
+    {
+        item = m_tableCoefs->item(row,0);
+        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        //item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+        item->setData(Qt::BackgroundRole, QColor("light grey"));
+    }
+
+    QObject::connect(m_tableCoefs, SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
+
+    updateAll();
+}
 
 QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
 {
