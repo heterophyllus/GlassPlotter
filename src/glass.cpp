@@ -240,24 +240,14 @@ QVector<double> Glass::index(QVector<double> vLambdamicron) const
  */
 double Glass::BuchdahlDispCoef(int n) const
 {
-    /* This is a test function.
-     *
-     * This function calculates Buchdahl dispersion coefficients.
-     * The implementation refers remarkable github repository: mjhoptics/opticalglass
-     *      source:https://github.com/mjhoptics/opticalglass/blob/master/opticalglass/buchdahl.py
-     *
-     * Input:
-     *      n : coefficients index (0,1)
-     */
-
     Q_ASSERT(n <= 1);
 
-    double nd = index(SpectralLine::d/1000.0);
-    double nF = index(SpectralLine::F/1000.0);
-    double nC = index(SpectralLine::C/1000.0);
     double wd = SpectralLine::d/1000.0;
     double wF = SpectralLine::F/1000.0;
     double wC = SpectralLine::C/1000.0;
+    double nd = index(wd);
+    double nF = index(wF);
+    double nC = index(wC);
 
     double omegaF = ( wF-wd )/( 1 + 2.5*(wF-wd) );
     double omegaC = ( wC-wd )/( 1 + 2.5*(wC-wd) );
@@ -325,7 +315,9 @@ void Glass::setDispCoef(int n, double val)
     }
 }
 
-
+/**
+ * @brief Get dispersion formula name
+ */
 QString Glass::formulaName() const
 {
     switch(_formulaIndex){
@@ -372,6 +364,13 @@ QString Glass::formulaName() const
     }
 }
 
+/**
+ * @brief Compute internal transmittance at specified wavelength and thickness
+ * @param lambdamicron wavelength in micron
+ * @param thi thickness
+ * @note This function uses spline interpolation.  Calculation result outside of the valid wavelength range may be weird.
+ * @return internal transmittance
+ */
 double Glass::transmittance(double lambdamicron, double thi) const
 {
     Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );

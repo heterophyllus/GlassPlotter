@@ -39,7 +39,7 @@
 #include "glass_datasheet_form.h"
 #include "dndt_plot_form.h"
 #include "catalog_view_form.h"
-
+#include "load_catalog_result_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -121,18 +121,28 @@ void MainWindow::loadAGF()
 
     // load catalogs
     GlassCatalog* catalog;
+    QString parse_result, parse_result_all;
     for(int i = 0; i < filePaths.size(); i++){
         catalog = new GlassCatalog;
-        if(catalog->loadAGF(filePaths[i])){
+        parse_result.clear();
+        if(catalog->loadAGF(filePaths[i], parse_result)){
             m_catalogList.append(catalog);
+            parse_result_all += parse_result;
+        }
+        else{
+            parse_result_all += ("Catalog loading error:" + filePaths[i]);
         }
     }
 
-    // show path in statusbar
+    // show directory path in statusbar
     QFileInfo finfo(filePaths.first());
     ui->statusbar->showMessage(finfo.absolutePath());
 
-    QMessageBox::information(this,tr("Message"), tr("AGF files have been successfully loaded."));
+    // show parse result
+    LoadCatalogResultDialog dlg(this);
+    dlg.setLabel("Loading AGF files has been finished.\nBelows are notable parse results.");
+    dlg.setText(parse_result_all);
+    dlg.exec();
 }
 
 void MainWindow::loadXML()
@@ -161,18 +171,29 @@ void MainWindow::loadXML()
 
     // load catalogs
     GlassCatalog* catalog;
+    QString parse_result, parse_result_all;
     for(int i = 0; i < filePaths.size(); i++){
         catalog = new GlassCatalog;
-        if(catalog->loadXml(filePaths[i])){
+        parse_result.clear();
+        if(catalog->loadXml(filePaths[i],parse_result)){
             m_catalogList.append(catalog);
+            parse_result_all += parse_result;
+        }
+        else{
+            parse_result_all += ("Catalog loading error:" + filePaths[i]);
         }
     }
 
-    // show path in statusbar
+    // show directory path in statusbar
     QFileInfo finfo(filePaths.first());
     ui->statusbar->showMessage(finfo.absolutePath());
 
-    QMessageBox::information(this,tr("Message"), tr("XML files have been successfully loaded."));
+    // show parse result
+    LoadCatalogResultDialog dlg(this);
+    dlg.setLabel("Loading XML files has been finished.\nBelows are notable parse results.");
+    dlg.setText(parse_result_all);
+    dlg.exec();
+
 }
 
 /**

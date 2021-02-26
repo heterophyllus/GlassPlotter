@@ -41,6 +41,7 @@ SOURCES += \
     glass_datasheet_form.cpp \
     glass_selection_dialog.cpp \
     glassmap_form.cpp \
+    load_catalog_result_dialog.cpp \
     main.cpp \
     mainwindow.cpp \
     preset_dialog.cpp \
@@ -64,6 +65,7 @@ HEADERS += \
     glass_datasheet_form.h \
     glass_selection_dialog.h \
     glassmap_form.h \
+    load_catalog_result_dialog.h \
     mainwindow.h \
     preset_dialog.h \
     qcpscatterchart.h \
@@ -85,6 +87,7 @@ FORMS += \
     glass_datasheet_form.ui \
     glass_selection_dialog.ui \
     glassmap_form.ui \
+    load_catalog_result_dialog.ui \
     mainwindow.ui \
     preset_dialog.ui \
     transmittance_plot_form.ui

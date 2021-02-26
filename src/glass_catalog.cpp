@@ -30,7 +30,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-#include <QDebug>
 
 GlassCatalog::GlassCatalog()
 {
@@ -83,12 +82,21 @@ bool GlassCatalog::hasGlass(QString glassname) const
     return _name_to_int_map.contains(glassname);
 }
 
-bool GlassCatalog::loadAGF(QString AGFpath)
+/**
+ * @brief Load glass data from Zemax AGF file
+ * @param AGFpath AGF file path
+ * @param parse_result Container for notable parse results
+ * @return
+ */
+bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
 {
     QFile file(AGFpath);
     if (! file.open(QIODevice::ReadOnly)) {
         return false;
     }
+
+    // parse result
+    QString filename = QFileInfo(AGFpath).fileName();
 
     this->clear();
 
@@ -101,7 +109,8 @@ bool GlassCatalog::loadAGF(QString AGFpath)
 
     Glass *g;
     int glassNumber = 0;
-    while (! in.atEnd()) {
+    while (! in.atEnd())
+    {
         linetext = in.readLine();
         linecount++;
 
@@ -121,6 +130,10 @@ bool GlassCatalog::loadAGF(QString AGFpath)
 
             if(lineparts.size() > 7){
                 _glasses.last()->setStatus(lineparts[7].toUInt());
+            }
+
+            if(_glasses.last()->formulaIndex() == 13){
+                parse_result += filename + "(" + QString::number(linecount) + "): " + _glasses.last()->name() + ": " + "Unknown dispersion formula\n";
             }
         }
 
@@ -156,7 +169,7 @@ bool GlassCatalog::loadAGF(QString AGFpath)
                     _glasses.last()->setThermalData(i-1, lineparts[i].toDouble());
                 }
             }else{
-                qDebug() << "Invalid line(TD): "<< _glasses.last()->name();
+                parse_result += filename + "(" + QString::number(linecount) + "): " + _glasses.last()->name() + ": " + "Invalid line(TD)\n";
             }
         }
 
@@ -203,7 +216,7 @@ bool GlassCatalog::loadAGF(QString AGFpath)
                 }
             }
             else{
-                qDebug() << "Invalid line(OD): " << _glasses.last()->name();
+                parse_result += filename + "(" + QString::number(linecount) + "): " + _glasses.last()->name() + ": " + "Invalid line(OD)\n";
             }
 
         }
@@ -223,8 +236,8 @@ bool GlassCatalog::loadAGF(QString AGFpath)
             if(lineparts.size() == 4){
                 _glasses.last()->appendTransmittanceData(lineparts[1].toDouble(), lineparts[2].toDouble(), lineparts[3].toDouble());
             }
-            else{  //eg. NIHON_KESSHO_KOGAKU CaF2
-                qDebug() << "Invalid line (IT): " << _glasses.last()->name();
+            else{
+                parse_result += filename + "(" + QString::number(linecount) + "): " + _glasses.last()->name() + ": " + "Invalid line(IT)\n";
             }
         }
     }
@@ -234,12 +247,21 @@ bool GlassCatalog::loadAGF(QString AGFpath)
     return true;
 }
 
-bool GlassCatalog::loadXml(QString xmlpath)
+/**
+ * @brief Load glass data from CODEV Xml file
+ * @param xmlpath Xml file path
+ * @param parse_result Container for notable parse results
+ * @return
+ */
+bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
 {
     pugi::xml_document doc;
     if(!doc.load_file(xmlpath.toUtf8().data())) {
         return false;
     }
+
+    // parse result
+    QString filename = QFileInfo(xmlpath).fileName();
 
     this->clear();
 
@@ -280,6 +302,7 @@ bool GlassCatalog::loadXml(QString xmlpath)
         }
         else{
             g->setDispForm(13); //unknown
+            parse_result += filename + ": " + g->name() + ": " + "Unknown dispersion formula\n";
         }
 
 
@@ -295,26 +318,53 @@ bool GlassCatalog::loadXml(QString xmlpath)
         if(glass_it->child("LowCTE")){
             g->setLowTCE(glass_it->child("LowCTE").child("Value").text().as_double());
         }
+        else{
+            parse_result += filename + ": " + g->name() + ": " + "Not found LowCTE\n";
+        }
         if(glass_it->child("HighCTE")){
             g->setHighTCE(glass_it->child("HighCTE").child("Value").text().as_double());
         }
+        else{
+            parse_result += filename + ": " + g->name() + ": " + "Not found HighCTE\n";
+        }
 
         // Manufacturer's properties
+        bool hasAcidResist = false;
+        bool hasClimateResist = false;
+        bool hasStainResist = false;
+        bool hasAlkaliResist = false;
         for(pugi::xml_node_iterator mp_it = glass_it->child("ManufacturersProperties").begin(); mp_it != glass_it->child("ManufacturersProperties").end(); mp_it++)
         {
             QString propertyname = QString(mp_it->child("Name").text().as_string());
             if(propertyname.compare("Acid_resist") == 0){
+                hasAcidResist = true;
                 g->setAcidResist(mp_it->child("Value").text().as_double());
             }
             else if(propertyname.compare("Climatic_resist") == 0){
+                hasClimateResist = true;
                 g->setClimateResist(mp_it->child("Value").text().as_double());
             }
             else if(propertyname.compare("Stain_resist") == 0){
+                hasStainResist = true;
                 g->setStainResist(mp_it->child("Value").text().as_double());
             }
             else if(propertyname.compare("Alkali_resist") == 0){
+                hasAlkaliResist = true;
                 g->setAlkaliResist(mp_it->child("Value").text().as_double());
             }
+        }
+        // append parse result of manufacturer property
+        if(!hasAcidResist){
+            parse_result += filename + ": " + g->name() + ": " + "Not found Acid Resist\n";
+        }
+        if(!hasClimateResist){
+            parse_result += filename + ": " + g->name() + ": " + "Not found Climate Resist\n";
+        }
+        if(!hasStainResist){
+            parse_result += filename + ": " + g->name() + ": " + "Not found Stain Resist\n";
+        }
+        if(!hasAlkaliResist){
+            parse_result += filename + ": " + g->name() + ": " + "Not found Alkali Resist\n";
         }
 
         // transmittance
@@ -346,6 +396,9 @@ bool GlassCatalog::loadXml(QString xmlpath)
             g->setThermalData( 4, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_E1").text().as_double() );
             g->setThermalData( 5, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Lambda").text().as_double() );
             g->setThermalData( 6, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Temperature").text().as_double() );
+        }
+        else{
+            parse_result += filename + ": " + g->name() + ": " + "Not found DnDtConstants\n";
         }
 
         // append to list

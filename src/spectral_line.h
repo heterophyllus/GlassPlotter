@@ -23,9 +23,6 @@
  *****************************************************************************/
 
 
-/**
-  * Container class for Fraunhofer spectral lines
-  */
 
 #ifndef SPECTRAL_LINE_H
 #define SPECTRAL_LINE_H
@@ -33,22 +30,24 @@
 #include<QString>
 #include<QStringList>
 
+/**
+ * @brief Container class for Fraunhofer spectral line
+ */
 class SpectralLine
 {
 public:
     /**
-     * @brief get wavelength of the line
+     * @brief Get wavelength of the line
      * @param spectralname
      * @return
      */
     static double wavelength(QString spectralname);
 
     /**
-     * @brief get line name list
+     * @brief Get line name list
      * @return
      */
     static QStringList spectralLineList();
-
 
     static const double t;
     static const double s;

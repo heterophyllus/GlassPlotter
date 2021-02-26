@@ -51,8 +51,8 @@ public:
     int     glassCount() const {return _glasses.size();}
     bool    hasGlass(QString glassname) const;
 
-    bool loadAGF(QString AGFpath);
-    bool loadXml(QString xmlpath);
+    bool loadAGF(QString AGFpath, QString& parse_result);
+    bool loadXml(QString xmlpath, QString& parse_result);
 
     void clear();
 
