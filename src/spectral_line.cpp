@@ -27,18 +27,19 @@
 
 //http://www.hoya-opticalworld.com/japanese/technical/002.html
 const double SpectralLine::t = 1013.980;
-const double SpectralLine::s = 852.110;
-const double SpectralLine::r = 706.519;
-const double SpectralLine::C = 656.273;
-const double SpectralLine::C_= 643.847;
-const double SpectralLine::D = 589.294;
-const double SpectralLine::d = 587.562;
-const double SpectralLine::e = 546.074;
-const double SpectralLine::F = 486.133;
-const double SpectralLine::F_= 479.991;
-const double SpectralLine::g = 435.834;
-const double SpectralLine::h = 404.656;
-const double SpectralLine::i = 365.015;
+const double SpectralLine::s =  852.110;
+const double SpectralLine::r =  706.519;
+const double SpectralLine::C =  656.273;
+const double SpectralLine::C_=  643.847;
+const double SpectralLine::D =  589.294;
+const double SpectralLine::d =  587.562;
+const double SpectralLine::e =  546.074;
+const double SpectralLine::F =  486.133;
+const double SpectralLine::F_=  479.991;
+const double SpectralLine::g =  435.834;
+const double SpectralLine::h =  404.656;
+const double SpectralLine::i =  365.015;
+
 
 /**
  * @brief Get wavelength of the line
@@ -87,16 +88,7 @@ double SpectralLine::wavelength(QString spectralname)
         return SpectralLine::i;
     }
     else{
-        return 0;
+        return NAN;
     }
 }
 
-
-/**
- * @brief Get line name list
- * @return
- */
-QStringList SpectralLine::spectralLineList()
-{
-    return QStringList() << "t" << "s"<< "r"<< "C" << "d" << "e" << "F" << "g" << "h" << "i";
-}

@@ -41,9 +41,9 @@ GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
 
     // set names
     ui->label_GlassName->setText( m_glass->name() + " (" + m_glass->supplyer() + ")" );
-    ui->label_Fundamental->setText( "nd= " + QString::number(m_glass->nd()) + "   Vd= " + QString::number(m_glass->vd()) );
+    ui->label_Fundamental->setText( "nd= " + QString::number(m_glass->nd()) + "   vd= " + QString::number(m_glass->vd()) );
 
-    // The layout is created with reference to Schott's website
+    // set up all tabs
     setUpBasicTab();
     setUpIndicesTab();
     setUpPartialTab();
@@ -58,7 +58,7 @@ GlassDataSheetForm::~GlassDataSheetForm()
     delete ui;
 }
 
-void GlassDataSheetForm::addItem(int row, int col, QString str, QGridLayout* gridLayout)
+void GlassDataSheetForm::addGridItem(QGridLayout* gridLayout, int row, int col, QString str)
 {
     QWidget* scrollAreaContents = gridLayout->parentWidget();
 
@@ -72,44 +72,47 @@ void GlassDataSheetForm::addItem(int row, int col, QString str, QGridLayout* gri
 void GlassDataSheetForm::setUpBasicTab()
 {
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Basic;
-    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout_Basic"));
+    QGridLayout* grid = new QGridLayout(scrollAreaContents);
+    grid->setObjectName(QString::fromUtf8("gridLayout_Basic"));
 
     // name
-    addItem(0, 0, "Name",              gridLayout);
-    addItem(0, 1, m_glass->name(),     gridLayout);
+    addGridItem(grid, 0, 0, "Name");
+    addGridItem(grid, 0, 1, m_glass->name());
 
     // catalog
-    addItem(1, 0, "Catalog",           gridLayout);
-    addItem(1, 1, m_glass->supplyer(), gridLayout);
+    addGridItem(grid, 1, 0, "Catalog");
+    addGridItem(grid, 1, 1, m_glass->supplyer());
 
     // MIL
-    addItem(2, 0, "MIL",               gridLayout);
-    addItem(2, 1, m_glass->MIL(),      gridLayout);
+    addGridItem(grid, 2, 0, "MIL");
+    addGridItem(grid, 2, 1, m_glass->MIL());
 
     // status
-    addItem(3, 0, "Status",            gridLayout);
-    addItem(3, 1, m_glass->status(),   gridLayout);
+    addGridItem(grid, 3, 0, "Status");
+    addGridItem(grid, 3, 1, m_glass->status());
 
     // comment
-    addItem(4, 0, "Comment",           gridLayout);
-    addItem(4, 1, m_glass->comment(),  gridLayout);
+    addGridItem(grid, 4, 0, "Comment");
+    addGridItem(grid, 4, 1, m_glass->comment());
 }
 
 void GlassDataSheetForm::setUpIndicesTab()
 {
+    const int wvl_digit = 3;
+    const int val_digit = 6;
+
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents;
-    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout_Indices"));
+    QGridLayout* grid = new QGridLayout(scrollAreaContents);
+    grid->setObjectName(QString::fromUtf8("gridLayout_Indices"));
 
     // table header
-    addItem(0, 0, "Spectral",   gridLayout);
-    addItem(0, 1, "Wavelength", gridLayout);
-    addItem(0, 2, "Index",      gridLayout);
+    addGridItem(grid, 0, 0, "Spectral");
+    addGridItem(grid, 0, 1, "Wavelength");
+    addGridItem(grid, 0, 2, "Index");
 
     // list up indices
-    QStringList spectralList = SpectralLine::spectralLineList();
-    QString spectralLineName;
+    QStringList spectralList = {"t", "s", "r", "C", "d", "e", "F", "g", "h", "i"};
+    QString     spectralLineName;
 
     int row;
     for(int i = 0; i < spectralList.size(); i++)
@@ -118,88 +121,92 @@ void GlassDataSheetForm::setUpIndicesTab()
 
         // Spectral name
         spectralLineName = spectralList[i];
-        addItem(row, 0, spectralLineName, gridLayout);
+        addGridItem(grid, row, 0, spectralLineName);
 
         // lambda(nm)
-        addItem(row, 1, QString::number(SpectralLine::wavelength(spectralLineName), 'f', 3), gridLayout);
+        addGridItem(grid, row, 1, QString::number(SpectralLine::wavelength(spectralLineName), 'f', wvl_digit));
 
         // refractive index
-        addItem(row, 2, numToQString(m_glass->index(spectralLineName), 'f', 6), gridLayout);
+        addGridItem(grid, row, 2, numToQString(m_glass->index(spectralLineName), 'f', val_digit));
     }
 }
 
 void GlassDataSheetForm::setUpPartialTab()
-{
+{   
+    const int digit = 6;
+
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Partial;
-    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout_Partial"));
+    QGridLayout* grid = new QGridLayout(scrollAreaContents);
+    grid->setObjectName(QString::fromUtf8("gridLayout_Partial"));
 
     QStringList firsts, seconds;
 
     int row;
 
     // Px,y
-    firsts  = QStringList() << "s" << "C" << "d" << "e" << "g" << "i";
-    seconds = QStringList() << "t" << "s" << "C" << "d" << "F" << "h";
+    firsts  = QStringList( {"s", "C", "d", "e", "g", "i"} );
+    seconds = QStringList( {"t", "s", "C", "d", "F", "h"} );
 
     for(int i = 0; i < firsts.size(); i++){
         row = i;
-        addItem(row, 0, "P " + firsts[i] + "," + seconds[i], gridLayout);
-        addItem(row, 1, numToQString(m_glass->Pxy(firsts[i], seconds[i]), 'f', 6), gridLayout);
+        addGridItem(grid, row, 0, "P " + firsts[i] + "," + seconds[i]);
+        addGridItem(grid, row, 1, numToQString(m_glass->Pxy(firsts[i], seconds[i]), 'f', digit));
     }
 
     // P'x,y
-    int rowOffset = gridLayout->rowCount();
-    firsts  = QStringList() << "s" << "C_" << "d" << "e" << "g" << "i";
-    seconds = QStringList() << "t" << "s" << "C_" << "d" << "F_" << "h";
+    int rowOffset = grid->rowCount();
+    firsts  = QStringList( {"s", "C_", "d",  "e", "g",  "i"} );
+    seconds = QStringList( {"t", "s",  "C_", "d", "F_", "h"} );
 
     for(int j = 0; j < firsts.size(); j++)
     {
         row = j + rowOffset;
 
-        addItem(row, 0, "P' " + firsts[j] + "," + seconds[j],                          gridLayout);
-        addItem(row, 1, numToQString(m_glass->Pxy_(firsts[j], seconds[j]), 'f', 6), gridLayout);
+        addGridItem(grid, row, 0, "P' " + firsts[j] + "," + seconds[j]);
+        addGridItem(grid, row, 1, numToQString(m_glass->Pxy_(firsts[j], seconds[j]), 'f', digit));
     }
 
 }
 
 
 void GlassDataSheetForm::setUpDispersionTab()
-{
-    QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Dispersion;
+{   
+    const int digit = 6;
 
-    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout_Dispersion"));
+    QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Dispersion;
+    QGridLayout* grid = new QGridLayout(scrollAreaContents);
+    grid->setObjectName(QString::fromUtf8("gridLayout_Dispersion"));
 
     int row;
 
     // formula name
-    addItem(0, 0, tr("Formula"),          gridLayout);
-    addItem(0, 1, m_glass->formulaName(), gridLayout);
+    addGridItem(grid, 0, 0, "Formula");
+    addGridItem(grid, 0, 1, m_glass->formulaName());
 
     // list up coefficients
     for(int i = 0; i < m_glass->dispersionCoefCount();i++)
     {
         row = i + 1;
 
-        addItem(row, 0, "C" + QString::number(i),                          gridLayout); // C0, C1, C2...
-        addItem(row, 1, numToQString(m_glass->dispersionCoef(i),'g',5),    gridLayout); // coefficient value
+        addGridItem(grid, row, 0, "C" + QString::number(i));                             // C0, C1, C2...
+        addGridItem(grid, row, 1, numToQString(m_glass->dispersionCoef(i),'g',digit)); // coefficient value
     }
 }
 
 
 void GlassDataSheetForm::setUpThermalTab()
-{
+{   
+    const int digit = 6;
+
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_dndT;
-    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout_dndT"));
+    QGridLayout* grid = new QGridLayout(scrollAreaContents);
+    grid->setObjectName(QString::fromUtf8("gridLayout_dndT"));
 
-    QStringList coefNames = QStringList() << "D0" << "D1" << "D2" << "E0" << "E1" << "Ltk" << "T0";
-    QList<double> coefValues = QList<double>() << m_glass->D0() << m_glass->D1() << m_glass->D2() << m_glass->E0() << m_glass->E1() << m_glass->Ltk() << m_glass->T0();
-
+    QStringList   coefNames  = QStringList(   {"D0", "D1", "D2", "E0", "E1", "Ltk", "T0"} );
+    QList<double> coefValues = QList<double>( {m_glass->D0(), m_glass->D1(), m_glass->D2(), m_glass->E0(), m_glass->E1(), m_glass->Ltk(), m_glass->T0()} );
     for(int i = 0; i < coefNames.size(); i++){
-        addItem(i, 0, coefNames[i],                   gridLayout);
-        addItem(i, 1, numToQString(coefValues[i]), gridLayout);
+        addGridItem(grid, i, 0, coefNames[i]);
+        addGridItem(grid, i, 1, numToQString(coefValues[i], 'g', digit));
     }
 
 }
@@ -207,28 +214,31 @@ void GlassDataSheetForm::setUpThermalTab()
 
 void GlassDataSheetForm::setUpTransmittanceTab()
 {
-    QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Transmittance;
-    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout_Transmittance"));
+    const int wvl_digit = 3;
+    const int thi_digit = 3;
+    const int tra_digit = 3;
 
-    int digit = 4;
+    QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Transmittance;
+    QGridLayout* grid = new QGridLayout(scrollAreaContents);
+    grid->setObjectName(QString::fromUtf8("gridLayout_Transmittance"));
+
     int row;
 
     // set lambda max and min
     row = 0;
-    addItem(row, 0, tr("Lambda Min/Max"),                           gridLayout);
-    addItem(row, 1, numToQString(m_glass->lambdaMin(),'f',digit),gridLayout);
-    addItem(row, 2, numToQString(m_glass->lambdaMax(),'f',digit),gridLayout);
+    addGridItem(grid, row, 0, "Lambda Min/Max");
+    addGridItem(grid, row, 1, numToQString(m_glass->lambdaMin(),'f',wvl_digit));
+    addGridItem(grid, row, 2, numToQString(m_glass->lambdaMax(),'f',wvl_digit));
 
     // insert space
     ++row;
-    addItem(row, 0, "", gridLayout);
+    addGridItem(grid, row, 0, "");
 
     // set header labels
     ++row;
-    addItem(row, 0, tr("Wavelength(micron)"),gridLayout);
-    addItem(row, 1, tr("Transmittance"),     gridLayout);
-    addItem(row, 2, tr("Thickness"),         gridLayout);
+    addGridItem(grid, row, 0, "Wavelength(micron)");
+    addGridItem(grid, row, 1, "Transmittance");
+    addGridItem(grid, row, 2, "Thickness");
 
     // set transmittance data
     QList<double> lambdamicrons, transmittances, thicknesses;
@@ -240,9 +250,9 @@ void GlassDataSheetForm::setUpTransmittanceTab()
     {
         row = i + rowOffset;
 
-        addItem(row, 0, numToQString(lambdamicrons[i],  'f', digit), gridLayout);
-        addItem(row, 1, numToQString(transmittances[i], 'f', digit), gridLayout);
-        addItem(row, 2, numToQString(thicknesses[i],    'f', digit), gridLayout);
+        addGridItem(grid, row, 0, numToQString(lambdamicrons[i],  'f', wvl_digit));
+        addGridItem(grid, row, 1, numToQString(transmittances[i], 'f', tra_digit));
+        addGridItem(grid, row, 2, numToQString(thicknesses[i],    'f', thi_digit));
     }
 
 }
@@ -250,26 +260,28 @@ void GlassDataSheetForm::setUpTransmittanceTab()
 
 void GlassDataSheetForm::setUpOtherDataTab()
 {
+    const int digit = 2;
+
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_OtherData;
-    QGridLayout* gridLayout = new QGridLayout(scrollAreaContents);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout_otherdata"));
+    QGridLayout* grid = new QGridLayout(scrollAreaContents);
+    grid->setObjectName(QString::fromUtf8("gridLayout_otherdata"));
 
-    addItem(0, 0, "Relative Cost",              gridLayout);
-    addItem(0, 1, numToQString(m_glass->relCost()),     gridLayout);
+    addGridItem(grid, 0, 0, "Relative Cost");
+    addGridItem(grid, 0, 1, numToQString(m_glass->relCost(), 'f', digit));
 
-    addItem(1, 0, "Climate Resist",           gridLayout);
-    addItem(1, 1, numToQString(m_glass->climateResist()), gridLayout);
+    addGridItem(grid, 1, 0, "Climate Resist");
+    addGridItem(grid, 1, 1, numToQString(m_glass->climateResist(), 'f', digit));
 
-    addItem(2, 0, "Stain Resist",           gridLayout);
-    addItem(2, 1, numToQString(m_glass->stainResist()), gridLayout);
+    addGridItem(grid, 2, 0, "Stain Resist");
+    addGridItem(grid, 2, 1, numToQString(m_glass->stainResist(), 'f', digit));
 
-    addItem(3, 0, "Acid Resist",           gridLayout);
-    addItem(3, 1, numToQString(m_glass->acidResist()), gridLayout);
+    addGridItem(grid, 3, 0, "Acid Resist");
+    addGridItem(grid, 3, 1, numToQString(m_glass->acidResist(), 'f', digit));
 
-    addItem(4, 0, "Alkali Resist",           gridLayout);
-    addItem(4, 1, numToQString(m_glass->alkaliResist()), gridLayout);
+    addGridItem(grid, 4, 0, "Alkali Resist");
+    addGridItem(grid, 4, 1, numToQString(m_glass->alkaliResist(), 'f', digit));
 
-    addItem(5, 0, "Phosphate Resist",           gridLayout);
-    addItem(5, 1, numToQString(m_glass->phosphateResist()), gridLayout);
+    addGridItem(grid, 5, 0, "Phosphate Resist");
+    addGridItem(grid, 5, 1, numToQString(m_glass->phosphateResist(), 'f', digit));
 }
 

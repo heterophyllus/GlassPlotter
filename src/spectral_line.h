@@ -36,10 +36,7 @@
 class SpectralLine
 {
 public:
-
     static double wavelength(QString spectralname);
-
-    static QStringList spectralLineList();
 
     static const double t;
     static const double s;

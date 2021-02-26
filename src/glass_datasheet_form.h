@@ -50,7 +50,6 @@ private:
     Ui::GlassDataSheetForm *ui;
     Glass* m_glass;
 
-    // set up tabs
     void setUpBasicTab();
     void setUpIndicesTab();
     void setUpPartialTab();
@@ -59,7 +58,7 @@ private:
     void setUpTransmittanceTab();
     void setUpOtherDataTab();
 
-    void addItem(int row, int col, QString str, QGridLayout* gridLayout);
+    void addGridItem(QGridLayout* gridLayout, int row, int col, QString str);
 
     inline QString numToQString(double val, char fmt='f', int digit=6);
 };
