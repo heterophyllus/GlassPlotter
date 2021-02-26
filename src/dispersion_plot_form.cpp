@@ -163,68 +163,68 @@ void DispersionPlotForm::on_comboBoxChanged()
     }
 
 
-    // get unused coefficients
-    int invalid_start = m_tableCoefs->rowCount();
+    // unused coefficients
+    int unused_start = m_tableCoefs->rowCount();
 
     switch (ui->comboBox_Formula->currentIndex()) {
-    case 0:
+    case 0: // Polynomial
         break;
     case 1: // Schott
-        invalid_start = 6;
+        unused_start = 6;
         break;
     case 2: // Sellmeier 1
-        invalid_start = 6;
+        unused_start = 6;
         break;
     case 3: // Herzberger
-        invalid_start = 6;
+        unused_start = 6;
         break;
     case 4: // Sellmeier 2
-        invalid_start = 5;
+        unused_start = 5;
         break;
     case 5: // Conrady
-        invalid_start = 3;
+        unused_start = 3;
         break;
     case 6: // Sellmeier 3
-        invalid_start = 8;
+        unused_start = 8;
         break;
     case 7: // Handbook of Optics 1
-        invalid_start = 4;
+        unused_start = 4;
         break;
     case 8: // Handbook of Optics 2
-        invalid_start = 4;
+        unused_start = 4;
         break;
     case 9: // Sellmeier 4
-        invalid_start = 5;
+        unused_start = 5;
         break;
     case 10: // Extended 1
-        invalid_start = 8;
+        unused_start = 8;
         break;
     case 11: // Sellmeier 5
-        invalid_start = 9;
+        unused_start = 9;
         break;
     case 12: // Extended 2
-        invalid_start = 8;
+        unused_start = 8;
         break;
     case 13: // Laurent
-        invalid_start = 12;
+        unused_start = 12;
         break;
     case 14: // Glass Manufacturer Laurent
-        invalid_start = 7;
+        unused_start = 7;
         break;
     case 15: // Glass Manufacturer Sellmeier
-        invalid_start = 12;
+        unused_start = 12;
         break;
     case 16: // Cauchy
-        invalid_start = 3;
+        unused_start = 3;
         break;
     case 17: // Hartman
-        invalid_start = 3;
+        unused_start = 3;
         break;
     }
 
 
     // disable and encolor invalid cells
-    for(int row = invalid_start; row < rowCount; row++)
+    for(int row = unused_start; row < rowCount; row++)
     {
         item = m_tableCoefs->item(row,0);
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);

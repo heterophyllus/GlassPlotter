@@ -27,7 +27,6 @@
 #define DISPERSION_FORMULA_H
 
 #include <QVector>
-#include <QStringList>
 
 /**
  * @class DispersionFormula

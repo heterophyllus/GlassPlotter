@@ -28,9 +28,9 @@
 #define SPECTRAL_LINE_H
 
 #include<QString>
-#include<QStringList>
 
 /**
+ * @class SpectralLine
  * @brief Container class for Fraunhofer spectral line
  */
 class SpectralLine
