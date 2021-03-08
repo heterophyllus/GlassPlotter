@@ -100,6 +100,8 @@ private:
     QList<double> getCurveCoefs();
     void setCurveCoefsToUI(QList<double> coefs);
     void setCurveData(QCPGraph* curveGraph, QList<double> coefs);
+
+    QColor getColorFromIndex(int index, int maxIndex);
 };
 
 #endif // GLASSMAP_FORM_H

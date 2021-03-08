@@ -30,6 +30,8 @@
 #include <QVector>
 #include <QList>
 
+#include "property_plot_form.h"
+
 namespace Ui {
 class DispersionPlotForm;
 }
@@ -43,7 +45,7 @@ class QCheckBox;
 class QComboBox;
 class QListWidget;
 
-class DispersionPlotForm : public QWidget
+class DispersionPlotForm : public PropertyPlotForm
 {
     Q_OBJECT
 
@@ -53,31 +55,23 @@ public:
 
 private slots:
     void on_comboBoxChanged();
-    void addGraph();
-    void deleteGraph();
-    void setAxis();
-    void setLegendVisible();
-    void updateAll();
-    void clearAll();
+    void addGraph() override;
+    void deleteGraph() override;
+    void updateAll() override;
+    void clearAll() override;
 
 private:
     Ui::DispersionPlotForm *ui;
 
-    QCustomPlot*  m_customPlot;
-    QCheckBox*    m_checkBox;
-    QTableWidget* m_tablePlotData;
-    const int     m_maxGraphCount = 5;
-
-    QComboBox* m_comboBoxFormula;
+    QComboBox*    m_comboBoxFormula;
+    QCheckBox*    m_chkCurve;
     QTableWidget* m_tableCoefs;
 
     QList<GlassCatalog*> m_catalogList;
     QList<Glass*>        m_glassList;
 
-    void            setDefault();
-    void            setColorToGraph(QCPGraph* graph, QColor color);
-    QVector<double> computeUserDefined(QVector<double> xdata);
-    void            addTableItem(int row, int col, QString str);
+    QVector<double> computeUserDefinedCurve(QVector<double> xdata);
+
 };
 
 #endif // DISPERSION_PLOT_FORM_H

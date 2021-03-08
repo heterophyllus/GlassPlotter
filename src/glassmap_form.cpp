@@ -25,7 +25,6 @@
 #include "glassmap_form.h"
 #include "ui_glassmap_form.h"
 
-#include "qcputil.h"
 #include "glass.h"
 #include "glass_catalog.h"
 #include "glass_datasheet_form.h"
@@ -297,6 +296,7 @@ void GlassMapForm::update()
     // delete all graphs and items
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
+    m_customPlot->clearPlottables();
 
     int catalogCount = m_catalogList.size();
     QCPScatterChart* glassmap;
@@ -310,7 +310,7 @@ void GlassMapForm::update()
 
         if(plot_on || label_on){
             glassmap = new QCPScatterChart(m_customPlot);
-            setGlassmapData(glassmap, m_catalogList[i], m_xDataName, m_yDataName, QCPUtil::getColorFromIndex(i,catalogCount));
+            setGlassmapData(glassmap, m_catalogList[i], m_xDataName, m_yDataName, getColorFromIndex(i,catalogCount));
             glassmap->setVisiblePointSeries(plot_on);
             glassmap->setVisibleTextLabels(label_on);
         }
@@ -427,4 +427,13 @@ void GlassMapForm::setCurveCoefsToUI(QList<double> coefs)
     for(int i = 0; i < m_lineEditList.size(); i++){
         m_lineEditList[i]->setText(QString::number(coefs[i]));
     }
+}
+
+QColor GlassMapForm::getColorFromIndex(int index, int maxIndex)
+{
+    QCPColorGradient colorgrad;
+    colorgrad.loadPreset(QCPColorGradient::gpHues);
+    QColor color = colorgrad.color(index, QCPRange(0, maxIndex));
+
+    return color;
 }

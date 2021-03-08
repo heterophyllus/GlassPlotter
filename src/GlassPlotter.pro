@@ -45,8 +45,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     preset_dialog.cpp \
+    property_plot_form.cpp \
     qcpscatterchart.cpp \
-    qcputil.cpp \
     spectral_line.cpp \
     transmittance_plot_form.cpp \
     QCustomPlot/qcustomplot.cpp \ # QCustomPlot
@@ -68,8 +68,8 @@ HEADERS += \
     load_catalog_result_dialog.h \
     mainwindow.h \
     preset_dialog.h \
+    property_plot_form.h \
     qcpscatterchart.h \
-    qcputil.h \
     spectral_line.h \
     transmittance_plot_form.h \
     QCustomPlot/qcustomplot.h \    # QCustomPlot

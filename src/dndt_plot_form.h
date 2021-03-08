@@ -26,20 +26,18 @@
 #define DNDT_PLOT_FORM_H
 
 #include <QWidget>
-#include <QList>
+
+#include "property_plot_form.h"
 
 class Glass;
 class GlassCatalog;
-class QCustomPlot;
-class QCPGraph;
-class QTableWidget;
-class QCheckBox;
+
 
 namespace Ui {
 class DnDtPlotForm;
 }
 
-class DnDtPlotForm : public QWidget
+class DnDtPlotForm : public PropertyPlotForm
 {
     Q_OBJECT
 
@@ -49,28 +47,17 @@ public:
 
 private slots:
     void setGlass();
-    void addGraph();
-    void deleteGraph();
-    void setAxis();
-    void setLegendVisible();
-    void clearAll();
-    void updateAll();
+    void addGraph() override;
+    void deleteGraph() override;
+    void clearAll() override;
+    void updateAll() override;
 
 private:
     Ui::DnDtPlotForm *ui;
-    QCustomPlot*      m_customPlot;
-    QTableWidget*     m_table;
 
     QList<GlassCatalog*> m_catalogList;
     QList<double>        m_wvlList;
     Glass*               m_currentGlass = nullptr;
-
-    const int m_maxGraphCount = 7;
-
-    void setColorToGraph(QCPGraph* graph, QColor color);
-    void setDefault();
-
-    void addTableItem(int row, int col, QString str);
 };
 
 #endif // DNDT_PLOT_FORM_H

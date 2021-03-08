@@ -54,6 +54,7 @@ public:
     double          Pxy(QString x, QString y) const;
     double          Pxy_(QString x, QString y) const;
 
+    /** convenience function to get glass property */
     double          getValue(QString dname) const;
     double          nd() const;
     double          ne() const;

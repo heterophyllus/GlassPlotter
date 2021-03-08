@@ -30,10 +30,8 @@
 #include "glass_catalog.h"
 #include "glass_selection_dialog.h"
 
-#include "qcputil.h"
-
 TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
-    QWidget(parent),
+    PropertyPlotForm(parent),
     ui(new Ui::TransmittancePlotForm)
 {
     ui->setupUi(this);
@@ -41,6 +39,7 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
 
     m_catalogList = catalogList;
 
+    // plot widget
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
     m_customPlot->xAxis->setLabel("Wavelength(nm)");
@@ -48,16 +47,36 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
     m_customPlot->legend->setVisible(true);
     m_customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight|Qt::AlignBottom); // Legend position
 
+    m_maxGraphCount = 5;
+
+    // legend
+    m_chkLegend = ui->checkBox_Legend;
+
     QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()),     this, SLOT(addGraph()));
     QObject::connect(ui->pushButton_DeleteGraph,SIGNAL(clicked()),     this, SLOT(deleteGraph()));
     QObject::connect(ui->pushButton_SetAxis,    SIGNAL(clicked()),     this, SLOT(setAxis()));
     QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()),     this, SLOT(clearAll()));
     QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
 
-    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
-    ui->lineEdit_PlotStep->setText(QString::number(5));
+    // thickness
+    m_editThickness = ui->lineEdit_Thickness;
+    m_editThickness->setText(QString::number(25));
 
-    m_table = ui->tableWidget;
+    // plot step
+    m_editPlotStep = ui->lineEdit_PlotStep;
+    m_editPlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
+    m_editPlotStep->setText(QString::number(5));
+
+    // axis
+    m_defaultXrange = QCPRange(300, 2000);
+    m_defaultYrange = QCPRange(0.0, 1.2);
+
+    m_editXmin = ui->lineEdit_Xmin;
+    m_editXmax = ui->lineEdit_Xmax;
+    m_editYmin = ui->lineEdit_Ymin;
+    m_editYmax = ui->lineEdit_Ymax;
+
+    m_plotDataTable = ui->tableWidget;
     setDefault();
 }
 
@@ -71,26 +90,12 @@ TransmittancePlotForm::~TransmittancePlotForm()
     m_customPlot->clearPlottables();
     m_customPlot = nullptr;
 
-    m_table->clear();
-    m_table = nullptr;
+    m_plotDataTable->clear();
+    m_plotDataTable = nullptr;
 
     delete ui;
 }
 
-void TransmittancePlotForm::addTableItem(int row, int col, QString str)
-{
-    QTableWidgetItem* item = new QTableWidgetItem();
-    item->setText(str);
-    m_table->setItem(row,col,item);
-}
-
-void TransmittancePlotForm::setColorToGraph(QCPGraph* graph, QColor color)
-{
-    QPen pen;
-    pen.setWidth(2);
-    pen.setColor(color);
-    graph->setPen(pen);
-}
 
 void TransmittancePlotForm::addGraph()
 {
@@ -128,12 +133,12 @@ void TransmittancePlotForm::updateAll()
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot->clearPlottables();
-    m_table->clear();
+    m_plotDataTable->clear();
 
-    double          thickness     = ui->lineEdit_Thickness->text().toDouble();
-    double          plotStep      = ui->lineEdit_PlotStep->text().toDouble();
-    QVector<double> vLambdanano   = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep); // unit:nm
-    QVector<double> vLambdamicron = QCPUtil::scaleVector(vLambdanano,0.001);
+    double          thickness     = m_editThickness->text().toDouble();
+    double          plotStep      = m_editPlotStep->text().toDouble();
+    QVector<double> vLambdanano   = getVectorFromRange(m_customPlot->xAxis->range(), plotStep); // unit:nm
+    QVector<double> vLambdamicron = scaleVector(vLambdanano,0.001);
     QVector<double> ydata;
     QCPGraph*       graph;
     QCPItemTracer*  upperTracer;
@@ -142,8 +147,8 @@ void TransmittancePlotForm::updateAll()
     int i,j;
     int rowCount    = vLambdanano.size();
     int columnCount = m_glassList.size() + 1; // lambda + glasses
-    m_table->setRowCount(rowCount);
-    m_table->setColumnCount(columnCount);
+    m_plotDataTable->setRowCount(rowCount);
+    m_plotDataTable->setColumnCount(columnCount);
 
     QStringList header = QStringList() << "WVL";
 
@@ -162,7 +167,7 @@ void TransmittancePlotForm::updateAll()
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
         graph->setData(vLambdanano, ydata);
-        setColorToGraph(graph, QCPUtil::getColorFromIndex(i, m_maxGraphCount));
+        graph->setPen(QPen(getColorFromIndex(i, m_maxGraphCount)));
         graph->setVisible(true);
 
         // tracer
@@ -194,7 +199,7 @@ void TransmittancePlotForm::updateAll()
     }
 
     m_customPlot->replot();
-    m_table->setHorizontalHeaderLabels(header);
+    m_plotDataTable->setHorizontalHeaderLabels(header);
 
 }
 void TransmittancePlotForm::deleteGraph()
@@ -215,35 +220,6 @@ void TransmittancePlotForm::deleteGraph()
     }
 }
 
-void TransmittancePlotForm::setDefault()
-{
-    QCPRange xrange = QCPRange(300,2000);
-    QCPRange yrange = QCPRange(0.0,1.2);
-
-    m_customPlot->xAxis->setRange(xrange);
-    m_customPlot->yAxis->setRange(yrange);
-
-    ui->lineEdit_Xmin->setText(QString::number(xrange.lower));
-    ui->lineEdit_Xmax->setText(QString::number(xrange.upper));
-    ui->lineEdit_Ymin->setText(QString::number(yrange.lower));
-    ui->lineEdit_Ymax->setText(QString::number(yrange.upper));
-
-    ui->lineEdit_Thickness->setText(QString::number(25));
-}
-
-void TransmittancePlotForm::setAxis()
-{
-    QCPRange xrange, yrange;
-    xrange.lower = ui->lineEdit_Xmin->text().toDouble();
-    xrange.upper = ui->lineEdit_Xmax->text().toDouble();
-    yrange.lower = ui->lineEdit_Ymin->text().toDouble();
-    yrange.upper = ui->lineEdit_Ymax->text().toDouble();
-
-    m_customPlot->xAxis->setRange(xrange);
-    m_customPlot->yAxis->setRange(yrange);
-
-    updateAll();
-}
 
 void TransmittancePlotForm::clearAll()
 {
@@ -251,12 +227,7 @@ void TransmittancePlotForm::clearAll()
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot->replot();
-    m_table->clear();
-    m_table->update();
+    m_plotDataTable->clear();
+    m_plotDataTable->update();
 }
 
-void TransmittancePlotForm::setLegendVisible()
-{
-    m_customPlot->legend->setVisible(ui->checkBox_Legend->checkState());
-    m_customPlot->replot();
-}

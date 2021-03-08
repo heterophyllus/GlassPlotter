@@ -30,10 +30,9 @@
 #include "glass_catalog.h"
 #include "glass_selection_dialog.h"
 
-#include "qcputil.h"
 
 DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
-    QWidget(parent),
+    PropertyPlotForm(parent),
     ui(new Ui::DnDtPlotForm)
 {
     ui->setupUi(this);
@@ -48,6 +47,10 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     m_customPlot->legend->setVisible(true);
     m_customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight|Qt::AlignBottom); // Legend position
 
+    m_maxGraphCount = 7;
+
+    m_chkLegend = ui->checkBox_Legend;
+
     QObject::connect(ui->pushButton_SetGlass,   SIGNAL(clicked()),     this, SLOT(setGlass()));
     QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()),     this, SLOT(addGraph()));
     QObject::connect(ui->pushButton_DeleteGraph,SIGNAL(clicked()),     this, SLOT(deleteGraph()));
@@ -55,10 +58,20 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()),     this, SLOT(clearAll()));
     QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
 
-    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
-    ui->lineEdit_PlotStep->setText(QString::number(5));
+    m_editPlotStep = ui->lineEdit_PlotStep;
+    m_editPlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
+    m_editPlotStep->setText(QString::number(5));
 
-    m_table = ui->tableWidget;
+    m_plotDataTable = ui->tableWidget;
+
+    // default axis setup
+    m_editXmin = ui->lineEdit_Xmin;
+    m_editXmax = ui->lineEdit_Xmax;
+    m_editYmin = ui->lineEdit_Ymin;
+    m_editYmax = ui->lineEdit_Ymax;
+    m_defaultXrange = QCPRange(-100, 140);
+    m_defaultYrange = QCPRange(0.0, 23.0);
+
     setDefault();
 }
 
@@ -67,8 +80,8 @@ DnDtPlotForm::~DnDtPlotForm()
     m_currentGlass = nullptr;
     m_catalogList.clear();
     m_wvlList.clear();
-    m_table->clear();
-    m_table = nullptr;
+    m_plotDataTable->clear();
+    m_plotDataTable = nullptr;
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot->clearPlottables();
@@ -166,33 +179,6 @@ void DnDtPlotForm::deleteGraph()
     }
 }
 
-void DnDtPlotForm::setDefault()
-{
-    QCPRange xrange = QCPRange(-100,140);
-    QCPRange yrange = QCPRange(0,23);
-
-    m_customPlot->xAxis->setRange(xrange);
-    m_customPlot->yAxis->setRange(yrange);
-
-    ui->lineEdit_Xmin->setText(QString::number(xrange.lower));
-    ui->lineEdit_Xmax->setText(QString::number(xrange.upper));
-    ui->lineEdit_Ymin->setText(QString::number(yrange.lower));
-    ui->lineEdit_Ymax->setText(QString::number(yrange.upper));
-}
-
-void DnDtPlotForm::setAxis()
-{
-    QCPRange xrange, yrange;
-    xrange.lower = ui->lineEdit_Xmin->text().toDouble();
-    xrange.upper = ui->lineEdit_Xmax->text().toDouble();
-    yrange.lower = ui->lineEdit_Ymin->text().toDouble();
-    yrange.upper = ui->lineEdit_Ymax->text().toDouble();
-
-    m_customPlot->xAxis->setRange(xrange);
-    m_customPlot->yAxis->setRange(yrange);
-
-    updateAll();
-}
 
 void DnDtPlotForm::updateAll()
 {
@@ -201,18 +187,18 @@ void DnDtPlotForm::updateAll()
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot->clearPlottables();
-    m_table->clear();
+    m_plotDataTable->clear();
 
-    double          plotStep = ui->lineEdit_PlotStep->text().toDouble();
-    QVector<double> xdata    = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
+    double          plotStep = m_editPlotStep->text().toDouble();
+    QVector<double> xdata    = getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
     QVector<double> ydata;
     QCPGraph*       graph;
 
     int i,j;
     int rowCount    = xdata.size();
     int columnCount = m_wvlList.size() + 1; // temperature + wavelengths
-    m_table->setRowCount(rowCount);
-    m_table->setColumnCount(columnCount);
+    m_plotDataTable->setRowCount(rowCount);
+    m_plotDataTable->setColumnCount(columnCount);
 
     int digit = ui->spinBox_Digit->value();
 
@@ -225,11 +211,11 @@ void DnDtPlotForm::updateAll()
         currentWvl = m_wvlList[i]; // unit:nm
 
         // graphs
-        ydata = QCPUtil::scaleVector(m_currentGlass->dn_dt_abs(xdata, currentWvl/1000.0), pow(10,6)); //unit:micron
+        ydata = scaleVector(m_currentGlass->dn_dt_abs(xdata, currentWvl/1000.0), pow(10,6)); //unit:micron
         graph = m_customPlot->addGraph();
         graph->setName(QString::number(currentWvl));
         graph->setData(xdata, ydata);
-        QCPUtil::setColorToGraph(graph, QCPUtil::getColorFromIndex(i,m_maxGraphCount));
+        graph->setPen(QPen(getColorFromIndex(i,m_maxGraphCount)));
         graph->setVisible(true);
 
         // table
@@ -241,7 +227,7 @@ void DnDtPlotForm::updateAll()
         }
     }
     m_customPlot->replot();
-    m_table->setHorizontalHeaderLabels(header);
+    m_plotDataTable->setHorizontalHeaderLabels(header);
 }
 
 void DnDtPlotForm::clearAll()
@@ -253,19 +239,6 @@ void DnDtPlotForm::clearAll()
     m_customPlot->clearPlottables();
     m_customPlot->replot();
 
-    m_table->clear();
-    m_table->update();
-}
-
-void DnDtPlotForm::setLegendVisible()
-{
-    m_customPlot->legend->setVisible(ui->checkBox_Legend->checkState());
-    m_customPlot->replot();
-}
-
-void DnDtPlotForm::addTableItem(int row, int col, QString str)
-{
-    QTableWidgetItem* item = new QTableWidgetItem();
-    item->setText(str);
-    m_table->setItem(row,col,item);
+    m_plotDataTable->clear();
+    m_plotDataTable->update();
 }

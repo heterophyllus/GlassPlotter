@@ -40,7 +40,7 @@ public:
     QCPScatterChart(QCPScatterChart &other);
 
     QCustomPlot*        parentPlot();
-    QCPGraph*           graphPoints();
+    QCPCurve*           graphPoints();
     QList<QCPItemText*> textLabels();
     QString             name();
 
@@ -54,7 +54,7 @@ public:
 
 private:
     QCustomPlot*        m_customPlot;
-    QCPGraph*           m_graphPoints; //points
+    QCPCurve*           m_graphPoints; //points
     QList<QCPItemText*> m_textlabels; // text label for each point
 };
 

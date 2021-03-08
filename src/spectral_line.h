@@ -36,6 +36,8 @@
 class SpectralLine
 {
 public:
+
+    /** get wavelength value from spectral line name */
     static double wavelength(QString spectralname);
 
     static const double t;

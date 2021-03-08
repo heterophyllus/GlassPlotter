@@ -33,6 +33,8 @@
 
 #include <QWidget>
 
+#include "property_plot_form.h"
+
 class Glass;
 class GlassCatalog;
 class QCustomPlot;
@@ -43,7 +45,7 @@ namespace Ui {
 class TransmittancePlotForm;
 }
 
-class TransmittancePlotForm : public QWidget
+class TransmittancePlotForm : public PropertyPlotForm
 {
     Q_OBJECT
 
@@ -52,12 +54,10 @@ public:
     ~TransmittancePlotForm();
 
 private slots:
-    void addGraph();
-    void deleteGraph();
-    void setAxis();
-    void setLegendVisible();
-    void clearAll();
-    void updateAll();
+    void addGraph() override;
+    void deleteGraph() override;
+    void clearAll() override;
+    void updateAll() override;
 
 private:
     Ui::TransmittancePlotForm *ui;
@@ -65,15 +65,8 @@ private:
     QList<GlassCatalog*> m_catalogList;
     QList<Glass*>        m_glassList;
 
-    QCustomPlot*  m_customPlot;
-    QTableWidget* m_table;
+    QLineEdit* m_editThickness;
 
-    const int  m_maxGraphCount = 5;
-
-    void setColorToGraph(QCPGraph* graph, QColor color);
-    void setDefault();
-
-    void addTableItem(int row, int col, QString str);
 };
 
 #endif // TRANSMITTANCE_PLOT_FORM_H

@@ -28,7 +28,9 @@
 QCPScatterChart::QCPScatterChart(QCustomPlot *customPlot)
 {  
     m_customPlot = customPlot;
-    m_graphPoints = m_customPlot->addGraph();
+
+    m_graphPoints = new QCPCurve(m_customPlot->xAxis, m_customPlot->yAxis);
+
     m_textlabels.clear();
 }
 
@@ -36,7 +38,7 @@ QCPScatterChart::~QCPScatterChart()
 {
     // delete graph
     try {
-        m_customPlot->removeGraph(m_graphPoints);
+        m_customPlot->removePlottable(m_graphPoints);
     }  catch (...) {
         m_graphPoints = nullptr;
     }
@@ -81,7 +83,7 @@ QCustomPlot* QCPScatterChart::parentPlot()
     return m_customPlot;
 }
 
-QCPGraph* QCPScatterChart::graphPoints()
+QCPCurve* QCPScatterChart::graphPoints()
 {
     return m_graphPoints;
 }
@@ -100,11 +102,11 @@ void QCPScatterChart::setData(QVector<double> x, QVector<double> y, QVector<QStr
 {   
     //set data to points
     m_graphPoints->setData(x,y);
-    m_graphPoints->setLineStyle(QCPGraph::lsNone);
+    m_graphPoints->setLineStyle(QCPCurve::lsNone);
     m_graphPoints->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc,8));
 
 
-    //set text to labels
+    //clear current text labels and recreate
     if(!m_textlabels.isEmpty())
     {
         int labelCount = m_textlabels.size();

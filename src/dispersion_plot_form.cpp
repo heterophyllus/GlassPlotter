@@ -25,7 +25,6 @@
 #include "dispersion_plot_form.h"
 #include "ui_dispersion_plot_form.h"
 
-#include "qcputil.h"
 #include "dispersion_formula.h"
 #include "glass.h"
 #include "glass_catalog.h"
@@ -33,7 +32,7 @@
 
 
 DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
-    QWidget(parent),
+    PropertyPlotForm(parent),
     ui(new Ui::DispersionPlotForm)
 {
     ui->setupUi(this);
@@ -47,8 +46,11 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     m_customPlot->yAxis->setLabel("Refractive Index");
     m_customPlot->legend->setVisible(true);
 
+    // max graph count
+    m_maxGraphCount = 5;
+
     // plot data table
-    m_tablePlotData = ui->tableWidget;
+    m_plotDataTable = ui->tableWidget;
 
     // buttons
     QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()), this, SLOT(addGraph()));
@@ -57,11 +59,12 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()), this, SLOT(clearAll()));
 
     // legend on/off
-    QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
+    m_chkLegend = ui->checkBox_Legend;
+    QObject::connect(m_chkLegend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
 
     // user defined curve on/off
-    m_checkBox = ui->checkBox_Curve;
-    QObject::connect(ui->checkBox_Curve,        SIGNAL(toggled(bool)), this, SLOT(updateAll()));
+    m_chkCurve = ui->checkBox_Curve;
+    QObject::connect(m_chkCurve,        SIGNAL(toggled(bool)), this, SLOT(updateAll()));
 
     // select formula for user defined curve
     QStringList formulaNames = {"Polynomial",
@@ -88,7 +91,7 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     QObject::connect(m_comboBoxFormula,       SIGNAL(currentIndexChanged(int)), this, SLOT(on_comboBoxChanged()));
 
 
-    // table widget to list up the coefficients
+    // set up coefficients table
     m_tableCoefs = ui->tableWidget_Coefs;
     m_tableCoefs->setColumnCount(1);
     m_tableCoefs->setRowCount(12);
@@ -102,16 +105,22 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
         m_tableCoefs->setItem(i,0,item);
     }
     m_tableCoefs->setVerticalHeaderLabels(vHeaderLabels);
-    //m_tableCoefs->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-    //m_tableCoefs->resizeColumnsToContents();
     int whole_width = m_tableCoefs->width();
     m_tableCoefs->setColumnWidth(0, whole_width);
     m_tableCoefs->update();
     QObject::connect(m_tableCoefs, SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
 
     // plot step
-    ui->lineEdit_PlotStep->setValidator(new QDoubleValidator(0, 100, 5, this));
+    m_editPlotStep = ui->lineEdit_PlotStep;
+    m_editPlotStep->setValidator(new QDoubleValidator(0, 100, 5, this));
 
+    // default axis setup
+    m_editXmin = ui->lineEdit_Xmin;
+    m_editXmax = ui->lineEdit_Xmax;
+    m_editYmin = ui->lineEdit_Ymin;
+    m_editYmax = ui->lineEdit_Ymax;
+    m_defaultXrange = QCPRange(0.3, 1.0);
+    m_defaultYrange = QCPRange(0.9, 2.1);
     setDefault();
 }
 
@@ -122,28 +131,13 @@ DispersionPlotForm::~DispersionPlotForm()
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot = nullptr;
-    m_checkBox = nullptr;
-    m_tablePlotData->clear();
+    m_chkCurve = nullptr;
+    m_plotDataTable->clear();
     m_tableCoefs->clear();
 
     delete ui;
 }
 
-void DispersionPlotForm::addTableItem(int row, int col, QString str)
-{
-    QTableWidgetItem* item = new QTableWidgetItem();
-    item->setText(str);
-    m_tablePlotData->setItem(row,col,item);
-}
-
-
-void DispersionPlotForm::setColorToGraph(QCPGraph* graph, QColor color)
-{
-    QPen pen;
-    pen.setWidth(2);
-    pen.setColor(color);
-    graph->setPen(pen);
-}
 
 void DispersionPlotForm::on_comboBoxChanged()
 {
@@ -223,7 +217,7 @@ void DispersionPlotForm::on_comboBoxChanged()
     }
 
 
-    // disable and encolor invalid cells
+    // disable and color invalid cells
     for(int row = unused_start; row < rowCount; row++)
     {
         item = m_tableCoefs->item(row,0);
@@ -237,7 +231,7 @@ void DispersionPlotForm::on_comboBoxChanged()
     updateAll();
 }
 
-QVector<double> DispersionPlotForm::computeUserDefined(QVector<double> xdata)
+QVector<double> DispersionPlotForm::computeUserDefinedCurve(QVector<double> xdata)
 {
     // get coefficients
     QVector<double> coefs(12);
@@ -339,10 +333,10 @@ void DispersionPlotForm::addGraph()
 void DispersionPlotForm::updateAll()
 {
     m_customPlot->clearGraphs();
-    m_tablePlotData->clear();
+    m_plotDataTable->clear();
 
     double          plotStep      = ui->lineEdit_PlotStep->text().toDouble();
-    QVector<double> vLambdamicron = QCPUtil::getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
+    QVector<double> vLambdamicron = getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
     int             dataCount     = vLambdamicron.size();
     QVector<double> ydata;
     QCPGraph*       graph;
@@ -351,8 +345,8 @@ void DispersionPlotForm::updateAll()
 
     int rowCount    = dataCount;
     int columnCount = m_glassList.size() + 1+1; // wvl + glasses + curve
-    m_tablePlotData->setRowCount(rowCount);
-    m_tablePlotData->setColumnCount(columnCount);
+    m_plotDataTable->setRowCount(rowCount);
+    m_plotDataTable->setColumnCount(columnCount);
 
     QStringList header = QStringList() << "WVL";
 
@@ -370,7 +364,7 @@ void DispersionPlotForm::updateAll()
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
         graph->setData(vLambdamicron, ydata);
-        setColorToGraph(graph, QCPUtil::getColorFromIndex(i, m_maxGraphCount));
+        graph->setPen( QPen(getColorFromIndex(i, m_maxGraphCount)) );
         graph->setVisible(true);
 
         // table
@@ -384,14 +378,14 @@ void DispersionPlotForm::updateAll()
 
     // user defined curve
     header << "curve";
-    if(m_checkBox->checkState())
+    if(m_chkCurve->checkState())
     {
-        ydata = computeUserDefined(vLambdamicron);
+        ydata = computeUserDefinedCurve(vLambdamicron);
         graph = m_customPlot->addGraph();
         graph->setName("User Defined Curve");
         graph->setData(vLambdamicron, ydata);
         graph->setVisible(true);
-        setColorToGraph(graph,Qt::black);
+        graph->setPen(QPen(Qt::black));
 
         for(i = 0; i < dataCount; i++)
         {
@@ -399,7 +393,7 @@ void DispersionPlotForm::updateAll()
         }
     }
 
-    m_tablePlotData->setHorizontalHeaderLabels(header);
+    m_plotDataTable->setHorizontalHeaderLabels(header);
 
     m_customPlot->replot();
 }
@@ -425,33 +419,7 @@ void DispersionPlotForm::deleteGraph()
     }
 }
 
-void DispersionPlotForm::setDefault()
-{
-    QCPRange xrange = QCPRange(0.3,1.0); // micron
-    QCPRange yrange = QCPRange(0.9,2.1);
-    m_customPlot->xAxis->setRange(xrange);
-    m_customPlot->yAxis->setRange(yrange);
 
-    ui->lineEdit_Xmin->setText(QString::number(xrange.lower));
-    ui->lineEdit_Xmax->setText(QString::number(xrange.upper));
-    ui->lineEdit_Ymin->setText(QString::number(yrange.lower));
-    ui->lineEdit_Ymax->setText(QString::number(yrange.upper));
-
-    ui->lineEdit_PlotStep->setText(QString::number(0.005));
-}
-
-void DispersionPlotForm::setAxis()
-{
-    QCPRange xrange, yrange;
-    xrange.lower = ui->lineEdit_Xmin->text().toDouble();
-    xrange.upper = ui->lineEdit_Xmax->text().toDouble();
-    yrange.lower = ui->lineEdit_Ymin->text().toDouble();
-    yrange.upper = ui->lineEdit_Ymax->text().toDouble();
-
-    m_customPlot->xAxis->setRange(xrange);
-    m_customPlot->yAxis->setRange(yrange);
-    updateAll();
-}
 
 void DispersionPlotForm::clearAll()
 {
@@ -460,9 +428,9 @@ void DispersionPlotForm::clearAll()
     m_customPlot->clearItems();
     m_customPlot->clearPlottables();
     m_customPlot->replot();
-    m_tablePlotData->clear();
+    m_plotDataTable->clear();
 
-    m_checkBox->setCheckState(Qt::Unchecked);
+    m_chkCurve->setCheckState(Qt::Unchecked);
     for(int i = 0;i < m_tableCoefs->rowCount(); i++){
         QObject::disconnect(m_tableCoefs,       SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
         m_tableCoefs->item(i,0)->setText("");
@@ -470,8 +438,3 @@ void DispersionPlotForm::clearAll()
     }
 }
 
-void DispersionPlotForm::setLegendVisible()
-{
-    m_customPlot->legend->setVisible(ui->checkBox_Legend->checkState());
-    m_customPlot->replot();
-}
