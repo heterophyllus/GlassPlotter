@@ -19,69 +19,63 @@
  **  Author  : Hiiragi                                                      **
  **  Contact : heterophyllus.work@gmail.com                                 **
  **  Website : https://github.com/heterophyllus/glassplotter                **
- **  Date    : 2020-1-25                                                    **
+ **  Date    : 2020-5-20                                                    **
  *****************************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef GLASS_SEARCH_FORM_H
+#define GLASS_SEARCH_FORM_H
 
-#include <QMainWindow>
+#include <QWidget>
+#include <QList>
 
-#include "qcustomplot.h"
+namespace Ui {
+class GlassSearchForm;
+}
 
+class QMdiArea;
+class QComboBox;
+class QTableWidget;
 class GlassCatalog;
+class Glass;
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-class MainWindow : public QMainWindow
+class GlassSearchForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-
-private:
-
-    /** Base function to show plot form */
-    template<class F> void showAnalysisForm();
-
-
-    /**
-     * @brief Base function to show glassmap form
-     * @param xdataname property to be plotted for x axis
-     * @param ydataname property to be plotted for y axis
-     * @param xrange default x axis range
-     * @param yrange default y axis range
-     * @param xreversed if true, x axis is reversed
-     */
-    void showGlassMap(QString xdataname, QString ydataname,QCPRange xrange, QCPRange yrange, bool xreversed=true);
+    explicit GlassSearchForm(QList<GlassCatalog*> catalogList, QMdiArea *parent = nullptr);
+    ~GlassSearchForm();
 
 private slots:
-    void loadAGF();
-    void loadXML();
-
-    void showGlassMapNdVd();
-    void showGlassMapNeVe();
-    void showGlassMapVdPgF();
-    void showGlassMapVdPCt();
-    void showGlassMapBuchdahl();
-    void showDispersionPlot();
-    void showTransmittancePlot();
-    void showDnDtabsPlot();
-    void showCatalogViewForm();
-    void showGlassSearchForm();
-
-    void tileWindows();
-    void cascadeWindows();
-    void closeAll();
-
-    void showAbout();
+    /** Execute search and show result */
+    void showSearchResult();
+    void addParameter();
+    void removeParameter();
 
 private:
-    Ui::MainWindow *ui;
+    bool compareErrorValue(Glass* g1, Glass* g2);
+    double getErrorValue(Glass* g);
+    QComboBox* createParameterCombo();
+    void setCellValue(QTableWidget* table, int row, int col, QString str);
+    inline QString numToQString(double val, char fmt='f', int digit=6);
+
+    Ui::GlassSearchForm *ui;
+    QMdiArea*     m_parentMdiArea;
+    QTableWidget* m_tableProperties;
+    QTableWidget* m_tableResult;
+
     QList<GlassCatalog*> m_catalogList;
 };
-#endif // MAINWINDOW_H
+
+
+QString GlassSearchForm::numToQString(double val, char fmt, int digit)
+{
+    if(qIsNaN(val)){
+        return "-";
+    }
+    else{
+        return QString::number(val,fmt,digit);
+    }
+}
+
+#endif // GLASS_SEARCH_FORM_H

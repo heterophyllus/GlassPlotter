@@ -39,6 +39,7 @@
 #include "glass_datasheet_form.h"
 #include "dndt_plot_form.h"
 #include "catalog_view_form.h"
+#include "glass_search_form.h"
 #include "load_catalog_result_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -64,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->action_TransmittancePlot, SIGNAL(triggered()),this, SLOT(showTransmittancePlot()));
     QObject::connect(ui->action_DnDtabsPlot,       SIGNAL(triggered()),this, SLOT(showDnDtabsPlot()));
     QObject::connect(ui->action_CatalogView,       SIGNAL(triggered()),this, SLOT(showCatalogViewForm()));
+    QObject::connect(ui->action_GlassSearch,       SIGNAL(triggered()),this, SLOT(showGlassSearchForm()));
 
     // Window menu
     QObject::connect(ui->action_Tile,    SIGNAL(triggered()),this, SLOT(tileWindows()));
@@ -196,14 +198,7 @@ void MainWindow::loadXML()
 
 }
 
-/**
- * @brief Base function to show glassmap form
- * @param xdataname property to be plotted for x axis
- * @param ydataname property to be plotted for y axis
- * @param xrange default x axis range
- * @param yrange default y axis range
- * @param xreversed if true, x axis is reversed
- */
+
 void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed)
 {
     if(m_catalogList.empty()){
@@ -244,9 +239,7 @@ void MainWindow::showGlassMapBuchdahl()
 }
 
 
-/**
- * @brief Base function to show plot form
- */
+
 template<class F> void MainWindow::showAnalysisForm()
 {
     if(m_catalogList.empty()){
@@ -279,6 +272,11 @@ void MainWindow::showDnDtabsPlot()
 void MainWindow::showCatalogViewForm()
 {    
     showAnalysisForm<CatalogViewForm>();
+}
+
+void MainWindow::showGlassSearchForm()
+{
+    showAnalysisForm<GlassSearchForm>();
 }
 
 void MainWindow::tileWindows()

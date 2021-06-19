@@ -59,6 +59,7 @@
     <addaction name="action_TransmittancePlot"/>
     <addaction name="action_DnDtabsPlot"/>
     <addaction name="action_CatalogView"/>
+    <addaction name="action_GlassSearch"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -157,6 +158,11 @@
   <action name="action_Buchdahl">
    <property name="text">
     <string>Buchdahl</string>
+   </property>
+  </action>
+  <action name="action_GlassSearch">
+   <property name="text">
+    <string>Glass Search</string>
    </property>
   </action>
  </widget>

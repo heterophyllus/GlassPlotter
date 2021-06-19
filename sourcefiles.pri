@@ -13,6 +13,7 @@ SOURCES += \
     src/glass_catalog.cpp \
     src/glass_datasheet_form.cpp \
     src/glass_selection_dialog.cpp \
+    src/glass_search_form.cpp \
     src/glassmap_form.cpp \
     src/load_catalog_result_dialog.cpp \
     src/main.cpp \
@@ -22,9 +23,8 @@ SOURCES += \
     src/qcpscatterchart.cpp \
     src/spectral_line.cpp \
     src/transmittance_plot_form.cpp \
-
     3rdparty/QCustomPlot/qcustomplot.cpp \
-    3rdparty/pugixml/src/pugixml.cpp 
+    3rdparty/pugixml/src/pugixml.cpp
 
 
 HEADERS += \
@@ -39,6 +39,7 @@ HEADERS += \
     src/glass_catalog.h \
     src/glass_datasheet_form.h \
     src/glass_selection_dialog.h \
+    src/glass_search_form.h \
     src/glassmap_form.h \
     src/load_catalog_result_dialog.h \
     src/mainwindow.h \
@@ -55,6 +56,7 @@ HEADERS += \
 
 FORMS += \
     src/about_dialog.ui \
+    src/glassmap_form.ui \
     src/catalog_view_form.ui \
     src/catalog_view_setting_dialog.ui \
     src/curve_fitting_dialog.ui \
@@ -62,7 +64,7 @@ FORMS += \
     src/dndt_plot_form.ui \
     src/glass_datasheet_form.ui \
     src/glass_selection_dialog.ui \
-    src/glassmap_form.ui \
+    src/glass_search_form.ui \
     src/load_catalog_result_dialog.ui \
     src/mainwindow.ui \
     src/preset_dialog.ui \
