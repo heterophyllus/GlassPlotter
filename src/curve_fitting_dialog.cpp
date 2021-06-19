@@ -133,11 +133,7 @@ void CurveFittingDialog::addGlassForNewRow()
         glass = nullptr;
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-        dlg = nullptr;
-    }
+    delete dlg;
     dlg = nullptr;
 
 }

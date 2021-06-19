@@ -35,7 +35,7 @@ Glass::Glass()
 {
     _name     = "";
     _supplyer = "";
-    _status   = "-";
+    _status   = "";
     _comment  = "";
     _MIL      = "";
 
@@ -56,16 +56,12 @@ Glass::Glass()
 
     _lambdaMax = 0;
     _lambdaMin = 0;
-    _wavelengthData.clear();
-    _transmittanceData.clear();
-    _thicknessData.clear();
-
-
 }
 
 
 Glass::~Glass()
 {
+    _formula_func_ptr = nullptr;
     _dispersionData.clear();
     _wavelengthData.clear();
     _transmittanceData.clear();
@@ -73,10 +69,7 @@ Glass::~Glass()
     _thermalData.clear();
 }
 
-/**
- * @brief Get value of specified property
- * @param dname property name
- */
+
 double Glass::getValue(QString dname) const
 {
     if(dname == "nd"){
@@ -154,90 +147,41 @@ double Glass::PCt_() const
     return Pxy_("C","t");
 }
 
-/**
- * @brief Fundamental function to compute refractive index.
- * @param lambdamicron wavelength in micron
- * @return refractive index
- */
+
 double Glass::index(double lambdamicron) const
 {
-    switch(_formulaIndex){
-
-    // Zemax AGF
-    case 1:
-        return DispersionFormula::Schott(lambdamicron,_dispersionData);
-    case 2:
-        return DispersionFormula::Sellmeier1(lambdamicron,_dispersionData);
-    case 3:
-        return DispersionFormula::Herzberger(lambdamicron,_dispersionData);
-    case 4:
-        return DispersionFormula::Sellmeier2(lambdamicron,_dispersionData);
-    case 5:
-        return DispersionFormula::Conrady(lambdamicron,_dispersionData);
-    case 6:
-        return DispersionFormula::Sellmeier3(lambdamicron,_dispersionData);
-    case 7:
-        return DispersionFormula::HandbookOfOptics1(lambdamicron,_dispersionData);
-    case 8:
-        return DispersionFormula::HandbookOfOptics2(lambdamicron,_dispersionData);
-    case 9:
-        return DispersionFormula::Sellmeier4(lambdamicron,_dispersionData);
-    case 10:
-        return DispersionFormula::Extended1(lambdamicron,_dispersionData);
-    case 11:
-        return DispersionFormula::Sellmeier5(lambdamicron,_dispersionData);
-    case 12:
-        return DispersionFormula::Extended2(lambdamicron,_dispersionData);
-    case 13: // Unknown
-        return NAN;
-
-    // CODEV XML
-    case 101:
-        return DispersionFormula::Laurent(lambdamicron,_dispersionData);
-    case 102:
-        return DispersionFormula::GlassManufacturerLaurent(lambdamicron,_dispersionData);
-    case 103:
-        return DispersionFormula::GlassManufacturerSellmeier(lambdamicron,_dispersionData);
-    case 104:
-        return DispersionFormula::StandardSellmeier(lambdamicron,_dispersionData);
-    case 105:
-        return DispersionFormula::Cauchy(lambdamicron,_dispersionData);
-    case 106:
-        return DispersionFormula::Hartman(lambdamicron,_dispersionData);
-    default:
-        return NAN;
+    if(_formula_func_ptr){
+        return _formula_func_ptr(lambdamicron, _dispersionData);
+    }else{
+        return 1.0;
     }
-
 }
 
-/**
- * @brief Compute refractive index for spectral line
- * @param spectral spectral line name
- * @return
- */
+
 double Glass::index(QString spectral) const
 {
-    return index(SpectralLine::wavelength(spectral)/1000.0); // unit:micron
+    if(_formula_func_ptr){
+        double lambdamicron = SpectralLine::wavelength(spectral)/1000.0;
+        return _formula_func_ptr(lambdamicron, _dispersionData);
+    }else {
+        return 1.0;
+    }
 }
 
-QVector<double> Glass::index(QVector<double> vLambdamicron) const
+QVector<double> Glass::index(const QVector<double>& vLambdamicron) const
 {
     int ndata = vLambdamicron.size();
     QVector<double> vInd(ndata);
 
     for(int i = 0; i < ndata; i++){
-        vInd[i] = index(vLambdamicron[i]);
+        //vInd[i] = index(vLambdamicron[i]);
+        vInd[i] = _formula_func_ptr(vLambdamicron[i], _dispersionData);
     }
 
     return vInd;
 }
 
-/**
- * @brief Compute Buchdahl dispersion coefficient
- * @note This is a test function.  The implementation refers the github repository: mjhoptics/opticalglass (https://github.com/mjhoptics/opticalglass/blob/master/opticalglass/buchdahl.py)
- * @param n coefficient index
- * @return
- */
+
 double Glass::BuchdahlDispCoef(int n) const
 {
     Q_ASSERT(n <= 1);
@@ -306,6 +250,7 @@ double Glass::dispersionCoef(int n) const
     return 0;
 }
 
+
 void Glass::setDispCoef(int n, double val)
 {
     Q_ASSERT(_dispersion_data_size == _dispersionData.size());
@@ -315,9 +260,56 @@ void Glass::setDispCoef(int n, double val)
     }
 }
 
-/**
- * @brief Get dispersion formula name
- */
+void Glass::setDispForm(int n)
+{
+    _formulaIndex = n;
+
+    switch (n) {
+    case 1:
+        _formula_func_ptr = &(DispersionFormula::Schott);
+        break;
+    case 2:
+        _formula_func_ptr = &(DispersionFormula::Sellmeier1);
+        break;
+    case 3:
+        _formula_func_ptr = &(DispersionFormula::Herzberger);
+        break;
+    case 4:
+        _formula_func_ptr = &(DispersionFormula::Sellmeier2);
+        break;
+    case 5:
+        _formula_func_ptr = &(DispersionFormula::Conrady);
+        break;
+    case 6:
+        _formula_func_ptr = &(DispersionFormula::Sellmeier3);
+        break;
+    case 7:
+        _formula_func_ptr = &(DispersionFormula::HandbookOfOptics1);
+        break;
+    case 8:
+        _formula_func_ptr = &(DispersionFormula::HandbookOfOptics2);
+        break;
+    case 9:
+        _formula_func_ptr = &(DispersionFormula::Sellmeier4);
+        break;
+    case 10:
+        _formula_func_ptr = &(DispersionFormula::Extended1);
+        break;
+    case 11:
+        _formula_func_ptr = &(DispersionFormula::Sellmeier5);
+        break;
+    case 12:
+        _formula_func_ptr = &(DispersionFormula::Extended2);
+        break;
+    case 13: // Unknown
+        _formula_func_ptr = nullptr;
+        break;
+    default:
+        _formula_func_ptr = nullptr;
+    }
+
+}
+
 QString Glass::formulaName() const
 {
     switch(_formulaIndex){
@@ -364,13 +356,7 @@ QString Glass::formulaName() const
     }
 }
 
-/**
- * @brief Compute internal transmittance at specified wavelength and thickness
- * @param lambdamicron wavelength in micron
- * @param thi thickness
- * @note This function uses spline interpolation.  Calculation result outside of the valid wavelength range may be weird.
- * @return internal transmittance
- */
+
 double Glass::transmittance(double lambdamicron, double thi) const
 {
     Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );
@@ -393,7 +379,7 @@ double Glass::transmittance(double lambdamicron, double thi) const
     return s(lambdamicron);
 }
 
-QVector<double> Glass::transmittance(QVector<double> vLambdamicron, double thi) const
+QVector<double> Glass::transmittance(const QVector<double>& vLambdamicron, double thi) const
 {
     Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );
 

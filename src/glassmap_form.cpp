@@ -270,11 +270,7 @@ void GlassMapForm::showCurveFittingDlg()
         coefs.clear();
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-
-    }
+    delete dlg;
     dlg = nullptr;
 }
 
@@ -346,11 +342,7 @@ void GlassMapForm::showPresetDlg()
         update();
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-        dlg = nullptr;
-    }
+    delete dlg;
     dlg = nullptr;
 }
 

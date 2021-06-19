@@ -315,10 +315,5 @@ void CatalogViewForm::showSettingDlg()
         update();
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-        dlg = nullptr;
-    }
-
+    delete dlg;
 }

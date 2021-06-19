@@ -131,7 +131,6 @@ DispersionPlotForm::~DispersionPlotForm()
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot = nullptr;
-    m_chkCurve = nullptr;
     m_plotDataTable->clear();
     m_tableCoefs->clear();
 

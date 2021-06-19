@@ -22,11 +22,6 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Glass property container class
-  */
-
-#pragma once
 
 #ifndef GLASS_H
 #define GLASS_H
@@ -35,6 +30,7 @@
 #include <QList>
 #include <QVector>
 #include <QtMath>
+
 
 class Glass
 {
@@ -45,7 +41,7 @@ public:
     // fundamental data
     double          index(double lambdamicron) const;
     double          index(QString spectral) const;
-    QVector<double> index(QVector<double> vLambdamicron) const;
+    QVector<double> index(const QVector<double>& vLambdamicron) const;
     QString         name() const { return _name;}
     QString         supplyer() const { return _supplyer;}
     QString         status() const { return _status;}
@@ -87,7 +83,7 @@ public:
     int         dispersionCoefCount() const { return _dispersionData.size(); }
     double      dispersionCoef(int n) const;
 
-    void        setDispForm(int n){ _formulaIndex = n;}
+    void        setDispForm(int n);
     void        setDispCoef(int n, double val);
 
 
@@ -123,7 +119,7 @@ public:
 
     // transmittance data
     double          transmittance(double lambdamicron, double thi = 25) const;
-    QVector<double> transmittance(QVector<double> vLambdamicron, double thi = 25) const;
+    QVector<double> transmittance(const QVector<double>& vLambdamicron, double thi = 25) const;
     double          lambdaMin() const {return _lambdaMin;}
     double          lambdaMax() const {return _lambdaMax;}
     void            getTransmittanceData(QList<double>& pvLambdamicron, QList<double>& pvTransmittance, QList<double>& pvThickness);
@@ -148,6 +144,7 @@ private:
     const int       _dispersion_data_size = 12;
     QVector<double> _dispersionData;
     int             _formulaIndex;
+    double (*_formula_func_ptr)(double, const QVector<double>&);
 
     // thermal data
     const int       _thermal_data_size = 7;

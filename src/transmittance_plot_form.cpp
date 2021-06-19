@@ -118,11 +118,7 @@ void TransmittancePlotForm::addGraph()
         updateAll();
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-        dlg = nullptr;
-    }
+    delete dlg;
     dlg = nullptr;
 
 }
