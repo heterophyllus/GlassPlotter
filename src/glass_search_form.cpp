@@ -28,6 +28,7 @@
 #include <QMdiArea>
 #include <QComboBox>
 #include <QTableWidget>
+#include <QMessageBox>
 
 #include "glass.h"
 #include "glass_catalog.h"
@@ -50,6 +51,8 @@ GlassSearchForm::GlassSearchForm(QList<GlassCatalog*> catalogList, QMdiArea *par
     ui->tableWidget_Parameters->setHorizontalHeaderLabels(hHeaderLabels);
     addParameter();
     ui->tableWidget_Parameters->resizeColumnsToContents();
+
+    QObject::connect(ui->tableWidget_Parameters, SIGNAL(cellChanged(int,int)), this, SLOT(validateCellInput(int,int)));
 
     QObject::connect(ui->pushButton_Add,    SIGNAL(clicked()), this, SLOT(addParameter()));
     QObject::connect(ui->pushButton_Remove, SIGNAL(clicked()), this, SLOT(removeParameter()));
@@ -81,7 +84,7 @@ void GlassSearchForm::addParameter()
 
 void GlassSearchForm::removeParameter()
 {
-    if(ui->tableWidget_Parameters->rowCount() > 0) {
+    if(ui->tableWidget_Parameters->rowCount() > 1) {
         int currentRow = ui->tableWidget_Parameters->currentRow();
         ui->tableWidget_Parameters->removeRow(currentRow);
     }
@@ -142,25 +145,41 @@ void GlassSearchForm::showSearchResult()
 
     }
 
+}
+
+
+void GlassSearchForm::validateCellInput(int row, int col)
+{
+    if(col == 0) return;
+
+    QTableWidgetItem *item = ui->tableWidget_Parameters->item(row, col);
+    if(!item) {
+        return;
+    }
+
+    QString text = item->text();
+    if(text == "") return;
+
+    bool isDouble;
+    double val = text.toDouble(&isDouble);
+    if(!isDouble){
+        QMessageBox::warning(this,tr("Error"), tr("Invalid Input"));
+        item->setText("1.0");
+    }
 
 }
 
 void GlassSearchForm::setCellValue(QTableWidget* table, int row, int col, QString str)
 {
     QTableWidgetItem *item = table->item(row, col);
-        if(!item){
-            item = new QTableWidgetItem;
-            table->setItem(row, col, item);
-        }
-        item->setTextAlignment(Qt::AlignRight);
-        item->setText(str);
+    if(!item){
+        item = new QTableWidgetItem;
+        table->setItem(row, col, item);
+    }
+    item->setTextAlignment(Qt::AlignRight);
+    item->setText(str);
 }
 
-
-bool GlassSearchForm::compareErrorValue(Glass* g1, Glass* g2)
-{
-    return ( getErrorValue(g1) < getErrorValue(g2) );
-}
 
 double GlassSearchForm::getErrorValue(Glass* g)
 {
@@ -184,7 +203,7 @@ double GlassSearchForm::getErrorValue(Glass* g)
 
 QComboBox* GlassSearchForm::createParameterCombo()
 {
-    QStringList items({"nd", "ne", "vd", "ve", "PgF"});
+    QStringList items({"nd", "ne", "vd", "ve", "PgF", "PCt_"});
     QComboBox *combo = new QComboBox();
     combo->addItems(items);
     combo->setCurrentIndex(0);

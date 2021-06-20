@@ -49,14 +49,22 @@ public:
 private slots:
     /** Execute search and show result */
     void showSearchResult();
+
+    /** Add new line to search parameter table */
     void addParameter();
+
+    /** Remove line from search parameter table */
     void removeParameter();
 
+    /** Validate cell input value of search parameter table */
+    void validateCellInput(int row, int col);
+
 private:
-    bool compareErrorValue(Glass* g1, Glass* g2);
+    /** Compute error function value */
     double getErrorValue(Glass* g);
     QComboBox* createParameterCombo();
     void setCellValue(QTableWidget* table, int row, int col, QString str);
+
     inline QString numToQString(double val, char fmt='f', int digit=6);
 
     Ui::GlassSearchForm *ui;
