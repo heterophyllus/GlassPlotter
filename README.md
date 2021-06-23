@@ -3,21 +3,35 @@
 ![MDI](image/Screenshot_MDI.png)
 
 ## Overview
-GlassPlotter is an open source glassmap viewer which aims to be useful for daily work of diverse optical engineers.
+GlassPlotter is an open source and easy-to-use glassmap viewer.  
 
-## Key Features
-- Comprehensive functionality
-- User defined curve
-- Rich GUI
-- Open source
+The key feature of this application is to support various useful functions as listed below. They will be helpful in designing any optical systems.
+
+From the viewpoint of software, this application is developed to be intuitive. It can be built and distributed as executable with simple GUI that frees from any scripting and specific environments.  
+
+## Functions
+- Glass maps
+  - [x] nd - vd
+  - [x] ne - ve
+  - [x] PgF - vd
+  - [x] PCt - vd
+  - [ ] Buchdahl coefficients (test)
+- Plots
+  - [x] Refractive index vs wavelength plot
+  - [x] Transmittance vs wavelength plot
+  - [x] Thermal coefficient (dn/dt) plot
+- Table
+  - [x] Various glass properties (optical, mechanical, chemical, etc)
+- Others
+  - [x] Glass search (used for glass fitting)
 
 ## Getting Started 
-The binaries for Windows/Mac can be downloaded from [Release page](https://github.com/heterophyllus/glassplotter/releases/latest).
+The prebuilt binaries can be downloaded from [Release page](https://github.com/heterophyllus/glassplotter/releases/latest).
 
 See also [Wiki](https://github.com/heterophyllus/glassplotter/wiki) for further information.
 
-## Resources
-This application requires additional files in either of two formats.
+## Glass Catalogs
+This application reads glass catalog files in either of two formats.
 
 1. Zemax AGF  
    Available on each manufacturer's website. 
@@ -27,8 +41,8 @@ This application requires additional files in either of two formats.
 
 Note that the AGF/XML files in this repository are not always up to date.
 
-## Development
-This application is built with:
+## Dependency
+
 |Library|Description|
 |---|---|
 |[Qt](https://www.qt.io)|GUI library|
@@ -38,8 +52,10 @@ This application is built with:
 |[pugixml](https://github.com/zeux/pugixml)|Simple XML parser|
 
 
+All of the aboves except Qt itself are already included in this repository.
+
 ## License
-This project is licensed under the GPL License - see the [LICENSE](LICENSE.md) for details.
+This project is licensed under GPL License - see the [LICENSE](LICENSE.md) for details.
 
 ## Contribution
 Contributions and feedbacks are greatly appreciated.
