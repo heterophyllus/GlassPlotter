@@ -5,9 +5,9 @@
 ## Overview
 GlassPlotter is an open source and easy-to-use glassmap viewer.  
 
-The key feature of this application is to support various useful functions as listed below. They will be helpful in designing any optical systems.
+As listed below, GlassPlotter features to support various glass maps, analytical plots and utilities. Besides, most of glass manufacturers are supported, for GlassPlotter reads glass catalogs which are freely available and are usually contained in optical design software.
 
-From the viewpoint of software, this application is developed to be intuitive. It can be built and distributed as executable with simple GUI that frees from any scripting and specific environments.  
+It is also noteworthy that GlassPlotter is developed as a standalone application with intuitive GUI, which frees from any scripting and specific environments.  GlassPlotter aims to be useful for any diverse optical engineers, including those who are not skillful at programming.
 
 ## Functions
 - Glass maps
