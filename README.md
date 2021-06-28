@@ -3,11 +3,11 @@
 ![MDI](image/Screenshot_MDI.png)
 
 ## Overview
-GlassPlotter is an open source and easy-to-use glassmap viewer.  
+GlassPlotter is an open source and easy-to-use glass map viewer.  
 
-As listed below, GlassPlotter features to support various glass maps, analytical plots and utilities. Besides, most of glass manufacturers are supported, for GlassPlotter reads glass catalogs which are freely available and are usually contained in optical design software.
+As listed below, GlassPlotter features to provide various glass maps, analytical plots and utilities. A large number of glasses (or optical materials) from various manufacturers are supported. For, GlassPlotter obtains property data by reading catalogs in AGF/XML format, most of which can be downloaded from elsewhere.
 
-It is also noteworthy that GlassPlotter is developed as a standalone application with intuitive GUI, which frees from any scripting and specific environments.  GlassPlotter aims to be useful for any diverse optical engineers, including those who are not skillful at programming.
+It is also noteworthy that GlassPlotter is developed as a standalone application. It has intuitive GUI and frees the user from any scripting or specific environments. This feature allows diverse optical engineers to use it easily and everywhere.
 
 ## Functions
 - Glass maps
@@ -20,7 +20,7 @@ It is also noteworthy that GlassPlotter is developed as a standalone application
   - [x] Refractive index vs wavelength plot
   - [x] Transmittance vs wavelength plot
   - [x] Thermal coefficient (dn/dt) plot
-- Table
+- Tables
   - [x] Various glass properties (optical, mechanical, chemical, etc)
 - Others
   - [x] Glass search (used for glass fitting)
