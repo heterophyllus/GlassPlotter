@@ -5,9 +5,11 @@
 ## Overview
 GlassPlotter is an open source and easy-to-use glass map viewer.  
 
-As listed below, GlassPlotter features to provide a great variety of glass maps, analytical plots and utilities. A large number of optical glasses (or optical materials) from multiple manufacturers are supported, for GlassPlotter obtains the property data by reading catalogs in AGF/XML format, most of which are available from elsewhere.
+As listed below, GlassPlotter features to provide a great variety of analytical tools and to support large number of optical glasses (or optical materials) from multiple manufacturers.
 
-It is also noteworthy that GlassPlotter is developed as a standalone application with intuitive GUI. It allows diverse optical engineers to use easily and anywhere without any scripting or specific environment.
+The glass property data are obtained by reading catalogs in AGF/XML format, most of which are freely available from elsewhere.
+
+It is also noteworthy that GlassPlotter is developed as a standalone application with intuitive GUI, allowing diverse optical engineers to use easily and anywhere without any scripting or specific environment.
 
 ## Features
 - Glass maps
@@ -32,6 +34,7 @@ See also [Wiki](https://github.com/heterophyllus/glassplotter/wiki) for further 
 
 ## Glass Catalogs
 This application reads glass catalog files in either of two formats.
+Note that the catalog files in this repository are not always up to date.
 
 1. Zemax AGF  
    Available on each manufacturer's website. 
@@ -39,7 +42,6 @@ This application reads glass catalog files in either of two formats.
 2. CODE V XML  
    Available on [Synopsys support page](https://www.synopsys.com/optical-solutions/support/support-glass-catalog.html).
 
-Note that the AGF/XML files in this repository are not always up to date.
 
 ## Dependency
 
@@ -52,7 +54,7 @@ Note that the AGF/XML files in this repository are not always up to date.
 |[pugixml](https://github.com/zeux/pugixml)|Simple XML parser|
 
 
-All of the aboves except Qt itself are already included in this repository.
+All of the aboves except Qt itself have been already included in this repository.
 
 ## License
 This project is licensed under GPL License - see the [LICENSE](LICENSE.md) for details.

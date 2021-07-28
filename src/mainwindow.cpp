@@ -41,6 +41,7 @@
 #include "catalog_view_form.h"
 #include "glass_search_form.h"
 #include "load_catalog_result_dialog.h"
+#include "preference_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -52,8 +53,9 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("GlassPlotter");
 
     // File menu
-    QObject::connect(ui->action_loadAGF,SIGNAL(triggered()), this, SLOT(loadAGF()));
-    QObject::connect(ui->action_loadXML,SIGNAL(triggered()), this, SLOT(loadXML()));
+    QObject::connect(ui->action_loadAGF,    SIGNAL(triggered()), this, SLOT(loadNewAGF()));
+    QObject::connect(ui->action_loadXML,    SIGNAL(triggered()), this, SLOT(loadNewXML()));
+    QObject::connect(ui->action_Preference, SIGNAL(triggered()), this, SLOT(showPreferenceDlg()));
 
     // Tools menu
     QObject::connect(ui->action_NdVd,              SIGNAL(triggered()),this, SLOT(showGlassMapNdVd()));
@@ -77,10 +79,35 @@ MainWindow::MainWindow(QWidget *parent)
 
     //setAttribute(Qt::WA_DeleteOnClose);
     setUnifiedTitleAndToolBarOnMac(true);
+
+    // preference
+    QDir qdir(QApplication::applicationDirPath());
+    if(!qdir.exists("INI")) qdir.mkdir("INI");
+    const QString settingFile = QApplication::applicationDirPath() + "/INI/" + "preference.ini";
+
+    m_settings = new QSettings(settingFile, QSettings::IniFormat);
+    m_settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
+
+    // Load catalogs from default directory
+    m_settings->beginGroup("Preference");
+    m_catalogDir = m_settings->value("Directory", "").toString();
+    m_catalogExt = m_settings->value("Extension", "").toString();
+    m_loadWithResult = m_settings->value("ShowResult", false).toBool();
+    m_settings->endGroup();
+
+    loadCatalogsFromDir(m_catalogDir, m_catalogExt, m_loadWithResult);
+
 }
 
 MainWindow::~MainWindow()
 {
+    try {
+        delete m_settings;
+    }  catch (...) {
+        qDebug() << "memory release error: m_setting in ~MainWindow";
+    }
+    m_settings = nullptr;
+
     if(!m_catalogList.isEmpty()){
         for(auto &cat: m_catalogList){
             try {
@@ -96,7 +123,79 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::loadAGF()
+void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths, QString ext, bool withResult)
+{
+    // clear old catalogs
+    if(!m_catalogList.isEmpty())
+    {
+        for (auto &cat: m_catalogList) {
+            delete cat;
+        }
+        m_catalogList.clear();
+    }
+
+    // load catalogs
+    GlassCatalog* catalog;
+    QString parse_result, parse_result_all;
+
+    for(int i = 0; i < catalogFilePaths.size(); i++){
+        catalog = new GlassCatalog;
+        parse_result.clear();
+
+        bool ok;
+        if(ext == "AGF"){
+            ok = catalog->loadAGF(catalogFilePaths[i], parse_result);
+        }else{
+            ok = catalog->loadXml(catalogFilePaths[i], parse_result);
+        }
+
+        if(ok){
+            m_catalogList.append(catalog);
+            parse_result_all += parse_result;
+        }
+        else{
+            parse_result_all += ("Catalog loading error:" + catalogFilePaths[i]);
+            try {
+                delete catalog;
+            }  catch (...) {
+                qDebug() << "memory release error";
+            }
+            continue;
+        }
+    }
+
+    catalog = nullptr;
+
+
+    // show parse result
+    if(withResult) {
+        LoadCatalogResultDialog dlg(this);
+        dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
+        dlg.setText(parse_result_all);
+        dlg.exec();
+    }
+
+}
+
+void MainWindow::loadCatalogsFromDir(QString catalogDir, QString ext, bool withResult)
+{
+    QStringList nameFilter;
+    nameFilter.append("*." + m_catalogExt);
+
+    QDir dir(catalogDir);
+    dir.setNameFilters(nameFilter);
+
+    QStringList catalogFilePaths;
+    QFileInfoList infoList = dir.entryInfoList();
+    for(auto &finfo : infoList) {
+        catalogFilePaths.append(finfo.filePath());
+    }
+
+    loadCatalogFiles(catalogFilePaths, ext, withResult);
+
+}
+
+void MainWindow::loadNewAGF()
 {
     ui->mdiArea->closeAllSubWindows();
 
@@ -111,43 +210,11 @@ void MainWindow::loadAGF()
         return;
     }
 
+    loadCatalogFiles(filePaths, "AGF", m_loadWithResult);
 
-    // clear old catalogs
-    if(!m_catalogList.isEmpty())
-    {
-        for (auto &cat: m_catalogList) {
-            delete cat;
-        }
-        m_catalogList.clear();
-    }
-
-    // load catalogs
-    GlassCatalog* catalog;
-    QString parse_result, parse_result_all;
-    for(int i = 0; i < filePaths.size(); i++){
-        catalog = new GlassCatalog;
-        parse_result.clear();
-        if(catalog->loadAGF(filePaths[i], parse_result)){
-            m_catalogList.append(catalog);
-            parse_result_all += parse_result;
-        }
-        else{
-            parse_result_all += ("Catalog loading error:" + filePaths[i]);
-        }
-    }
-
-    // show directory path in statusbar
-    QFileInfo finfo(filePaths.first());
-    ui->statusbar->showMessage(finfo.absolutePath());
-
-    // show parse result
-    LoadCatalogResultDialog dlg(this);
-    dlg.setLabel("Loading AGF files has been finished.\nBelows are notable parse results.");
-    dlg.setText(parse_result_all);
-    dlg.exec();
 }
 
-void MainWindow::loadXML()
+void MainWindow::loadNewXML()
 {
     ui->mdiArea->closeAllSubWindows();
 
@@ -162,42 +229,20 @@ void MainWindow::loadXML()
         return;
     }
 
-    // clear old catalogs
-    if(!m_catalogList.isEmpty())
-    {
-        for (auto &cat: m_catalogList) {
-            delete cat;
-        }
-        m_catalogList.clear();
-    }
-
-    // load catalogs
-    GlassCatalog* catalog;
-    QString parse_result, parse_result_all;
-    for(int i = 0; i < filePaths.size(); i++){
-        catalog = new GlassCatalog;
-        parse_result.clear();
-        if(catalog->loadXml(filePaths[i],parse_result)){
-            m_catalogList.append(catalog);
-            parse_result_all += parse_result;
-        }
-        else{
-            parse_result_all += ("Catalog loading error:" + filePaths[i]);
-        }
-    }
-
-    // show directory path in statusbar
-    QFileInfo finfo(filePaths.first());
-    ui->statusbar->showMessage(finfo.absolutePath());
-
-    // show parse result
-    LoadCatalogResultDialog dlg(this);
-    dlg.setLabel("Loading XML files has been finished.\nBelows are notable parse results.");
-    dlg.setText(parse_result_all);
-    dlg.exec();
+    loadCatalogFiles(filePaths, "XML", m_loadWithResult);
 
 }
 
+
+void MainWindow::showPreferenceDlg()
+{
+    PreferenceDialog* dlg = new PreferenceDialog(m_settings, this);
+    if(dlg->exec() == QDialog::Accepted){
+        qDebug() << "Update preference";
+    }
+
+    delete dlg;
+}
 
 void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed)
 {

@@ -40,7 +40,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     label->setText(QApplication::translate("AboutDlg",
     "GlassPlotter - Simple Glassmap Viewer\n"
     "\n"
-    "    Copyright (C) <2020>  Hiiragi<heterophyllus.work@gmail.com>\n"
+    "    Copyright (C)  2020 - present  Hiiragi<heterophyllus.work@gmail.com>\n"
     "\n"
     "    This program is free software: you can redistribute it and/or modify \n"
     "    it under the terms of the GNU General Public License as published by\n"
@@ -55,7 +55,7 @@ AboutDialog::AboutDialog(QWidget *parent) :
     "    You should have received a copy of the GNU General Public License\n"
     "    along with this program.  If not, see <https://www.gnu.org/licenses/>.\n"
     "\n"
-    "    Additional information is provided at:\n"
+    "    For further information:\n"
     "    https://github.com/heterophyllus/glassplotter", nullptr));
 
 

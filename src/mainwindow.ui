@@ -39,6 +39,8 @@
     </property>
     <addaction name="action_loadAGF"/>
     <addaction name="action_loadXML"/>
+    <addaction name="separator"/>
+    <addaction name="action_Preference"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -82,7 +84,7 @@
   </widget>
   <action name="action_loadAGF">
    <property name="text">
-    <string>Load AGF</string>
+    <string>Load New AGF</string>
    </property>
   </action>
   <action name="action_DispersionPlot">
@@ -147,7 +149,7 @@
   </action>
   <action name="action_loadXML">
    <property name="text">
-    <string>Load XML</string>
+    <string>Load New XML</string>
    </property>
   </action>
   <action name="action_DnDtabsPlot">
@@ -163,6 +165,11 @@
   <action name="action_GlassSearch">
    <property name="text">
     <string>Glass Search</string>
+   </property>
+  </action>
+  <action name="action_Preference">
+   <property name="text">
+    <string>Preference</string>
    </property>
   </action>
  </widget>

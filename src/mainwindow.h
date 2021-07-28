@@ -26,6 +26,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
 
 #include "qcustomplot.h"
 
@@ -60,8 +61,9 @@ private:
     void showGlassMap(QString xdataname, QString ydataname,QCPRange xrange, QCPRange yrange, bool xreversed=true);
 
 private slots:
-    void loadAGF();
-    void loadXML();
+    void loadNewAGF();
+    void loadNewXML();
+    void showPreferenceDlg();
 
     void showGlassMapNdVd();
     void showGlassMapNeVe();
@@ -81,7 +83,20 @@ private slots:
     void showAbout();
 
 private:
+    void loadCatalogFiles(const QStringList& catalogFilePaths, QString ext="AGF", bool withResult= true);
+    void loadCatalogsFromDir(QString catalogDir, QString ext="AGF", bool withResult= true);
+
     Ui::MainWindow *ui;
     QList<GlassCatalog*> m_catalogList;
+
+    /** Default directory */
+    QString m_catalogDir;
+
+    /** Default file extension (AGF/XML) */
+    QString m_catalogExt;
+    QSettings* m_settings;
+
+    /** whether to show parse result dialog after loading catalogs */
+    bool m_loadWithResult;
 };
 #endif // MAINWINDOW_H
