@@ -57,6 +57,8 @@ private slots:
     void update();
     void setDefault();
     void showPresetDlg();
+    void showContextMenu();
+    void exportImage();
 
 private:
     /**

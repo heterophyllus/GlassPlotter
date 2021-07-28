@@ -92,9 +92,13 @@ GlassMapForm::GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, 
     m_settings = new QSettings(m_settingFile, QSettings::IniFormat);
     m_settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
 
-    //mouse
+    // mouse
     QObject::connect(m_customPlot, SIGNAL(itemClick(QCPAbstractItem*,QMouseEvent*)), this, SLOT(showNeighbors(QCPAbstractItem*)));
     QObject::connect(m_customPlot,SIGNAL(mousePress(QMouseEvent*)),this, SLOT(clearNeighbors()));
+
+    // context menu
+    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(m_customPlot, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
 
     // fitting
     QObject::connect(ui->pushButton_Fitting, SIGNAL(clicked()), this, SLOT(showCurveFittingDlg()));
@@ -139,6 +143,30 @@ GlassMapForm::GlassMapCtrl::GlassMapCtrl(QCheckBox* p, QCheckBox* l)
 {
     checkBoxPlot = p;
     checkBoxLabel = l;
+}
+
+void GlassMapForm::showContextMenu()
+{
+    QMenu contextMenu;
+    QAction *action1 = contextMenu.addAction("Export");
+    QObject::connect(action1, SIGNAL(triggered()), this, SLOT(exportImage()));
+
+    contextMenu.exec(QCursor::pos());
+}
+
+
+void GlassMapForm::exportImage()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save to"),"",tr("PNG file(*.png);;All Files(*.*)"));
+    if(filePath.isEmpty()){
+        return;
+    }
+
+    if(m_customPlot->savePng(filePath)){
+        QMessageBox::information(this, "Success", "The image was successfully exported");
+    }else{
+        QMessageBox::warning(this, "Error", "Failed to export image");
+    }
 }
 
 void GlassMapForm::setUpScrollArea()
