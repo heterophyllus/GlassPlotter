@@ -265,6 +265,7 @@ void Glass::setDispForm(int n)
     _formulaIndex = n;
 
     switch (n) {
+    // -----> Zemax AGF
     case 1:
         _formula_func_ptr = &(DispersionFormula::Schott);
         break;
@@ -304,6 +305,27 @@ void Glass::setDispForm(int n)
     case 13: // Unknown
         _formula_func_ptr = nullptr;
         break;
+
+    // -----> CodeV XML
+    case 101:
+        _formula_func_ptr = &(DispersionFormula::Laurent);
+        break;
+    case 102:
+        _formula_func_ptr = &(DispersionFormula::GlassManufacturerLaurent);
+        break;
+    case 103:
+        _formula_func_ptr = &(DispersionFormula::GlassManufacturerSellmeier);
+        break;
+    case 104:
+        _formula_func_ptr = &(DispersionFormula::StandardSellmeier);
+        break;
+    case 105:
+        _formula_func_ptr = &(DispersionFormula::Cauchy);
+        break;
+    case 106:
+        _formula_func_ptr = &(DispersionFormula::Hartman);
+        break;
+
     default:
         _formula_func_ptr = nullptr;
     }
