@@ -17,7 +17,8 @@ public:
     ~PreferenceDialog();
 
 private slots:
-    void browseDirectory();
+    void browseCatalogFiles();
+    void clearCatalogFiles();
     void onAccept();
 
 private:
