@@ -47,6 +47,12 @@ protected slots:
     /** Set legend visible on/off.  This can be slot for the checkbox. */
     void setLegendVisible();
 
+    /** Show context menu at right click on the plot */
+    void showContextMenu();
+
+    /** Export current plot to image file */
+    void exportImage();
+
 protected:
     /** Add data to the specified cell in plot data table */
     void addTableItem(int row, int col, QString str);

@@ -52,6 +52,11 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     // plot data table
     m_plotDataTable = ui->tableWidget;
 
+    // context menu
+    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(m_customPlot, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
+
+
     // buttons
     QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()), this, SLOT(addGraph()));
     QObject::connect(ui->pushButton_DeleteGraph,SIGNAL(clicked()), this, SLOT(deleteGraph()));

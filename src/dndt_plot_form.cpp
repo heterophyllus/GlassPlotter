@@ -38,6 +38,7 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle("Dn/Dt(abs) Plot");
 
+
     m_catalogList = catalogList;
 
     m_customPlot = ui->widget;
@@ -63,6 +64,10 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     m_editPlotStep->setText(QString::number(5));
 
     m_plotDataTable = ui->tableWidget;
+
+    // context menu
+    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(m_customPlot, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
 
     // default axis setup
     m_editXmin = ui->lineEdit_Xmin;

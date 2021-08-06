@@ -49,6 +49,7 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
 
     m_maxGraphCount = 5;
 
+
     // legend
     m_chkLegend = ui->checkBox_Legend;
 
@@ -57,6 +58,12 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
     QObject::connect(ui->pushButton_SetAxis,    SIGNAL(clicked()),     this, SLOT(setAxis()));
     QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()),     this, SLOT(clearAll()));
     QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
+
+
+    // context menu
+    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(m_customPlot, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
+
 
     // thickness
     m_editThickness = ui->lineEdit_Thickness;

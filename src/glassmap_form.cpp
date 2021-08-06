@@ -157,7 +157,7 @@ void GlassMapForm::showContextMenu()
 
 void GlassMapForm::exportImage()
 {
-    QString filePath = QFileDialog::getSaveFileName(this, tr("Save to"),"",tr("PNG file(*.png);;All Files(*.*)"));
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save as"),"",tr("PNG file(*.png);;All Files(*.*)"));
     if(filePath.isEmpty()){
         return;
     }

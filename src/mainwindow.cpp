@@ -88,14 +88,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_settings = new QSettings(settingFile, QSettings::IniFormat);
     m_settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
 
-    // Load catalogs from default directory
-    m_settings->beginGroup("Preference");
-    m_catalogDir = m_settings->value("Directory", "").toString();
-    m_catalogExt = m_settings->value("Extension", "").toString();
-    m_loadWithResult = m_settings->value("ShowResult", false).toBool();
-    m_settings->endGroup();
-
-    loadCatalogsFromDir(m_catalogDir, m_catalogExt, m_loadWithResult);
+    // Load default catalogs
+    loadDefaultCatalogFiles();
 
 }
 
@@ -123,8 +117,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths, QString ext, bool withResult)
+void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths, bool withResult)
 {
+    if(catalogFilePaths.empty()) {
+        return;
+    }
+
     // clear old catalogs
     if(!m_catalogList.isEmpty())
     {
@@ -138,12 +136,16 @@ void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths, QString e
     GlassCatalog* catalog;
     QString parse_result, parse_result_all;
 
+    QFileInfo finfo;
+    finfo.setFile(catalogFilePaths.first());
+    QString ext = finfo.suffix().toLower(); // .agf, .xml
+
     for(int i = 0; i < catalogFilePaths.size(); i++){
         catalog = new GlassCatalog;
         parse_result.clear();
 
         bool ok;
-        if(ext == "AGF"){
+        if(ext == "agf"){
             ok = catalog->loadAGF(catalogFilePaths[i], parse_result);
         }else{
             ok = catalog->loadXml(catalogFilePaths[i], parse_result);
@@ -154,7 +156,7 @@ void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths, QString e
             parse_result_all += parse_result;
         }
         else{
-            parse_result_all += ("Catalog loading error:" + catalogFilePaths[i]);
+            parse_result_all += ("Catalog loading error:" + catalogFilePaths[i] + "\n");
             try {
                 delete catalog;
             }  catch (...) {
@@ -177,21 +179,24 @@ void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths, QString e
 
 }
 
-void MainWindow::loadCatalogsFromDir(QString catalogDir, QString ext, bool withResult)
+void MainWindow::loadDefaultCatalogFiles()
 {
-    QStringList nameFilter;
-    nameFilter.append("*." + m_catalogExt);
+    m_settings->beginGroup("Preference");
 
-    QDir dir(catalogDir);
-    dir.setNameFilters(nameFilter);
-
+    int catalogCount = m_settings->value("NumFiles", 0).toInt();
     QStringList catalogFilePaths;
-    QFileInfoList infoList = dir.entryInfoList();
-    for(auto &finfo : infoList) {
-        catalogFilePaths.append(finfo.filePath());
+    if(catalogCount > 0) {
+        for(int i = 0; i < catalogCount; i++) {
+            QString filePath = m_settings->value("File" + QString::number(i), "").toString();
+            catalogFilePaths.append(filePath);
+        }
     }
 
-    loadCatalogFiles(catalogFilePaths, ext, withResult);
+    m_loadWithResult = m_settings->value("ShowResult", false).toBool();
+
+    m_settings->endGroup();
+
+    loadCatalogFiles(catalogFilePaths);
 
 }
 
@@ -210,8 +215,7 @@ void MainWindow::loadNewAGF()
         return;
     }
 
-    loadCatalogFiles(filePaths, "AGF", m_loadWithResult);
-
+    loadCatalogFiles(filePaths, m_loadWithResult);
 }
 
 void MainWindow::loadNewXML()
@@ -229,8 +233,7 @@ void MainWindow::loadNewXML()
         return;
     }
 
-    loadCatalogFiles(filePaths, "XML", m_loadWithResult);
-
+    loadCatalogFiles(filePaths, m_loadWithResult);
 }
 
 

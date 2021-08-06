@@ -3,9 +3,32 @@
 PropertyPlotForm::PropertyPlotForm(QWidget *parent):
     QWidget(parent)
 {
-
+    // Attribute
+    this->setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
+void PropertyPlotForm::showContextMenu()
+{
+    QMenu contextMenu;
+    QAction *action1 = contextMenu.addAction("Export");
+    QObject::connect(action1, SIGNAL(triggered()), this, SLOT(exportImage()));
+
+    contextMenu.exec(QCursor::pos());
+}
+
+void PropertyPlotForm::exportImage()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save as"),"",tr("PNG file(*.png);;All Files(*.*)"));
+    if(filePath.isEmpty()){
+        return;
+    }
+
+    if(m_customPlot->savePng(filePath)){
+        QMessageBox::information(this, "Success", "The image was successfully exported");
+    }else{
+        QMessageBox::warning(this, "Error", "Failed to export image");
+    }
+}
 
 void PropertyPlotForm::setAxis()
 {

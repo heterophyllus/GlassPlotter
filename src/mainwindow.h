@@ -83,17 +83,12 @@ private slots:
     void showAbout();
 
 private:
-    void loadCatalogFiles(const QStringList& catalogFilePaths, QString ext="AGF", bool withResult= true);
-    void loadCatalogsFromDir(QString catalogDir, QString ext="AGF", bool withResult= true);
+    void loadCatalogFiles(const QStringList& catalogFilePaths, bool withResult= true);
+    void loadDefaultCatalogFiles();
 
     Ui::MainWindow *ui;
     QList<GlassCatalog*> m_catalogList;
 
-    /** Default directory */
-    QString m_catalogDir;
-
-    /** Default file extension (AGF/XML) */
-    QString m_catalogExt;
     QSettings* m_settings;
 
     /** whether to show parse result dialog after loading catalogs */
