@@ -22,7 +22,7 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-#include "mainwindow.h"
+#include "main_window.h"
 
 #include <QApplication>
 

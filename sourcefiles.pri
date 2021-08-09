@@ -18,7 +18,7 @@ SOURCES += \
     src/glassmap_form.cpp \
     src/load_catalog_result_dialog.cpp \
     src/main.cpp \
-    src/mainwindow.cpp \
+    src/main_window.cpp \
     src/preset_dialog.cpp \
     src/property_plot_form.cpp \
     src/qcpscatterchart.cpp \
@@ -44,7 +44,7 @@ HEADERS += \
     src/glass_search_form.h \
     src/glassmap_form.h \
     src/load_catalog_result_dialog.h \
-    src/mainwindow.h \
+    src/main_window.h \
     src/preset_dialog.h \
     src/property_plot_form.h \
     src/qcpscatterchart.h \
@@ -69,6 +69,6 @@ FORMS += \
     src/glass_selection_dialog.ui \
     src/glass_search_form.ui \
     src/load_catalog_result_dialog.ui \
-    src/mainwindow.ui \
+    src/main_window.ui \
     src/preset_dialog.ui \
     src/transmittance_plot_form.ui

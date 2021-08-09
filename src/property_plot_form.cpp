@@ -77,7 +77,7 @@ QColor PropertyPlotForm::getColorFromIndex(int index, int maxIndex)
     return color;
 }
 
-QVector<double> PropertyPlotForm::scaleVector(QVector<double> v, double scale)
+QVector<double> PropertyPlotForm::scaleVector(const QVector<double>& v, double scale)
 {
     int len = v.size();
     QVector<double> sv(len);

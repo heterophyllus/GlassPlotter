@@ -98,7 +98,7 @@ QString QCPScatterChart::name()
     return m_graphPoints->name();
 }
 
-void QCPScatterChart::setData(QVector<double> x, QVector<double> y, QVector<QString> str)
+void QCPScatterChart::setData(const QVector<double>& x, const QVector<double>& y, const QVector<QString>& str)
 {   
     //set data to points
     m_graphPoints->setData(x,y);

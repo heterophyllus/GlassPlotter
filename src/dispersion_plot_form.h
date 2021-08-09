@@ -70,7 +70,7 @@ private:
     QList<GlassCatalog*> m_catalogList;
     QList<Glass*>        m_glassList;
 
-    QVector<double> computeUserDefinedCurve(QVector<double> xdata);
+    QVector<double> computeUserDefinedCurve(const QVector<double>& xdata);
 
 };
 

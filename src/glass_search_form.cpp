@@ -29,6 +29,7 @@
 #include <QComboBox>
 #include <QTableWidget>
 #include <QMessageBox>
+#include <QDebug>
 
 #include "glass.h"
 #include "glass_catalog.h"
@@ -163,6 +164,7 @@ void GlassSearchForm::validateCellInput(int row, int col)
     bool isDouble;
     double val = text.toDouble(&isDouble);
     if(!isDouble){
+        qDebug() << "Invalid input: " << val;
         QMessageBox::warning(this,tr("Error"), tr("Invalid Input"));
         item->setText("1.0");
     }

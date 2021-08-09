@@ -44,7 +44,7 @@ public:
     QList<QCPItemText*> textLabels();
     QString             name();
 
-    void setData(QVector<double> x, QVector<double> y, QVector<QString> str);
+    void setData(const QVector<double>& x, const QVector<double>& y, const QVector<QString>& str);
     void setName(QString name);
     void setColor(QColor color);
     void setVisiblePointSeries(bool state);

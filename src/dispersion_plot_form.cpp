@@ -235,7 +235,7 @@ void DispersionPlotForm::on_comboBoxChanged()
     updateAll();
 }
 
-QVector<double> DispersionPlotForm::computeUserDefinedCurve(QVector<double> xdata)
+QVector<double> DispersionPlotForm::computeUserDefinedCurve(const QVector<double>& xdata)
 {
     // get coefficients
     QVector<double> coefs(12);

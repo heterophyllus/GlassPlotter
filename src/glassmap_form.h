@@ -100,8 +100,8 @@ private:
     void   setUpScrollArea();
     void   saveSetting();
     QList<double> getCurveCoefs();
-    void setCurveCoefsToUI(QList<double> coefs);
-    void setCurveData(QCPGraph* curveGraph, QList<double> coefs);
+    void setCurveCoefsToUI(const QList<double>& coefs);
+    void setCurveData(QCPGraph* curveGraph, const QList<double>& coefs);
 
     QColor getColorFromIndex(int index, int maxIndex);
 };

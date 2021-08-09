@@ -61,7 +61,7 @@ protected:
     QColor getColorFromIndex(int index, int maxIndex=5);
 
     /** Get scaled vector */
-    QVector<double> scaleVector(QVector<double> v, double scale);
+    QVector<double> scaleVector(const QVector<double>& v, double scale);
 
     /** Get QVector<double> within the range */
     QVector<double> getVectorFromRange(QCPRange range, double step=5.0);

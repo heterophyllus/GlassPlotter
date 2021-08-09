@@ -405,7 +405,7 @@ void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catal
 }
 
 
-void GlassMapForm::setCurveData(QCPGraph* curveGraph, QList<double> coefs)
+void GlassMapForm::setCurveData(QCPGraph* curveGraph, const QList<double>& coefs)
 {
     const int dataCount = 100;
     QVector<double> x(dataCount),y(dataCount);
@@ -442,7 +442,7 @@ QList<double> GlassMapForm::getCurveCoefs()
     return coefs;
 }
 
-void GlassMapForm::setCurveCoefsToUI(QList<double> coefs)
+void GlassMapForm::setCurveCoefsToUI(const QList<double>& coefs)
 {
     for(int i = 0; i < m_lineEditList.size(); i++){
         m_lineEditList[i]->setText(QString::number(coefs[i]));
