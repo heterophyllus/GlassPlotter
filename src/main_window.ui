@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>916</width>
+    <height>675</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QMdiArea" name="mdiArea"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>916</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="action_loadAGF"/>
+    <addaction name="action_loadXML"/>
+    <addaction name="separator"/>
+    <addaction name="action_Preference"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <widget class="QMenu" name="menuGlass_Map">
+     <property name="title">
+      <string>Glass Map</string>
+     </property>
+     <addaction name="action_NdVd"/>
+     <addaction name="action_NeVe"/>
+     <addaction name="action_VdPgF"/>
+     <addaction name="action_VdPCt"/>
+     <addaction name="action_Buchdahl"/>
+    </widget>
+    <addaction name="menuGlass_Map"/>
+    <addaction name="action_DispersionPlot"/>
+    <addaction name="action_TransmittancePlot"/>
+    <addaction name="action_DnDtabsPlot"/>
+    <addaction name="action_CatalogView"/>
+    <addaction name="action_GlassSearch"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="action_Tile"/>
+    <addaction name="action_Cascade"/>
+    <addaction name="action_CloseAll"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="action_About"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="action_loadAGF">
+   <property name="text">
+    <string>Load New AGF</string>
+   </property>
+  </action>
+  <action name="action_DispersionPlot">
+   <property name="text">
+    <string>Dispersion Plot</string>
+   </property>
+  </action>
+  <action name="action_TransmittancePlot">
+   <property name="text">
+    <string>Transmittance Plot</string>
+   </property>
+  </action>
+  <action name="action_NdVd">
+   <property name="text">
+    <string>Nd-Vd</string>
+   </property>
+  </action>
+  <action name="action_NeVe">
+   <property name="text">
+    <string>Ne-Ve</string>
+   </property>
+  </action>
+  <action name="action_VdPgF">
+   <property name="text">
+    <string>Vd-PgF</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="action_Tile">
+   <property name="text">
+    <string>Tile</string>
+   </property>
+  </action>
+  <action name="action_Cascade">
+   <property name="text">
+    <string>Cascade</string>
+   </property>
+  </action>
+  <action name="action_CloseAll">
+   <property name="text">
+    <string>Close All</string>
+   </property>
+  </action>
+  <action name="action_VdPCt">
+   <property name="text">
+    <string>Vd-PCt</string>
+   </property>
+  </action>
+  <action name="action_Datasheet">
+   <property name="text">
+    <string>Datasheet</string>
+   </property>
+  </action>
+  <action name="action_CatalogView">
+   <property name="text">
+    <string>Catalog View</string>
+   </property>
+  </action>
+  <action name="action_loadXML">
+   <property name="text">
+    <string>Load New XML</string>
+   </property>
+  </action>
+  <action name="action_DnDtabsPlot">
+   <property name="text">
+    <string>Dn/Dt(abs) Plot</string>
+   </property>
+  </action>
+  <action name="action_Buchdahl">
+   <property name="text">
+    <string>Buchdahl</string>
+   </property>
+  </action>
+  <action name="action_GlassSearch">
+   <property name="text">
+    <string>Glass Search</string>
+   </property>
+  </action>
+  <action name="action_Preference">
+   <property name="text">
+    <string>Preference</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
