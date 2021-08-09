@@ -7,17 +7,19 @@ GlassPlotter is an open source and easy-to-use glass map viewer.
 
 As listed below, GlassPlotter features to provide a great variety of analytical tools and to support large number of optical glasses (or optical materials) from multiple manufacturers.
 
-The glass property data are obtained by reading catalogs in AGF/XML format, most of which are freely available from elsewhere.
-
 It is also noteworthy that GlassPlotter is developed as a standalone application with intuitive GUI, allowing diverse optical engineers to use easily and anywhere without any scripting or specific environment.
 
-## Features
-- Glass maps
+## Functionality
+- Supported Format
+  - [x] Zemax AGF
+  - [x] CODEV XML
+- Glassmaps
   - [x] nd - vd
   - [x] ne - ve
   - [x] PgF - vd
   - [x] PCt - vd
   - [ ] Buchdahl coefficients (test)
+  - [ ] mechanical property
 - Plots
   - [x] Refractive index vs wavelength plot
   - [x] Transmittance vs wavelength plot
@@ -33,7 +35,8 @@ The prebuilt binaries can be downloaded from [Release page](https://github.com/h
 See also [Wiki](https://github.com/heterophyllus/glassplotter/wiki) for further information.
 
 ## Glass Catalogs
-This application reads glass catalog files in either of two formats.
+This application obtains glass property data from AGF/XML files distributed elsewhere, most of which are freely available.
+
 Note that the catalog files in this repository are not always up to date.
 
 1. Zemax AGF  
