@@ -32,7 +32,6 @@
 #include "glass.h"
 #include "glass_catalog.h"
 
-#include "about_dialog.h"
 #include "glassmap_form.h"
 #include "dispersion_plot_form.h"
 #include "transmittance_plot_form.h"
@@ -347,6 +346,22 @@ void MainWindow::closeAll()
 
 void MainWindow::showAbout()
 {
-    AboutDialog dlg(this);
-    dlg.exec();
+    QString text =
+            "GlassPlotter<br><br>"
+            "<font size=1>Version: 0.18.3 <br>"
+            "Release: August 16, 2021<br><br>"
+            "This program is distributed in the hope that it will be useful,\n"
+            "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+            "GNU General Public License for more details.<br><br>"
+            "Copyright(C) 2020 - present  Hiiragi (heterophyllus.work@gmail.com)<br><br>"
+            "Please see: "
+            "<a href=\"https://github.com/heterophyllus/GlassPlotter\">"
+            "https://github.com/heterophyllus/GlassPlotter</a></font>";
+
+    QMessageBox msgBox(this);
+    msgBox.setText(text);
+    msgBox.setWindowTitle(tr("About GlassPlotter"));
+    msgBox.setIconPixmap(QPixmap(":/icon/GlassPlotterIcon.png").scaled(64,64,Qt::KeepAspectRatio, Qt::FastTransformation));
+    msgBox.exec();
 }

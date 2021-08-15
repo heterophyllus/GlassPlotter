@@ -32,4 +32,7 @@ INCLUDEPATH += $$PWD/3rdparty/spline/src  # spline
 
 include(sourcefiles.pri)
 
+RESOURCES += \
+    resource.qrc
+
 

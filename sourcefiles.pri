@@ -3,7 +3,6 @@
 #############################################################################
 
 SOURCES += \
-    src/about_dialog.cpp \
     src/preference_dialog.cpp \
     src/catalog_view_form.cpp \
     src/catalog_view_setting_dialog.cpp \
@@ -29,7 +28,6 @@ SOURCES += \
 
 
 HEADERS += \
-    src/about_dialog.h \
     src/preference_dialog.h \
     src/catalog_view_form.h \
     src/catalog_view_setting_dialog.h \
@@ -57,7 +55,6 @@ HEADERS += \
     #spline/src/spline.h            # spline
 
 FORMS += \
-    src/about_dialog.ui \
     src/preference_dialog.ui \
     src/glassmap_form.ui \
     src/catalog_view_form.ui \
