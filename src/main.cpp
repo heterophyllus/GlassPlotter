@@ -32,5 +32,6 @@ int main(int argc, char *argv[])
     //a.setStyle("fusion"); //for windows, it looks better.
     MainWindow w;
     w.show();
+    w.loadDefaultCatalogFiles();
     return a.exec();
 }

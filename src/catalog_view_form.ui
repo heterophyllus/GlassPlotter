@@ -24,8 +24,12 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="5">
-    <widget class="QTableWidget" name="tableWidget"/>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pushButton_showDatasheet">
+     <property name="text">
+      <string>Show Datasheet</string>
+     </property>
+    </widget>
    </item>
    <item row="0" column="0">
     <widget class="QComboBox" name="comboBox_Supplyer"/>
@@ -43,12 +47,8 @@
      </property>
     </spacer>
    </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="pushButton_showDatasheet">
-     <property name="text">
-      <string>Show Datasheet</string>
-     </property>
-    </widget>
+   <item row="1" column="0" colspan="4">
+    <widget class="QTableWidget" name="tableWidget"/>
    </item>
   </layout>
  </widget>

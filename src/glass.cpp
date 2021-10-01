@@ -303,7 +303,11 @@ void Glass::setDispForm(int n)
         _formula_func_ptr = &(DispersionFormula::Extended2);
         break;
     case 13: // Unknown
-        _formula_func_ptr = nullptr;
+        if(_supplyer.contains("nikon", Qt::CaseInsensitive)){
+            _formula_func_ptr = &(DispersionFormula::Nikon_Hikari);
+        }else{
+            _formula_func_ptr = nullptr;
+        }
         break;
 
     // -----> CodeV XML

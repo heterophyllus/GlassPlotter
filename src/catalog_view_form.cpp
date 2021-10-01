@@ -25,18 +25,15 @@
 #include "catalog_view_form.h"
 #include "ui_catalog_view_form.h"
 
-#include <QMdiArea>
-#include <QComboBox>
-#include <QTableWidget>
+
 #include <QListWidget>
 #include <QDialog>
+#include <QDebug>
 
-#include "glass.h"
-#include "glass_catalog.h"
 #include "glass_datasheet_form.h"
 #include "catalog_view_setting_dialog.h"
 
-CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *parent) :
+CatalogViewForm::CatalogViewForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::CatalogViewForm)
 {
@@ -45,11 +42,11 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
 
     m_parentMdiArea = parent;
 
-    m_catalogList = catalogList;
+    m_catalogListPtr = catalogListPtr;
 
     m_comboBox = ui->comboBox_Supplyer;
-    for(int i = 0; i < m_catalogList.size(); i++){
-        m_comboBox->addItem(m_catalogList.at(i)->supplyer());
+    for(int i = 0; i < m_catalogListPtr->size(); i++){
+        m_comboBox->addItem(m_catalogListPtr->at(i)->supplyer());
     }
     QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 
@@ -57,6 +54,7 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
     QObject::connect(ui->pushButton_Setting,SIGNAL(clicked()),       this, SLOT(showSettingDlg()));
 
     m_table = ui->tableWidget;
+    m_table->setSortingEnabled(true);
 
     m_allPropertyList = QStringList({"nd",
                                      "ne",
@@ -88,14 +86,14 @@ CatalogViewForm::CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *par
 CatalogViewForm::~CatalogViewForm()
 {
     m_table->clear();
-    m_catalogList.clear();
+    m_catalogListPtr = nullptr;
 
     delete ui;
 }
 
 void CatalogViewForm::update()
 {
-    setUpTable(m_currentPropertyList, m_catalogList[ m_comboBox->currentIndex() ], m_currentDigit);
+    setUpTable(m_currentPropertyList, m_catalogListPtr->at( m_comboBox->currentIndex() ), m_currentDigit);
 }
 
 void CatalogViewForm::addTableItem(int row, int col, QString str)
@@ -282,6 +280,7 @@ void CatalogViewForm::setUpTable(QStringList properties, GlassCatalog* catalog, 
         }
     }
 
+    m_table->setSortingEnabled(true);
     m_table->update();
 }
 
@@ -292,7 +291,7 @@ void CatalogViewForm::showDatasheet()
     QString glassname    = m_table->item(m_table->currentRow(),0)->text();
 
     // show glass datasheet form
-    for(auto &cat: m_catalogList)
+    for(auto &cat: *m_catalogListPtr)
     {
         if(cat->supplyer() == supplyername)
         {
@@ -317,3 +316,4 @@ void CatalogViewForm::showSettingDlg()
 
     delete dlg;
 }
+

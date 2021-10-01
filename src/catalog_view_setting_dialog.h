@@ -17,6 +17,7 @@ public:
     explicit CatalogViewSettingDialog(QStringList allPropertyList, QStringList currentCheckedList, int currentDigit, QWidget *parent = nullptr);
     ~CatalogViewSettingDialog();
 
+    /** @brief get re-ordered and checked properties */
     void getSettings(QStringList& checkedList, int& digit);
 
 private:

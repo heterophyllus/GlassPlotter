@@ -29,8 +29,7 @@
 #include <QSettings>
 
 #include "qcustomplot.h"
-
-class GlassCatalog;
+#include "glass_catalog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -43,6 +42,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    void loadDefaultCatalogFiles();
 
 private:
 
@@ -59,6 +60,7 @@ private:
      * @param xreversed if true, x axis is reversed
      */
     void showGlassMap(QString xdataname, QString ydataname,QCPRange xrange, QCPRange yrange, bool xreversed=true);
+
 
 private slots:
     void loadNewAGF();
@@ -84,7 +86,7 @@ private slots:
 
 private:
     void loadCatalogFiles(const QStringList& catalogFilePaths);
-    void loadDefaultCatalogFiles();
+
 
     Ui::MainWindow *ui;
     QList<GlassCatalog*> m_catalogList;

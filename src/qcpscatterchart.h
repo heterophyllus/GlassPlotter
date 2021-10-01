@@ -39,10 +39,10 @@ public:
     ~QCPScatterChart();
     QCPScatterChart(QCPScatterChart &other);
 
-    QCustomPlot*        parentPlot();
-    QCPCurve*           graphPoints();
-    QList<QCPItemText*> textLabels();
-    QString             name();
+    QCustomPlot*        parentPlot() const;
+    QCPCurve*           graphPoints() const;
+    QList<QCPItemText*> textLabels() const;
+    QString             name() const;
 
     void setData(const QVector<double>& x, const QVector<double>& y, const QVector<QString>& str);
     void setName(QString name);
@@ -50,7 +50,7 @@ public:
     void setVisiblePointSeries(bool state);
     void setVisibleTextLabels(bool state);
     void setAxis(QCPRange xrange, QCPRange yrange);
-    int  dataCount();
+    int  dataCount() const;
 
 private:
     QCustomPlot*        m_customPlot;

@@ -27,13 +27,13 @@
 #define CATALOG_VIEW_FORM_H
 
 #include <QWidget>
+#include <QMdiArea>
 #include <QList>
+#include <QTableWidget>
+#include <QComboBox>
 #include <QtMath>
 
-class QMdiArea;
-class QComboBox;
-class QTableWidget;
-class GlassCatalog;
+#include "glass_catalog.h"
 
 namespace Ui {
 class CatalogViewForm;
@@ -44,7 +44,7 @@ class CatalogViewForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit CatalogViewForm(QList<GlassCatalog*> catalogList, QMdiArea *parent = nullptr);
+    explicit CatalogViewForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent = nullptr);
     ~CatalogViewForm();
 
 private slots:
@@ -60,7 +60,7 @@ private:
     QTableWidget* m_table;
     QComboBox*    m_comboBox;
 
-    QList<GlassCatalog*> m_catalogList;
+    const QList<GlassCatalog*> *m_catalogListPtr;
 
     QStringList m_allPropertyList;
     QStringList m_currentPropertyList;
@@ -69,6 +69,7 @@ private:
     void addTableItem(int row, int col, QString str);
     inline QString numToQString(double val, char fmt='f', int digit=6);
 };
+
 
 QString CatalogViewForm::numToQString(double val, char fmt, int digit)
 {

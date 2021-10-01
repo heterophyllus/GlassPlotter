@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>icon/GlassPlotterIcon.icns</file>
-        <file>icon/GlassPlotterIcon.ico</file>
-        <file>icon/GlassPlotterIcon.png</file>
+        <file>data/icon/GlassPlotterIcon.icns</file>
+        <file>data/icon/GlassPlotterIcon.ico</file>
+        <file>data/icon/GlassPlotterIcon.png</file>
     </qresource>
 </RCC>

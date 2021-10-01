@@ -27,23 +27,23 @@
 
 #include <QWidget>
 #include <QList>
+#include <QMdiArea>
+#include <QTableWidget>
+#include <QComboBox>
+
+#include "glass_catalog.h"
 
 namespace Ui {
 class GlassSearchForm;
 }
 
-class QMdiArea;
-class QComboBox;
-class QTableWidget;
-class GlassCatalog;
-class Glass;
-
+/** Form for glass search */
 class GlassSearchForm : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit GlassSearchForm(QList<GlassCatalog*> catalogList, QMdiArea *parent = nullptr);
+    explicit GlassSearchForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent = nullptr);
     ~GlassSearchForm();
 
 private slots:
@@ -72,7 +72,7 @@ private:
     QTableWidget* m_tableProperties;
     QTableWidget* m_tableResult;
 
-    QList<GlassCatalog*> m_catalogList;
+    const QList<GlassCatalog*> *m_catalogListPtr;
 };
 
 

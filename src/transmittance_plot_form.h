@@ -34,12 +34,7 @@
 #include <QWidget>
 
 #include "property_plot_form.h"
-
-class Glass;
-class GlassCatalog;
-class QCustomPlot;
-class QCPGraph;
-class QTableWidget;
+#include "glass_catalog.h"
 
 namespace Ui {
 class TransmittancePlotForm;
@@ -50,7 +45,7 @@ class TransmittancePlotForm : public PropertyPlotForm
     Q_OBJECT
 
 public:
-    explicit TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    explicit TransmittancePlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent = nullptr);
     ~TransmittancePlotForm();
 
 private slots:
@@ -62,7 +57,7 @@ private slots:
 private:
     Ui::TransmittancePlotForm *ui;
 
-    QList<GlassCatalog*> m_catalogList;
+    const QList<GlassCatalog*> *m_catalogListPtr;
     QList<Glass*>        m_glassList;
 
     QLineEdit* m_editThickness;

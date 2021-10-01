@@ -25,20 +25,15 @@
 #include "glass_search_form.h"
 #include "ui_glass_search_form.h"
 
-#include <QMdiArea>
-#include <QComboBox>
-#include <QTableWidget>
 #include <QMessageBox>
 #include <QDebug>
 
-#include "glass.h"
-#include "glass_catalog.h"
 
-GlassSearchForm::GlassSearchForm(QList<GlassCatalog*> catalogList, QMdiArea *parent) :
+GlassSearchForm::GlassSearchForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::GlassSearchForm),
     m_parentMdiArea(parent),
-    m_catalogList(catalogList)
+    m_catalogListPtr(catalogListPtr)
 {
     ui->setupUi(this);
     this->setWindowTitle("Glass Search");
@@ -63,7 +58,7 @@ GlassSearchForm::GlassSearchForm(QList<GlassCatalog*> catalogList, QMdiArea *par
 
 GlassSearchForm::~GlassSearchForm()
 {
-    m_catalogList.clear();
+    m_catalogListPtr = nullptr;
     delete ui;
 }
 
@@ -98,7 +93,7 @@ void GlassSearchForm::showSearchResult()
     QList<Glass*> results;
     QList<Glass*> allGlasses;
 
-    for(auto &cat : m_catalogList) {
+    for(auto &cat : *m_catalogListPtr) {
         int glassCount = cat->glassCount();
         for(int gi = 0; gi < glassCount; gi++) {
             allGlasses.append(cat->glass(gi));

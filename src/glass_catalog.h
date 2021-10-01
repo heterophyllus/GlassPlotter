@@ -23,9 +23,7 @@
  *****************************************************************************/
 
 
-/**
-  * GlassCatalog Container Class
-  * */
+/** GlassCatalog Container Class */
 
 #pragma once
 
@@ -36,7 +34,7 @@
 #include <QList>
 #include <QMap>
 
-class Glass;
+#include "glass.h"
 
 class GlassCatalog
 {

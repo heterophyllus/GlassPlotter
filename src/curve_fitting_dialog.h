@@ -28,11 +28,11 @@
 
 #include <QDialog>
 #include <QList>
+#include <QTableWidget>
+#include <QComboBox>
 
-class QTableWidget;
-class QComboBox;
-class Glass;
-class GlassCatalog;
+#include "glass_catalog.h"
+
 
 namespace Ui {
 class CurveFittingDialog;
@@ -43,7 +43,8 @@ class CurveFittingDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QWidget *parent = nullptr);
+    //explicit CurveFittingDialog(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QWidget *parent = nullptr);
+    explicit CurveFittingDialog(const QList<GlassCatalog*> *catalogListPtr, QString xdataname, QString ydataname, QWidget *parent = nullptr);
     ~CurveFittingDialog();
 
     bool getFittingResult(QList<double>& result);
@@ -56,7 +57,8 @@ private slots:
 private:
     Ui::CurveFittingDialog *ui;
 
-    QList<GlassCatalog*> m_catalogList;
+    //QList<GlassCatalog*> m_catalogList;
+    const QList<GlassCatalog*> *m_catalogListPtr;
 
     QString m_xDataName;
     QString m_yDataName;

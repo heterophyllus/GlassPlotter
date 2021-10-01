@@ -40,7 +40,7 @@ QCPScatterChart::~QCPScatterChart()
     try {
         m_customPlot->removePlottable(m_graphPoints);
     }  catch (...) {
-        m_graphPoints = nullptr;
+        qDebug() << "delete error: ~QCPScatterChart";
     }
     m_graphPoints = nullptr;
 
@@ -50,7 +50,7 @@ QCPScatterChart::~QCPScatterChart()
         try {
             m_customPlot->removeItem(m_textlabels[i]);
         }  catch (...) {
-            m_textlabels[i] = nullptr;
+            qDebug() << "delete error: ~QCPScatterChart";
         }
         m_textlabels[i] = nullptr;
     }
@@ -78,22 +78,22 @@ void QCPScatterChart::setColor(QColor color)
     m_graphPoints->setPen(pen);
 }
 
-QCustomPlot* QCPScatterChart::parentPlot()
+QCustomPlot* QCPScatterChart::parentPlot() const
 {
     return m_customPlot;
 }
 
-QCPCurve* QCPScatterChart::graphPoints()
+QCPCurve* QCPScatterChart::graphPoints() const
 {
     return m_graphPoints;
 }
 
-QList<QCPItemText*> QCPScatterChart::textLabels()
+QList<QCPItemText*> QCPScatterChart::textLabels() const
 {
     return m_textlabels;
 }
 
-QString QCPScatterChart::name()
+QString QCPScatterChart::name() const
 {
     return m_graphPoints->name();
 }
@@ -147,7 +147,7 @@ void QCPScatterChart::setVisibleTextLabels(bool state)
     }
 }
 
-int QCPScatterChart::dataCount()
+int QCPScatterChart::dataCount() const
 {
     return m_textlabels.size();
 }

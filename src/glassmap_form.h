@@ -32,9 +32,8 @@
 #include <QWidget>
 
 #include "qcpscatterchart.h"
+#include "glass_catalog.h"
 
-class GlassCatalog;
-class Glass;
 
 namespace Ui {
 class GlassMapForm;
@@ -45,7 +44,8 @@ class GlassMapForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed = true, QMdiArea *parent = nullptr);
+    //explicit GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed = true, QMdiArea *parent = nullptr);
+    explicit GlassMapForm(const QList<GlassCatalog*> *catalogListPtr, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed = true, QMdiArea *parent = nullptr);
     ~GlassMapForm();
 
 private slots:
@@ -80,7 +80,9 @@ private:
     QCheckBox*   m_checkBoxCurve;
     QListWidget* m_listWidgetNeighbors;
 
-    QList<GlassCatalog*> m_catalogList;
+    //QList<GlassCatalog*> m_catalogList;
+    const QList<GlassCatalog*> *m_catalogListPtr;
+
     QList<GlassMapCtrl>  m_glassMapCtrlList;
     QList<QLineEdit*>    m_lineEditList;
 

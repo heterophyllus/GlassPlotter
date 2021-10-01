@@ -8,10 +8,10 @@ CONFIG += c++11
 
 # application icon
 win32{
-    RC_ICONS = icon/GlassPlotterIcon.ico
+    RC_ICONS = data/icon/GlassPlotterIcon.ico
 }
 macx{
-    ICON = icon/GlassPlotterIcon.icns
+    ICON = data/icon/GlassPlotterIcon.icns
 }
 
 # The following define makes your compiler emit warnings if you use

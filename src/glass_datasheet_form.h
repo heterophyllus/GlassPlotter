@@ -22,22 +22,21 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Qt Form Class for Glass Datasheet
-  */
 
 #ifndef GLASS_DATASHEET_FORM_H
 #define GLASS_DATASHEET_FORM_H
 
 #include <QWidget>
+#include <QGridLayout>
 
-class Glass;
-class QGridLayout;
+#include "glass.h"
 
 namespace Ui {
 class GlassDataSheetForm;
 }
 
+
+/** Qt form for glass datasheet */
 class GlassDataSheetForm : public QWidget
 {
     Q_OBJECT

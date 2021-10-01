@@ -26,7 +26,7 @@
 #include "ui_glass_datasheet_form.h"
 
 #include "spectral_line.h"
-#include "glass.h"
+
 
 GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
     QWidget(parent),

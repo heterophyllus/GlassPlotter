@@ -25,27 +25,25 @@
 #include "glass_selection_dialog.h"
 #include "ui_glass_selection_dialog.h"
 
-#include "glass.h"
-#include "glass_catalog.h"
 #include <QSortFilterProxyModel>
 
-GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWidget *parent) :
+GlassSelectionDialog::GlassSelectionDialog(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GlassSelectionDialog)
 {
-    if(catalogList.empty()) return;
+    if(catalogListPtr->empty()) return;
 
     ui->setupUi(this);
 
     this->setWindowTitle("Select Glass");
 
-    m_catalogList = catalogList;
+    m_catalogListPtr = catalogListPtr;
     m_comboBoxSupplyer = ui->comboBox_Supplyer;
     m_lineEditFilter   = ui->lineEdit_Filter;
     m_listWidgetGlass  = ui->listWidget_Glass;
 
-    for(int i = 0; i < m_catalogList.size(); i++){
-        m_comboBoxSupplyer->addItem(m_catalogList.at(i)->supplyer());
+    for(int i = 0; i < m_catalogListPtr->size(); i++){
+        m_comboBoxSupplyer->addItem(m_catalogListPtr->at(i)->supplyer());
     }
 
     QObject::connect(m_comboBoxSupplyer,SIGNAL(currentIndexChanged(int)), this, SLOT(onComboChanged()));
@@ -58,7 +56,7 @@ GlassSelectionDialog::GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWi
 
 GlassSelectionDialog::~GlassSelectionDialog()
 {
-    m_catalogList.clear();
+    //m_catalogList.clear();
     delete ui;
 }
 
@@ -73,7 +71,7 @@ void GlassSelectionDialog::createGlassNameList()
 {
     m_glassNameList.clear();
     int catalogIndex = m_comboBoxSupplyer->currentIndex();
-    GlassCatalog* catalog = m_catalogList[catalogIndex];
+    GlassCatalog* catalog = m_catalogListPtr->at(catalogIndex);
     for(int i = 0; i < catalog->glassCount(); i++)
     {
         m_glassNameList.append(catalog->glass(i)->name());

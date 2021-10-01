@@ -15,10 +15,10 @@ CatalogViewSettingDialog::CatalogViewSettingDialog(QStringList allPropertyList, 
     "Drag a property to arrange the order.", nullptr));
 
     m_listWidget = ui->listWidget_PropertyNames;
-    QListWidgetItem *item;
+
     for(int i = 0; i < allPropertyList.size(); i++)
     {
-        item = new QListWidgetItem(m_listWidget);
+        QListWidgetItem *item = new QListWidgetItem(m_listWidget);
         item->setText(allPropertyList[i]);
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
 
@@ -47,9 +47,7 @@ CatalogViewSettingDialog::~CatalogViewSettingDialog()
     delete ui;
 }
 
-/**
- * @brief get re-ordered and checked properties
- */
+
 void CatalogViewSettingDialog::getSettings(QStringList& checkedList, int& digit)
 {
     // properties to be listed

@@ -26,12 +26,10 @@
 #include "dndt_plot_form.h"
 #include "ui_dndt_plot_form.h"
 
-#include "glass.h"
-#include "glass_catalog.h"
 #include "glass_selection_dialog.h"
 
 
-DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
+DnDtPlotForm::DnDtPlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent) :
     PropertyPlotForm(parent),
     ui(new Ui::DnDtPlotForm)
 {
@@ -39,7 +37,7 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
     this->setWindowTitle("Dn/Dt(abs) Plot");
 
 
-    m_catalogList = catalogList;
+    m_catalogListPtr = catalogListPtr;
 
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
@@ -83,7 +81,7 @@ DnDtPlotForm::DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
 DnDtPlotForm::~DnDtPlotForm()
 {
     m_currentGlass = nullptr;
-    m_catalogList.clear();
+    m_catalogListPtr = nullptr;
     m_wvlList.clear();
     m_plotDataTable->clear();
     m_plotDataTable = nullptr;
@@ -97,20 +95,20 @@ DnDtPlotForm::~DnDtPlotForm()
 
 void DnDtPlotForm::setGlass()
 {
-    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
+    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogListPtr, this);
     if(dlg->exec() == QDialog::Accepted)
     {
         int catalogIndex = dlg->getCatalogIndex();
         QString glassName = dlg->getGlassName();
-        Glass* newGlass = m_catalogList[catalogIndex]->glass(glassName);
+        Glass* newGlass = m_catalogListPtr->at(catalogIndex)->glass(glassName);
 
         // check whether the glass contains valid thermal data
         QVector<double> vTemp = newGlass->getThermalData();
-        for(int i = 0; i < vTemp.size(); i++){
+        for(int i = 0; i < vTemp.size(); i++)
+        {
             if(qIsNaN(vTemp[i])){
                 QMessageBox::information(this,tr("Error"), tr("This glass does not have thermal data."));
                 newGlass = nullptr;
-
                 return;
             }
         }
@@ -194,7 +192,7 @@ void DnDtPlotForm::updateAll()
     m_customPlot->clearPlottables();
     m_plotDataTable->clear();
 
-    double          plotStep = m_editPlotStep->text().toDouble();
+    const double    plotStep = m_editPlotStep->text().toDouble();
     QVector<double> xdata    = getVectorFromRange(m_customPlot->xAxis->range(), plotStep);
     QVector<double> ydata;
     QCPGraph*       graph;

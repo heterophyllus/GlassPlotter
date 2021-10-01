@@ -1,33 +1,16 @@
 # GlassPlotter - Desktop Glassmap Viewer
 
-![MDI](image/Screenshot_MDI.png)
+![MDI](data/screenshot/Screenshot_MDI.png)
 
 ## Overview
-GlassPlotter is an open source and easy-to-use glass map viewer.  
+GlassPlotter is easy-to-use glass map viewer. It hopes to be useful for diverse optical engineers. 
 
-As listed below, GlassPlotter features to provide a great variety of analytical tools and to support large number of optical glasses (or optical materials) from multiple manufacturers.
 
-It is also noteworthy that GlassPlotter is developed as a standalone application with intuitive GUI, allowing diverse optical engineers to use easily and anywhere without any scripting or specific environment.
+## Features
+- Support great variety of glassmaps and plots
+- Support large number of optical glasses from multiple manufacturers
+- Standalone application
 
-## Functionality
-- Supported Format
-  - [x] Zemax AGF
-  - [x] CODEV XML
-- Glassmaps
-  - [x] nd - vd
-  - [x] ne - ve
-  - [x] PgF - vd
-  - [x] PCt - vd
-  - [ ] Buchdahl coefficients (test)
-  - [ ] mechanical property
-- Plots
-  - [x] Refractive index vs wavelength plot
-  - [x] Transmittance vs wavelength plot
-  - [x] Thermal coefficient (dn/dt) plot
-- Tables
-  - [x] Various glass properties (optical, mechanical, chemical, etc)
-- Utilities
-  - [x] Glass search (used for glass fitting)
 
 ## Getting Started 
 The prebuilt binaries can be downloaded from [Release page](https://github.com/heterophyllus/glassplotter/releases/latest).

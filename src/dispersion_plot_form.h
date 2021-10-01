@@ -29,28 +29,22 @@
 #include <QWidget>
 #include <QVector>
 #include <QList>
+#include <QListWidget>
 
+#include "glass_catalog.h"
 #include "property_plot_form.h"
 
 namespace Ui {
 class DispersionPlotForm;
 }
 
-class Glass;
-class GlassCatalog;
-class QCustomPlot;
-class QCPGraph;
-class QTableWidget;
-class QCheckBox;
-class QComboBox;
-class QListWidget;
 
 class DispersionPlotForm : public PropertyPlotForm
 {
     Q_OBJECT
 
 public:
-    explicit DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    explicit DispersionPlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent = nullptr);
     ~DispersionPlotForm();
 
 private slots:
@@ -67,7 +61,7 @@ private:
     QCheckBox*    m_chkCurve;
     QTableWidget* m_tableCoefs;
 
-    QList<GlassCatalog*> m_catalogList;
+    const QList<GlassCatalog*> *m_catalogListPtr;
     QList<Glass*>        m_glassList;
 
     QVector<double> computeUserDefinedCurve(const QVector<double>& xdata);

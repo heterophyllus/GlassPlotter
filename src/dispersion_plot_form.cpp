@@ -26,12 +26,11 @@
 #include "ui_dispersion_plot_form.h"
 
 #include "dispersion_formula.h"
-#include "glass.h"
-#include "glass_catalog.h"
+
 #include "glass_selection_dialog.h"
 
 
-DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
+DispersionPlotForm::DispersionPlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent) :
     PropertyPlotForm(parent),
     ui(new Ui::DispersionPlotForm)
 {
@@ -39,7 +38,7 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
     this->setWindowTitle("Dispersion Plot");
 
     // plot
-    m_catalogList = catalogList;
+    m_catalogListPtr = catalogListPtr;
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
     m_customPlot->xAxis->setLabel("Wavelength(micron)");
@@ -131,13 +130,14 @@ DispersionPlotForm::DispersionPlotForm(QList<GlassCatalog*> catalogList, QWidget
 
 DispersionPlotForm::~DispersionPlotForm()
 {
-    m_catalogList.clear();
     m_glassList.clear();
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot = nullptr;
     m_plotDataTable->clear();
     m_tableCoefs->clear();
+
+    m_catalogListPtr = nullptr;
 
     delete ui;
 }
@@ -306,13 +306,13 @@ void DispersionPlotForm::addGraph()
         return;
     }
 
-    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
+    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogListPtr, this);
     if(dlg->exec() == QDialog::Accepted)
     {
         // get glass
         int catalogIndex  = dlg->getCatalogIndex();
         QString glassName = dlg->getGlassName();
-        Glass* newGlass   = m_catalogList.at(catalogIndex)->glass(glassName);
+        Glass* newGlass   = m_catalogListPtr->at(catalogIndex)->glass(glassName);
 
         // check dispersion formula of the glass
         if("Unknown" == newGlass->formulaName()){

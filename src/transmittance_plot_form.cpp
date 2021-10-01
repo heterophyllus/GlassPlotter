@@ -26,18 +26,16 @@
 #include "transmittance_plot_form.h"
 #include "ui_transmittance_plot_form.h"
 
-#include "glass.h"
-#include "glass_catalog.h"
 #include "glass_selection_dialog.h"
 
-TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, QWidget *parent) :
+TransmittancePlotForm::TransmittancePlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent) :
     PropertyPlotForm(parent),
     ui(new Ui::TransmittancePlotForm)
 {
     ui->setupUi(this);
     this->setWindowTitle("Transmittance Plot");
 
-    m_catalogList = catalogList;
+    m_catalogListPtr = catalogListPtr;
 
     // plot widget
     m_customPlot = ui->widget;
@@ -89,7 +87,7 @@ TransmittancePlotForm::TransmittancePlotForm(QList<GlassCatalog*> catalogList, Q
 
 TransmittancePlotForm::~TransmittancePlotForm()
 {
-    m_catalogList.clear();
+    m_catalogListPtr = nullptr;
     m_glassList.clear();
 
     m_customPlot->clearGraphs();
@@ -113,13 +111,13 @@ void TransmittancePlotForm::addGraph()
         return;
     }
 
-    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogList, this);
+    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogListPtr, this);
 
     if(dlg->exec() == QDialog::Accepted)
     {
         int catalogIndex = dlg->getCatalogIndex();
         QString glassName = dlg->getGlassName();
-        Glass* newGlass = m_catalogList.at(catalogIndex)->glass(glassName);
+        Glass* newGlass = m_catalogListPtr->at(catalogIndex)->glass(glassName);
 
         m_glassList.append(newGlass);
         updateAll();

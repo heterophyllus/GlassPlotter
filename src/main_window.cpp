@@ -29,9 +29,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include "glass.h"
-#include "glass_catalog.h"
-
 #include "glassmap_form.h"
 #include "dispersion_plot_form.h"
 #include "transmittance_plot_form.h"
@@ -88,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
 
     // Load default catalogs
-    loadDefaultCatalogFiles();
+    //loadDefaultCatalogFiles();
 
 }
 
@@ -175,6 +172,8 @@ void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths)
         dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
         dlg.setText(parse_result_all);
         dlg.exec();
+    }else{
+        QMessageBox::information(this, tr("Info"), "Catalog files were newly loaded");
     }
 
 }
@@ -213,6 +212,7 @@ void MainWindow::loadNewAGF()
     }else{
         ui->mdiArea->closeAllSubWindows();
         loadCatalogFiles(filePaths);
+        //QMessageBox::information(this, tr("Info"), tr("AGF files have been newly loaded"));
     }
 
 }
@@ -230,6 +230,7 @@ void MainWindow::loadNewXML()
     } else {
         ui->mdiArea->closeAllSubWindows();
         loadCatalogFiles(filePaths);
+        //QMessageBox::information(this, tr("Info"), tr("XML files have been newly loaded"));
     }
 }
 
@@ -238,14 +239,19 @@ void MainWindow::showPreferenceDlg()
 {
     PreferenceDialog* dlg = new PreferenceDialog(m_settings, this);
     if(dlg->exec() == QDialog::Accepted){
-        qDebug() << "Update preference";
+        int ans = QMessageBox::question(this, tr("Question"), tr("Setting has been updated. Will you load newly set catalog files?"));
+        if(ans == QMessageBox::Yes){
+            QStringList paths = dlg->getCatalogPaths();
+            if(paths.empty()){
+                QMessageBox::warning(this, tr("Warning"), tr("No catalog paths"));
+            }else{
+                closeAll();
+                loadDefaultCatalogFiles();
+            }
+        }
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-        qDebug() << "Failed to delete dlg";
-    }
+    delete dlg;
 
 }
 
@@ -256,7 +262,7 @@ void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xra
         return;
     }
 
-    GlassMapForm *subwindow = new GlassMapForm(m_catalogList, xdataname, ydataname, xrange, yrange, xreversed, ui->mdiArea);
+    GlassMapForm *subwindow = new GlassMapForm(&m_catalogList, xdataname, ydataname, xrange, yrange, xreversed, ui->mdiArea);
     ui->mdiArea->addSubWindow(subwindow);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->parentWidget()->setGeometry(0,10,this->width()*3/4,this->height()*3/4);
@@ -297,7 +303,7 @@ template<class F> void MainWindow::showAnalysisForm()
         return;
     }
 
-    F *subwindow = new F(m_catalogList, ui->mdiArea);
+    F *subwindow = new F(&m_catalogList, ui->mdiArea);
     ui->mdiArea->addSubWindow(subwindow);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->parentWidget()->setGeometry(0,10,this->width()*3/4,this->height()*3/4);
@@ -348,13 +354,13 @@ void MainWindow::showAbout()
 {
     QString text =
             "GlassPlotter<br><br>"
-            "<font size=1>Version: 0.18.3 <br>"
-            "Release: August 16, 2021<br><br>"
+            "<font size=1>Version: 0.18.3 <br><br>"
             "This program is distributed in the hope that it will be useful,\n"
             "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
             "GNU General Public License for more details.<br><br>"
-            "Copyright(C) 2020 - present  Hiiragi (heterophyllus.work@gmail.com)<br><br>"
+            "Copyright(C) 2020 - present  Hiiragi<br><br>"
+            "Contact : heterophyllus.work@gmail.com<br><br>"
             "Please see: "
             "<a href=\"https://github.com/heterophyllus/GlassPlotter\">"
             "https://github.com/heterophyllus/GlassPlotter</a></font>";
@@ -362,6 +368,6 @@ void MainWindow::showAbout()
     QMessageBox msgBox(this);
     msgBox.setText(text);
     msgBox.setWindowTitle(tr("About GlassPlotter"));
-    msgBox.setIconPixmap(QPixmap(":/icon/GlassPlotterIcon.png").scaled(64,64,Qt::KeepAspectRatio, Qt::FastTransformation));
+    msgBox.setIconPixmap(QPixmap(":data/icon/GlassPlotterIcon.png").scaled(64,64,Qt::KeepAspectRatio, Qt::FastTransformation));
     msgBox.exec();
 }

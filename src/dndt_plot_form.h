@@ -28,9 +28,7 @@
 #include <QWidget>
 
 #include "property_plot_form.h"
-
-class Glass;
-class GlassCatalog;
+#include "glass_catalog.h"
 
 
 namespace Ui {
@@ -42,7 +40,7 @@ class DnDtPlotForm : public PropertyPlotForm
     Q_OBJECT
 
 public:
-    explicit DnDtPlotForm(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
+    explicit DnDtPlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent = nullptr);
     ~DnDtPlotForm();
 
 private slots:
@@ -55,7 +53,8 @@ private slots:
 private:
     Ui::DnDtPlotForm *ui;
 
-    QList<GlassCatalog*> m_catalogList;
+    const QList<GlassCatalog*> *m_catalogListPtr;
+
     QList<double>        m_wvlList;
     Glass*               m_currentGlass = nullptr;
 };
