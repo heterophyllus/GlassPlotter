@@ -84,6 +84,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_settings = new QSettings(settingFile, QSettings::IniFormat);
     m_settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
 
+    //Set temperature
+    double temperature = m_settings->value("Temperature", 25).toDouble();
+    Glass::setCurrentTemperature(temperature);
+
     // Load default catalogs
     //loadDefaultCatalogFiles();
 
@@ -237,6 +241,8 @@ void MainWindow::loadNewXML()
 
 void MainWindow::showPreferenceDlg()
 {
+    closeAll();
+
     PreferenceDialog* dlg = new PreferenceDialog(m_settings, this);
     if(dlg->exec() == QDialog::Accepted){
         int ans = QMessageBox::question(this, tr("Question"), tr("Setting has been updated. Will you load newly set catalog files?"));
@@ -245,7 +251,7 @@ void MainWindow::showPreferenceDlg()
             if(paths.empty()){
                 QMessageBox::warning(this, tr("Warning"), tr("No catalog paths"));
             }else{
-                closeAll();
+                //closeAll();
                 loadDefaultCatalogFiles();
             }
         }
@@ -354,7 +360,7 @@ void MainWindow::showAbout()
 {
     QString text =
             "GlassPlotter<br><br>"
-            "<font size=1>Version: 0.18.3 <br><br>"
+            "<font size=1>Version: 0.19.0 <br><br>"
             "This program is distributed in the hope that it will be useful,\n"
             "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"

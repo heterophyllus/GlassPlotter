@@ -204,7 +204,7 @@ void CatalogViewForm::setUpTable(QStringList properties, GlassCatalog* catalog, 
         glass = catalog->glass(i);
 
         // glass name should be at the first column.
-        addTableItem(i,0,glass->name());
+        addTableItem(i,0,glass->productName());
 
         // properties
         col = 1;
@@ -220,22 +220,22 @@ void CatalogViewForm::setUpTable(QStringList properties, GlassCatalog* catalog, 
                 addTableItem(row,col,glass->MIL());
             }
             else if("nd" == properties[j]){
-                addTableItem(row,col,numToQString(glass->nd(), 'f', digit));
+                addTableItem(row,col,numToQString(glass->getValue("nd"), 'f', digit));
             }
             else if("ne" == properties[j]){
-                addTableItem(row,col,numToQString(glass->ne(), 'f', digit));
+                addTableItem(row,col,numToQString(glass->getValue("ne"), 'f', digit));
             }
             else if("vd" == properties[j]){
-                addTableItem(row,col,numToQString(glass->vd(), 'f', digit));
+                addTableItem(row,col,numToQString(glass->getValue("vd"), 'f', digit));
             }
             else if("ve" == properties[j]){
-                addTableItem(row,col,numToQString(glass->ve(), 'f', digit));
+                addTableItem(row,col,numToQString(glass->getValue("ve"), 'f', digit));
             }
             else if("PgF" == properties[j]){
-                addTableItem(row,col,numToQString(glass->PgF(), 'f', digit));
+                addTableItem(row,col,numToQString(glass->getValue("PgF"), 'f', digit));
             }
             else if("PCt_" == properties[j]){
-                addTableItem(row,col,numToQString(glass->PCt_(), 'f', digit));
+                addTableItem(row,col,numToQString(glass->getValue("PCt_"), 'f', digit));
             }
             else if("Dispersion Formula" == properties[j]){
                 addTableItem(row,col,glass->formulaName());
@@ -253,7 +253,7 @@ void CatalogViewForm::setUpTable(QStringList properties, GlassCatalog* catalog, 
                 addTableItem(row, ++col, numToQString(glass->E0(),'g',digit));
                 addTableItem(row, ++col, numToQString(glass->E1(),'g',digit));
                 addTableItem(row, ++col, numToQString(glass->Ltk(),'g',digit));
-                addTableItem(row, ++col, numToQString(glass->T0(),'f',digit));
+                addTableItem(row, ++col, numToQString(glass->Tref(),'f',digit));
             }
             else if("Low TCE" == properties[j]){
                 addTableItem(row, col, numToQString(glass->lowTCE(), 'f', digit));

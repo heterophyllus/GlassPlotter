@@ -26,6 +26,7 @@
 #include "ui_preference_dialog.h"
 
 #include <QFileDialog>
+#include "glass.h"
 
 PreferenceDialog::PreferenceDialog(QSettings *settings, QWidget *parent) :
     QDialog(parent),
@@ -34,6 +35,8 @@ PreferenceDialog::PreferenceDialog(QSettings *settings, QWidget *parent) :
     ui->setupUi(this);
 
     this->setWindowTitle("Preference");
+
+    ui->lineEdit_Temperature->setValidator(new QDoubleValidator(-10000.0, 10000.0, 4, this));
 
     m_settings = settings;
     syncUiWithSettings();
@@ -96,7 +99,13 @@ void PreferenceDialog::syncUiWithSettings()
     bool loadWithResult = m_settings->value("ShowResult", false).toBool();
     ui->checkBox_ParseResult->setChecked(loadWithResult);
 
+    // environment
+    double temperature = m_settings->value("Temperature", 25).toDouble();
+    ui->lineEdit_Temperature->setText(QString::number(temperature));
+
     m_settings->endGroup();
+
+
 }
 
 void PreferenceDialog::onAccept()
@@ -117,8 +126,15 @@ void PreferenceDialog::onAccept()
     bool withResult = ui->checkBox_ParseResult->checkState();
     m_settings->setValue("ShowResult", withResult);
 
+    //environment
+    double temperature = ui->lineEdit_Temperature->text().toDouble();
+    m_settings->setValue("Temperature", temperature);
+
     m_settings->endGroup();
     m_settings->sync();
+
+
+    Glass::setCurrentTemperature(temperature);
 
     accept();
 }

@@ -22,78 +22,107 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-
+#include <QDebug>
 #include "glass.h"
 
 #include "spline.h" // c++ cubic spline library, Tino Kluge (ttk448 at gmail.com), https://github.com/ttk592/spline
 #include "spectral_line.h"
 #include "dispersion_formula.h"
-
+#include "air.h"
 #include "Eigen/Dense"
 
+double Glass::T_ = 25;
+
 Glass::Glass()
-{
-    _name     = "";
-    _supplyer = "";
-    _status   = "";
-    _comment  = "";
-    _MIL      = "";
+{    
+    product_name_ = "";
+    supplyer_ = "";
+    status_   = "";
+    comment_  = "";
+    MIL_      = "";
 
-    _lowTCE  = NAN;
-    _highTCE = NAN;
+    lowTCE_  = NAN;
+    highTCE_ = NAN;
 
-    _relCost         = NAN;
-    _climateResist   = NAN;
-    _stainResist     = NAN;
-    _acidResist      = NAN;
-    _alkaliResist    = NAN;
-    _phosphateResist = NAN;
+    rel_cost_         = NAN;
+    climate_resist_   = NAN;
+    stain_resist_     = NAN;
+    acid_resist_      = NAN;
+    alkali_resist_    = NAN;
+    phosphate_resist_ = NAN;
 
-    _formulaIndex = 1;
-    _dispersionData = QVector<double>(_dispersion_data_size, 0.0);
+    formula_index_ = 1;
+    dispersion_data_ = QVector<double>(dispersion_data_size_, 0.0);
 
-    _thermalData = QVector<double>(_thermal_data_size, NAN);
+    thermal_data_ = QVector<double>(thermal_data_size_, NAN);
+    Tref_ = 25;
 
-    _lambdaMax = 0;
-    _lambdaMin = 0;
+    lambda_max_ = 0;
+    lambda_min_ = 0;
+
 }
 
 
 Glass::~Glass()
 {
-    _formula_func_ptr = nullptr;
-    _dispersionData.clear();
-    _wavelengthData.clear();
-    _transmittanceData.clear();
-    _thicknessData.clear();
-    _thermalData.clear();
+    formula_func_ptr_ = nullptr;
+    dispersion_data_.clear();
+    wavelength_data_.clear();
+    transmittance_data_.clear();
+    thickness_data_.clear();
+    thermal_data_.clear();
 }
 
+double Glass::currentTemperature()
+{
+    return T_;
+    qDebug() << "Set Environment Temeparature: " << T_;
+}
+
+void Glass::setCurrentTemperature(double t)
+{
+    T_ = t;
+}
+
+void Glass::setName(QString str)
+{
+    product_name_ = str;
+}
+
+void Glass::setSupplyer(QString str)
+{
+    supplyer_ = str;
+}
+
+void Glass::setMIL(QString str)
+{
+    MIL_ = str;
+}
+
+void Glass::setComment(QString str)
+{
+    comment_ = str;
+}
 
 double Glass::getValue(QString dname) const
 {
     if(dname == "nd"){
-        //return nd();
-        return index("d");
+        return refractiveIndex_rel("d");
     }
     else if(dname == "ne"){
-        //return ne();
-        return index("e");
+        return refractiveIndex_rel("e");
     }
     else if(dname == "vd"){
-        // return vd();
-        return (index("d") - 1)/(index("F") - index("C"));
+        return (refractiveIndex_rel("d") - 1)/(refractiveIndex_rel("F") - refractiveIndex_rel("C"));
     }
     else if(dname == "ve"){
-        // return ve();
-        return (index("e") - 1)/(index("F_") - index("C_"));
+        return (refractiveIndex_rel("e") - 1)/(refractiveIndex_rel("F_") - refractiveIndex_rel("C_"));
     }
     else if(dname == "PgF"){
-        // return PgF();
-        return (index("g") - index("F")) / ( index("F") - index("C") );
+        return (refractiveIndex_rel("g") - refractiveIndex_rel("F")) / ( refractiveIndex_rel("F") - refractiveIndex_rel("C") );
     }
     else if(dname == "PCt_"){
-        return (index("C") - index("t")) / ( index("F_") - index("C_") );
+        return (refractiveIndex_rel("C") - refractiveIndex_rel("t")) / ( refractiveIndex_rel("F_") - refractiveIndex_rel("C_") );
     }
     else if(dname == "eta1"){ // Buchdahl dispersion coefficients
         return BuchdahlDispCoef(0);
@@ -106,81 +135,99 @@ double Glass::getValue(QString dname) const
     }
 }
 
-// useful aliases
-double Glass::nd() const
-{
-    return index("d");
-}
-
-double Glass::ne() const
-{
-    return index("e");
-}
-
-double Glass::vd() const
-{
-    return (index("d") - 1)/(index("F") - index("C"));
-}
-
-double Glass::ve() const
-{
-    return (index("e") - 1)/(index("F_") - index("C_"));
-}
 
 double Glass::Pxy(QString x, QString y) const
 {
-    return (index(x) - index(y)) / ( index("F") - index("C") );
+    double nx = refractiveIndex_rel(x);
+    double ny = refractiveIndex_rel(y);
+    double nF = refractiveIndex_rel("F");
+    double nC = refractiveIndex_rel("C");
+
+    return ( nx - ny )/( nF- nC);
 }
 
 double Glass::Pxy_(QString x, QString y) const
 {
-    return (index(x) - index(y)) / ( index("F_") - index("C_") );
-}
+    double nx  = refractiveIndex_rel(x);
+    double ny  = refractiveIndex_rel(y);
+    double nF_ = refractiveIndex_rel("F_");
+    double nC_ = refractiveIndex_rel("C_");
 
-double Glass::PgF() const
-{
-    return Pxy("g","F");
-}
-
-double Glass::PCt_() const
-{
-    return Pxy_("C","t");
+    return ( nx - ny )/( nF_- nC_);
 }
 
 
-double Glass::index(double lambdamicron) const
+double Glass::refractiveIndex_rel_Tref(double lambdamicron) const
 {
-    if(_formula_func_ptr){
-        return _formula_func_ptr(lambdamicron, _dispersionData);
+    if(formula_func_ptr_){
+        return formula_func_ptr_(lambdamicron, dispersion_data_);
     }else{
-        return 1.0;
+        return NAN;
     }
 }
 
-
-double Glass::index(QString spectral) const
+double Glass::refractiveIndex_abs_Tref(double lambdamicron) const
 {
-    if(_formula_func_ptr){
-        double lambdamicron = SpectralLine::wavelength(spectral)/1000.0;
-        return _formula_func_ptr(lambdamicron, _dispersionData);
-    }else {
-        return 1.0;
-    }
+    constexpr double P = 101325.0;
+    double n_air_T0 = Air::refractive_index_abs(lambdamicron, Tref_, P);
+    double n_rel_T0 = refractiveIndex_rel_Tref(lambdamicron);
+    double n_abs_T0 = n_rel_T0*n_air_T0;
+
+    return n_abs_T0;
 }
 
-QVector<double> Glass::index(const QVector<double>& vLambdamicron) const
+double Glass::refractiveIndex_abs(double lambdamicron) const
 {
-    int ndata = vLambdamicron.size();
-    QVector<double> vInd(ndata);
+    double dn_dt = dn_dt_abs(T_, lambdamicron);
+    double dn = (T_-Tref_)*dn_dt;
+    double n_abs_T0 = refractiveIndex_abs_Tref(lambdamicron);
+    double n_abs = n_abs_T0 + dn;
 
-    for(int i = 0; i < ndata; i++){
-        //vInd[i] = index(vLambdamicron[i]);
-        vInd[i] = _formula_func_ptr(vLambdamicron[i], _dispersionData);
-    }
-
-    return vInd;
+    return n_abs;
 }
 
+double Glass::refractiveIndex_rel(double lambdamicron) const
+{
+    double n_abs = refractiveIndex_abs(lambdamicron);
+    double n_air = Air::refractive_index_abs(lambdamicron, T_);
+    double n_rel = n_abs/n_air;
+
+    return n_rel;
+}
+
+double Glass::refractiveIndex_abs(QString spectralname) const
+{
+    return refractiveIndex_abs(SpectralLine::wavelength(spectralname)/1000.0);
+}
+
+double Glass::refractiveIndex_rel(QString spectralname) const
+{
+    return refractiveIndex_rel(SpectralLine::wavelength(spectralname)/1000.0);
+}
+
+QVector<double> Glass::refractiveIndex_abs(const QVector<double> &vLambdamicron) const
+{
+    const int dataCount = vLambdamicron.size();
+    QVector<double> n_abs_v(dataCount);
+
+    for(int i = 0; i < dataCount; i++){
+        n_abs_v[i] = refractiveIndex_abs(vLambdamicron[i]);
+    }
+
+    return n_abs_v;
+}
+
+QVector<double> Glass::refractiveIndex_rel(const QVector<double> &vLambdamicron) const
+{
+    const int dataCount = vLambdamicron.size();
+    QVector<double> n_rel_v(dataCount);
+
+    for(int i = 0; i < dataCount; i++){
+        n_rel_v[i] = refractiveIndex_rel(vLambdamicron[i]);
+    }
+
+    return n_rel_v;
+}
 
 double Glass::BuchdahlDispCoef(int n) const
 {
@@ -189,9 +236,9 @@ double Glass::BuchdahlDispCoef(int n) const
     double wd = SpectralLine::d/1000.0;
     double wF = SpectralLine::F/1000.0;
     double wC = SpectralLine::C/1000.0;
-    double nd = index(wd);
-    double nF = index(wF);
-    double nC = index(wC);
+    double nd = refractiveIndex_rel(wd);
+    double nF = refractiveIndex_rel(wF);
+    double nC = refractiveIndex_rel(wC);
 
     double omegaF = ( wF-wd )/( 1 + 2.5*(wF-wd) );
     double omegaC = ( wC-wd )/( 1 + 2.5*(wC-wd) );
@@ -215,7 +262,7 @@ double Glass::BuchdahlDispCoef(int n) const
 
 void Glass::setStatus(QString str)
 {
-    _status = str;
+    status_ = str;
 }
 
 void Glass::setStatus(int n)
@@ -223,178 +270,183 @@ void Glass::setStatus(int n)
     switch(n)
     {
     case 1:
-        _status = "Preferred";
+        status_ = "Preferred";
         break;
     case 2:
-        _status = "Obsolete";
+        status_ = "Obsolete";
         break;
     case 3:
-        _status = "Special";
+        status_ = "Special";
         break;
     case 4:
-        _status = "Melt";
+        status_ = "Melt";
         break;
     default:
-        _status = "-";
+        status_ = "-";
     }
 }
 
-
-double Glass::dispersionCoef(int n) const
+void Glass::setLowTCE(double val)
 {
-    Q_ASSERT(_dispersion_data_size == _dispersionData.size());
-
-    if( n < _dispersionData.size() ){
-        return _dispersionData[n];
-    }
-    return 0;
+    lowTCE_ = val;
 }
+
+void Glass::setHighTCE(double val)
+{
+    highTCE_ = val;
+}
+
 
 
 void Glass::setDispCoef(int n, double val)
 {
-    Q_ASSERT(_dispersion_data_size == _dispersionData.size());
+    Q_ASSERT(dispersion_data_size_ == dispersion_data_.size());
 
-    if( n < _dispersionData.size() ){
-        _dispersionData[n] = val;
+    if( n < dispersion_data_.size() ){
+        dispersion_data_[n] = val;
     }
 }
 
 void Glass::setDispForm(int n)
 {
-    _formulaIndex = n;
+    formula_index_ = n;
 
     switch (n) {
     // -----> Zemax AGF
     case 1:
-        _formula_func_ptr = &(DispersionFormula::Schott);
+        formula_func_ptr_ = &(DispersionFormula::Schott);
+        formula_name_ = "Schott";
         break;
     case 2:
-        _formula_func_ptr = &(DispersionFormula::Sellmeier1);
+        formula_func_ptr_ = &(DispersionFormula::Sellmeier1);
+        formula_name_ = "Sellmeier1";
         break;
     case 3:
-        _formula_func_ptr = &(DispersionFormula::Herzberger);
+        formula_func_ptr_ = &(DispersionFormula::Herzberger);
+        formula_name_ = "Herzberger";
         break;
     case 4:
-        _formula_func_ptr = &(DispersionFormula::Sellmeier2);
+        formula_func_ptr_ = &(DispersionFormula::Sellmeier2);
+        formula_name_ = "Sellmeier2";
         break;
     case 5:
-        _formula_func_ptr = &(DispersionFormula::Conrady);
+        formula_func_ptr_ = &(DispersionFormula::Conrady);
+        formula_name_ = "Conrady";
         break;
     case 6:
-        _formula_func_ptr = &(DispersionFormula::Sellmeier3);
+        formula_func_ptr_ = &(DispersionFormula::Sellmeier3);
+        formula_name_ = "Sellmeier3";
         break;
     case 7:
-        _formula_func_ptr = &(DispersionFormula::HandbookOfOptics1);
+        formula_func_ptr_ = &(DispersionFormula::HandbookOfOptics1);
+        formula_name_ = "Handbook of Optics1";
         break;
     case 8:
-        _formula_func_ptr = &(DispersionFormula::HandbookOfOptics2);
+        formula_func_ptr_ = &(DispersionFormula::HandbookOfOptics2);
+        formula_name_ = "Handbook of Optics2";
         break;
     case 9:
-        _formula_func_ptr = &(DispersionFormula::Sellmeier4);
+        formula_func_ptr_ = &(DispersionFormula::Sellmeier4);
+        formula_name_ = "Sellmeier4";
         break;
     case 10:
-        _formula_func_ptr = &(DispersionFormula::Extended1);
+        formula_func_ptr_ = &(DispersionFormula::Extended1);
+        formula_name_ = "Extended1";
         break;
     case 11:
-        _formula_func_ptr = &(DispersionFormula::Sellmeier5);
+        formula_func_ptr_ = &(DispersionFormula::Sellmeier5);
+        formula_name_ = "Sellmeier5";
         break;
     case 12:
-        _formula_func_ptr = &(DispersionFormula::Extended2);
+        formula_func_ptr_ = &(DispersionFormula::Extended2);
+        formula_name_ = "Extended2";
         break;
     case 13: // Unknown
-        if(_supplyer.contains("nikon", Qt::CaseInsensitive)){
-            _formula_func_ptr = &(DispersionFormula::Nikon_Hikari);
+        if(supplyer_.contains("hikari", Qt::CaseInsensitive)){
+            formula_func_ptr_ = &(DispersionFormula::Nikon_Hikari);
+            formula_name_ = "Nikon Hikari";
         }else{
-            _formula_func_ptr = nullptr;
+            formula_func_ptr_ = nullptr;
+            formula_name_ = "Unknown";
         }
         break;
 
     // -----> CodeV XML
     case 101:
-        _formula_func_ptr = &(DispersionFormula::Laurent);
+        formula_func_ptr_ = &(DispersionFormula::Laurent);
+        formula_name_ = "Laurent";
         break;
     case 102:
-        _formula_func_ptr = &(DispersionFormula::GlassManufacturerLaurent);
+        formula_func_ptr_ = &(DispersionFormula::GlassManufacturerLaurent);
+        formula_name_ = "Glass Manufacturer Laurent";
         break;
     case 103:
-        _formula_func_ptr = &(DispersionFormula::GlassManufacturerSellmeier);
+        formula_func_ptr_ = &(DispersionFormula::GlassManufacturerSellmeier);
+        formula_name_ = "Glass Manufacturer Sellmeier";
         break;
     case 104:
-        _formula_func_ptr = &(DispersionFormula::StandardSellmeier);
+        formula_func_ptr_ = &(DispersionFormula::StandardSellmeier);
+        formula_name_ = "Standard Sellmeier";
         break;
     case 105:
-        _formula_func_ptr = &(DispersionFormula::Cauchy);
+        formula_func_ptr_ = &(DispersionFormula::Cauchy);
+        formula_name_ = "Cauchy";
         break;
     case 106:
-        _formula_func_ptr = &(DispersionFormula::Hartman);
+        formula_func_ptr_ = &(DispersionFormula::Hartman);
+        formula_name_ = "Hartman";
         break;
 
     default:
-        _formula_func_ptr = nullptr;
+        formula_func_ptr_ = nullptr;
+        formula_name_ = "Unknown";
     }
 
 }
 
-QString Glass::formulaName() const
+
+void Glass::setRelCost(double val)
 {
-    switch(_formulaIndex){
-    case 1:
-        return "Schott";
-    case 2:
-        return "Sellmeier1";
-    case 3:
-        return "Herzberger";
-    case 4:
-        return "Sellmeier2";
-    case 5:
-        return "Conrady";
-    case 6:
-        return "Sellmeier3";
-    case 7:
-        return "Handbook of Optics1";
-    case 8:
-        return "Handbook of Optics2";
-    case 9:
-        return "Sellmeier4";
-    case 10:
-        return "Extended1";
-    case 11:
-        return "Sellmeier5";
-    case 12:
-        return "Extended2";
-    case 13:
-        return "Unknown";
-    case 101:
-        return "Laurent";
-    case 102:
-        return "Glass Manufacturer Laurent";
-    case 103:
-        return "Glass Manufacturer Sellmeier";
-    case 104:
-        return "Standard Sellmeier";
-    case 105:
-        return "Cauchy";
-    case 106:
-        return "Hartman";
-    default:
-        return "Unknown";
-    }
+    rel_cost_ = val;
 }
 
+void Glass::setClimateResist(double val)
+{
+    climate_resist_ = val;
+}
+
+void Glass::setStainResist(double val)
+{
+    stain_resist_ = val;
+}
+
+void Glass::setAcidResist(double val)
+{
+    acid_resist_ = val;
+}
+
+void Glass::setAlkaliResist(double val)
+{
+    alkali_resist_ = val;
+}
+
+void Glass::setPhosphateResist(double val)
+{
+    phosphate_resist_ = val;
+}
 
 double Glass::transmittance(double lambdamicron, double thi) const
 {
-    Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );
+    Q_ASSERT( (wavelength_data_.size() > 0) && (transmittance_data_.size() > 0) && (thickness_data_.size() > 0) );
 
-    double ref_thi   = _thicknessData[0];
-    int    dataCount = _transmittanceData.size();
+    double ref_thi   = thickness_data_[0];
+    int    dataCount = transmittance_data_.size();
     QVector<double> qvx(dataCount), qvy(dataCount);
 
     for(int i = 0; i < dataCount; i++)
     {
-        qvx[i] = _wavelengthData[i];
-        qvy[i] = pow(_transmittanceData[i], thi/ref_thi); // T^(t/ref_t)
+        qvx[i] = wavelength_data_[i];
+        qvy[i] = pow(transmittance_data_[i], thi/ref_thi); // T^(t/ref_t)
     }
 
     tk::spline s;
@@ -407,17 +459,17 @@ double Glass::transmittance(double lambdamicron, double thi) const
 
 QVector<double> Glass::transmittance(const QVector<double>& vLambdamicron, double thi) const
 {
-    Q_ASSERT( (_wavelengthData.size() > 0) && (_transmittanceData.size() > 0) && (_thicknessData.size() > 0) );
+    Q_ASSERT( (wavelength_data_.size() > 0) && (transmittance_data_.size() > 0) && (thickness_data_.size() > 0) );
 
     // Spline interpolation is rewritten here to avoid being called many times.
-    double ref_thi = _thicknessData[0];
-    int  dataCount = _transmittanceData.size();
+    double ref_thi = thickness_data_[0];
+    int  dataCount = transmittance_data_.size();
     QVector<double> qvx(dataCount), qvy(dataCount);
 
     for(int i = 0; i < dataCount; i++)
     {
-        qvx[i] = _wavelengthData[i];
-        qvy[i] = pow(_transmittanceData[i], thi/ref_thi); // T^(t/ref_t)
+        qvx[i] = wavelength_data_[i];
+        qvy[i] = pow(transmittance_data_[i], thi/ref_thi); // T^(t/ref_t)
     }
 
     tk::spline s;
@@ -441,28 +493,37 @@ QVector<double> Glass::transmittance(const QVector<double>& vLambdamicron, doubl
 
 void Glass::getTransmittanceData(QList<double>& pvLambdamicron, QList<double>& pvTransmittance, QList<double>& pvThickness)
 {
-    pvLambdamicron  = _wavelengthData;
-    pvTransmittance = _transmittanceData;
-    pvThickness     = _thicknessData;
+    pvLambdamicron  = wavelength_data_;
+    pvTransmittance = transmittance_data_;
+    pvThickness     = thickness_data_;
 }
 
 void Glass::appendTransmittanceData(double lambdamicron, double trans, double thick)
 {
-    _wavelengthData.append(lambdamicron);
-    _transmittanceData.append(trans);
-    _thicknessData.append(thick);
+    wavelength_data_.append(lambdamicron);
+    transmittance_data_.append(trans);
+    thickness_data_.append(thick);
 }
 
+void Glass::setLambdaMax(double val)
+{
+    lambda_max_ = val;
+}
+
+void Glass::setLambdaMin(double val)
+{
+    lambda_min_ = val;
+}
 
 double Glass::dn_dt_abs(double T, double lambdamicron) const
 {
-    double dT = T - T0();
-    double n  = index(lambdamicron);
+    double dT = T - Tref_;
+    double n  = refractiveIndex_abs_Tref(lambdamicron);
 
     return (n*n-1)/(2*n) * ( D0() + 2*D1()*dT + 3*D2()*dT*dT + (E0() + 2*E1()*dT)/(lambdamicron*lambdamicron - Ltk()*Ltk()) );
 }
 
-QVector<double> Glass::dn_dt_abs(QVector<double> vT, double lambdamicron) const
+QVector<double> Glass::dn_dt_abs(const QVector<double>& vT, double lambdamicron) const
 {
     int ndata = vT.size();
     QVector<double> vDndt(ndata);
@@ -477,10 +538,14 @@ QVector<double> Glass::dn_dt_abs(QVector<double> vT, double lambdamicron) const
 
 void Glass::setThermalData(int n, double val)
 {
-    Q_ASSERT( _thermal_data_size == _thermalData.size() );
+    Q_ASSERT( thermal_data_size_ == thermal_data_.size() );
 
-    if( n < _thermalData.size() ){
-        _thermalData[n] = val;
+    if( n < thermal_data_.size() ){
+        thermal_data_[n] = val;
+
+        if(n == 6){
+            Tref_ = thermal_data_[6];
+        }
     }
 }
 

@@ -74,7 +74,7 @@ void GlassSelectionDialog::createGlassNameList()
     GlassCatalog* catalog = m_catalogListPtr->at(catalogIndex);
     for(int i = 0; i < catalog->glassCount(); i++)
     {
-        m_glassNameList.append(catalog->glass(i)->name());
+        m_glassNameList.append(catalog->glass(i)->productName());
     }
     catalog = nullptr;
 }

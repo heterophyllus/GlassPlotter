@@ -123,7 +123,7 @@ void CurveFittingDialog::addGlassForNewRow()
         else{
             QString s1 = QString::number(glass->getValue(m_xDataName));
             QString s2 = QString::number(glass->getValue(m_yDataName));
-            QString s3 = glass->name() + "_" + glass->supplyer();
+            QString s3 = glass->fullName();
             addNewRow(s1, s2, s3);
         }
         glass = nullptr;

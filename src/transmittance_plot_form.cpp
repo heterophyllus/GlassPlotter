@@ -166,7 +166,7 @@ void TransmittancePlotForm::updateAll()
         // graphs
         ydata = currentGlass->transmittance(vLambdamicron, thickness);
         graph = m_customPlot->addGraph();
-        graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
+        graph->setName(currentGlass->fullName());
         graph->setData(vLambdanano, ydata);
         graph->setPen(QPen(getColorFromIndex(i, m_maxGraphCount)));
         graph->setVisible(true);
@@ -191,7 +191,7 @@ void TransmittancePlotForm::updateAll()
         lowerTracer->updatePosition();
 
         // table
-        header << currentGlass->name();
+        header << currentGlass->productName();
         for(j = 0; j< rowCount; j++)
         {
             addTableItem(j, 0, QString::number(vLambdanano[j]) );         // wavelength
@@ -212,7 +212,7 @@ void TransmittancePlotForm::deleteGraph()
         QStringList glass_supplyer = graphName.split("_");
         int glassCount = m_glassList.size();
         for(int i = 0;i < glassCount; i++){
-            if(m_glassList[i]->name() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
+            if(m_glassList[i]->productName() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
                 m_glassList.removeAt(i);
                 break;
             }

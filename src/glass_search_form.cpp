@@ -131,7 +131,7 @@ void GlassSearchForm::showSearchResult()
     ui->tableWidget_Result->setRowCount(resultCount);
     for(int i = 0; i < resultCount; i++) {
         Glass* g = results[i];
-        setCellValue(ui->tableWidget_Result, i, 0, g->name());
+        setCellValue(ui->tableWidget_Result, i, 0, g->productName());
         setCellValue(ui->tableWidget_Result, i, 1, g->supplyer());
 
         for(int j = 0; j < ui->tableWidget_Parameters->rowCount(); j++) {

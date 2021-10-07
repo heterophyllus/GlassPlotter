@@ -28,8 +28,17 @@ Note that the catalog files in this repository are not always up to date.
 2. CODE V XML  
    Available on [Synopsys support page](https://www.synopsys.com/optical-solutions/support/support-glass-catalog.html).
 
+## Notes
+This application computes refractive index relative to air(relative refractive index). This is because the values in the catalog are relative index values. And the refractive index of optical glasses changes with temperature, the extend of which depending on the glass type and on the wavelength. Read [Schott Technical Information (TIE-19)](https://www.schott.com/products/optical-glass/downloads) for calculation details.
+
+
+When you find a slight difference between official data and that of this application,
+check the environment temperature setting (File->Preference). With the temperature value set to the same as that of the glass manufacturer, the calculated refractive index should be the same value.
+
 
 ## Dependency
+
+All of the followings except Qt itself have been already included in this repository.
 
 |Library|Description|
 |---|---|
@@ -40,7 +49,6 @@ Note that the catalog files in this repository are not always up to date.
 |[pugixml](https://github.com/zeux/pugixml)|Simple XML parser|
 
 
-All of the aboves except Qt itself have been already included in this repository.
 
 ## License
 This project is licensed under GPL License - see the [LICENSE](LICENSE.md) for details.

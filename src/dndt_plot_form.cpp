@@ -115,7 +115,7 @@ void DnDtPlotForm::setGlass()
 
         clearAll();
         m_currentGlass = newGlass;
-        ui->label_GlassName->setText( m_currentGlass->name() + "_" + m_currentGlass->supplyer() );
+        ui->label_GlassName->setText( m_currentGlass->fullName() );
 
         // plot for default wavelength
         m_wvlList  = QList<double>({435.8, 546.1, 587.0, 852.1, 1060.0});

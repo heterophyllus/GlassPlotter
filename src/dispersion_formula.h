@@ -74,9 +74,9 @@ public:
         return ( c[0] + c[1]/lambdamicron + c[2]/pow(lambdamicron,3.5) );
     }
 
-    static double Nikon_Hikari(double lambdamicron, const QVector<double>& c){
-            // https://www.hikari-g.co.jp/products/nature/properties_optical_glass/
-            return sqrt( c[0] + c[1]*pow(lambdamicron,2) + c[2]*pow(lambdamicron,4) + c[3]*pow(lambdamicron,-2) + c[4]*pow(lambdamicron,-6) + c[5]*pow(lambdamicron,-8) + c[6]*pow(lambdamicron,-8) + c[7]*pow(lambdamicron,-10) + c[8]*pow(lambdamicron, -12) );
+    static double Nikon_Hikari(double lambdamicron, const QVector<double>& c){           
+        // https://www.hikari-g.co.jp/products/nature/properties_optical_glass/
+        return sqrt( c[0] + c[1]*pow(lambdamicron,2) + c[2]*pow(lambdamicron,4) + c[3]*pow(lambdamicron,-2) + c[4]*pow(lambdamicron,-4) + c[5]*pow(lambdamicron,-6) + c[6]*pow(lambdamicron,-8) + c[7]*pow(lambdamicron,-10) + c[8]*pow(lambdamicron, -12) );
     }
 
     static double Laurent(double lambdamicron, const QVector<double>& c){

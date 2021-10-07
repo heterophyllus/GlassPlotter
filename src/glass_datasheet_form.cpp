@@ -35,13 +35,13 @@ GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
     ui->setupUi(this);
 
     this->setAttribute(Qt::WA_DeleteOnClose, true);
-    this->setWindowTitle("DataSheet - " + glass->name());
+    this->setWindowTitle("DataSheet - " + glass->fullName());
 
     m_glass = glass;
 
     // set names
-    ui->label_GlassName->setText( m_glass->name() + " (" + m_glass->supplyer() + ")" );
-    ui->label_Fundamental->setText( "nd= " + QString::number(m_glass->nd()) + "   vd= " + QString::number(m_glass->vd()) );
+    ui->label_GlassName->setText( m_glass->productName() + " (" + m_glass->supplyer() + ")" );
+    ui->label_Fundamental->setText( "nd= " + QString::number(m_glass->getValue("nd")) + "   vd= " + QString::number(m_glass->getValue("vd")) );
 
     // set up all tabs
     setUpBasicTab();
@@ -77,7 +77,7 @@ void GlassDataSheetForm::setUpBasicTab()
 
     // name
     addGridItem(grid, 0, 0, "Name");
-    addGridItem(grid, 0, 1, m_glass->name());
+    addGridItem(grid, 0, 1, m_glass->productName());
 
     // catalog
     addGridItem(grid, 1, 0, "Catalog");
@@ -127,7 +127,7 @@ void GlassDataSheetForm::setUpIndicesTab()
         addGridItem(grid, row, 1, QString::number(SpectralLine::wavelength(spectralLineName), 'f', wvl_digit));
 
         // refractive index
-        addGridItem(grid, row, 2, numToQString(m_glass->index(spectralLineName), 'f', val_digit));
+        addGridItem(grid, row, 2, numToQString(m_glass->refractiveIndex_rel(spectralLineName), 'f', val_digit));
     }
 }
 
@@ -203,7 +203,7 @@ void GlassDataSheetForm::setUpThermalTab()
     grid->setObjectName(QString::fromUtf8("gridLayout_dndT"));
 
     QStringList   coefNames  = QStringList(   {"D0", "D1", "D2", "E0", "E1", "Ltk", "T0"} );
-    QList<double> coefValues = QList<double>( {m_glass->D0(), m_glass->D1(), m_glass->D2(), m_glass->E0(), m_glass->E1(), m_glass->Ltk(), m_glass->T0()} );
+    QList<double> coefValues = QList<double>( {m_glass->D0(), m_glass->D1(), m_glass->D2(), m_glass->E0(), m_glass->E1(), m_glass->Ltk(), m_glass->Tref()} );
     for(int i = 0; i < coefNames.size(); i++){
         addGridItem(grid, i, 0, coefNames[i]);
         addGridItem(grid, i, 1, numToQString(coefValues[i], 'g', digit));

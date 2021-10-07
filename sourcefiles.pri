@@ -3,6 +3,7 @@
 #############################################################################
 
 SOURCES += \
+    src/air.cpp \
     src/preference_dialog.cpp \
     src/catalog_view_form.cpp \
     src/catalog_view_setting_dialog.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 
 
 HEADERS += \
+    src/air.h \
     src/preference_dialog.h \
     src/catalog_view_form.h \
     src/catalog_view_setting_dialog.h \

@@ -280,7 +280,7 @@ QVector<double> DispersionPlotForm::computeUserDefinedCurve(const QVector<double
             dummyGlass.setDispCoef(i,m_tableCoefs->item(i,0)->text().toDouble());
         }
 
-        ydata = dummyGlass.index(xdata);
+        ydata = dummyGlass.refractiveIndex_rel(xdata);
     }
     else // formula in CODEV format
     {
@@ -290,7 +290,7 @@ QVector<double> DispersionPlotForm::computeUserDefinedCurve(const QVector<double
             dummyGlass.setDispCoef(i,m_tableCoefs->item(i,0)->text().toDouble());
         }
 
-        ydata = dummyGlass.index(xdata);
+        ydata = dummyGlass.refractiveIndex_rel(xdata);
     }
 
     return ydata;
@@ -364,15 +364,15 @@ void DispersionPlotForm::updateAll()
         currentGlass = m_glassList[i];
 
         // graphs
-        ydata = currentGlass->index(vLambdamicron);
+        ydata = currentGlass->refractiveIndex_rel(vLambdamicron);
         graph = m_customPlot->addGraph();
-        graph->setName(currentGlass->name() + "_" + currentGlass->supplyer());
+        graph->setName(currentGlass->fullName());
         graph->setData(vLambdamicron, ydata);
         graph->setPen( QPen(getColorFromIndex(i, m_maxGraphCount)) );
         graph->setVisible(true);
 
         // table
-        header << currentGlass->name();
+        header << currentGlass->productName();
         for(j = 0; j< rowCount; j++)
         {
             addTableItem(j, 0,   QString::number(vLambdamicron[j], 'f', digit) );  // wavelength
@@ -414,7 +414,7 @@ void DispersionPlotForm::deleteGraph()
 
         for(int i = 0;i < glassCount; i++)
         {
-            if(m_glassList[i]->name() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
+            if(m_glassList[i]->productName() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
                 m_glassList.removeAt(i);
                 break;
             }

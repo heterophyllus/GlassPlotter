@@ -42,23 +42,47 @@ public:
     GlassCatalog();
     ~GlassCatalog();
 
-    QString supplyer() const { return _supplyer;}
+    inline QString supplyer() const;
 
     Glass*  glass(int n) const;
     Glass*  glass(QString glassname) const;
-    int     glassCount() const {return _glasses.size();}
-    bool    hasGlass(QString glassname) const;
+    inline int glassCount() const;
+    bool hasGlass(QString glassname) const;
 
+    /**
+     * @brief Load glass data from Zemax AGF file
+     * @param AGFpath AGF file path
+     * @param parse_result Container for notable parse results
+     * @return
+     */
     bool loadAGF(QString AGFpath, QString& parse_result);
+
+
+    /**
+     * @brief Load glass data from CODEV Xml file
+     * @param xmlpath Xml file path
+     * @param parse_result Container for notable parse results
+     * @return
+     */
     bool loadXml(QString xmlpath, QString& parse_result);
 
     void clear();
 
 private:
-    QString       _supplyer;
-    QList<Glass*> _glasses;
+    QString       supplyer_;
+    QList<Glass*> glasses_;
 
-    QMap<QString, int> _name_to_int_map;
+    QMap<QString, int> name_to_int_map_;
 };
+
+QString GlassCatalog::supplyer() const
+{
+    return supplyer_;
+}
+
+int GlassCatalog::glassCount() const
+{
+    return glasses_.size();
+}
 
 #endif // GLASSCATALOGUE_H

@@ -238,7 +238,7 @@ void GlassMapForm::showNeighbors(QCPAbstractItem* item)
                 double dy = (targetGlass->getValue(m_yDataName) - g->getValue(m_yDataName));
 
                 if(abs(dx) < xThreshold && abs(dy) < yThreshold){
-                    m_listWidgetNeighbors->addItem(g->name() + "_" + g->supplyer());
+                    m_listWidgetNeighbors->addItem(g->fullName());
                 }
             }
         }
@@ -385,7 +385,7 @@ void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catal
         }else{
             x.append(g->getValue(xlabel));
             y.append(g->getValue(ylabel));
-            s.append(g->name());
+            s.append(g->productName());
         }
     }
 
