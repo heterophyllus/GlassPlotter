@@ -25,25 +25,21 @@
 #include "glassmap_form.h"
 #include "ui_glassmap_form.h"
 
+#include "glass_catalog_manager.h"
 #include "glass_datasheet_form.h"
 #include "curve_fitting_dialog.h"
 #include "preset_dialog.h"
 
-GlassMapForm::GlassMapForm(const QList<GlassCatalog*> *catalogListPtr, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed, QMdiArea *parent) :
+GlassMapForm::GlassMapForm(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed, QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::GlassMapForm),
     m_parentMdiArea(parent),
-    m_catalogListPtr(catalogListPtr),
     m_xDataName(xdataname),
     m_yDataName(ydataname),
     m_defaultXrange(xrange),
     m_defaultYrange(yrange),
     m_xReversed(xreversed)
 {
-    if(catalogListPtr->empty()){
-        return;
-    }
-
     ui->setupUi(this);
 
     // plot widget
@@ -127,19 +123,25 @@ GlassMapForm::~GlassMapForm()
     m_customPlot->clearItems();
     m_customPlot = nullptr;
 
+    for(int i = 0; i < m_glassMapCtrlList.size(); i++){
+        delete m_glassMapCtrlList[i].labelSupplyer;
+        delete m_glassMapCtrlList[i].checkBoxPlot;
+        delete m_glassMapCtrlList[i].checkBoxLabel;
+    }
     m_glassMapCtrlList.clear();
-    m_lineEditList.clear();
 
-    m_catalogListPtr = nullptr;
+    m_lineEditList.clear();
 
     delete ui;
 }
 
-GlassMapForm::GlassMapCtrl::GlassMapCtrl(QCheckBox* p, QCheckBox* l)
+GlassMapForm::GlassMapCtrl::GlassMapCtrl(QLabel* l, QCheckBox* checkPlot, QCheckBox* checkLabel)
 {
-    checkBoxPlot  = p;
-    checkBoxLabel = l;
+    labelSupplyer = l;
+    checkBoxPlot  = checkPlot;
+    checkBoxLabel = checkLabel;
 }
+
 
 void GlassMapForm::showContextMenu()
 {
@@ -177,12 +179,12 @@ void GlassMapForm::setUpScrollArea()
     gridLayout = new QGridLayout(ui->scrollAreaWidgetContents);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout_PlotControl"));
 
-    for(int i = 0; i < m_catalogListPtr->size(); i++)
+    for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++)
     {
         // supplyer name
         label = new QLabel(ui->scrollAreaWidgetContents);
         label->setObjectName("label_" + QString::number(i));
-        label->setText(m_catalogListPtr->at(i)->supplyer());
+        label->setText(GlassCatalogManager::catalogList().at(i)->supplyer());
         gridLayout->addWidget(label, i, 0, 1, 1);
 
         // plot on/off
@@ -199,7 +201,7 @@ void GlassMapForm::setUpScrollArea()
         gridLayout->addWidget(checkBox2, i, 2, 1, 1);
         QObject::connect(checkBox2,SIGNAL(toggled(bool)), this, SLOT(update()));
 
-        m_glassMapCtrlList.append(GlassMapCtrl(checkBox1,checkBox2));
+        m_glassMapCtrlList.append( GlassMapCtrl(label, checkBox1, checkBox2) );
     }
 
     ui->scrollArea->setWidgetResizable(true);
@@ -219,17 +221,17 @@ void GlassMapForm::showNeighbors(QCPAbstractItem* item)
 
     // mouse-selected glass
     QString glassName = item->objectName();
-    Glass* targetGlass = getGlassFromName(glassName);
+    Glass* targetGlass = GlassCatalogManager::find(glassName);
 
     double xThreshold = (m_customPlot->xAxis->range().upper - m_customPlot->xAxis->range().lower)/10;
     double yThreshold = (m_customPlot->yAxis->range().upper - m_customPlot->yAxis->range().lower)/10;
 
-    for(int i = 0; i < m_catalogListPtr->size(); i++){
+    for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++){
 
         // Glasses in currently visible catalogs will be listed.
         if(m_glassMapCtrlList[i].checkBoxPlot->checkState())
         {
-            GlassCatalog* cat = m_catalogListPtr->at(i);
+            GlassCatalog* cat = GlassCatalogManager::catalogList().at(i);
             for(int j = 0; j < cat->glassCount(); j++)
             {
                 Glass* g = cat->glass(j);
@@ -257,20 +259,23 @@ void GlassMapForm::showGlassDataSheet()
 {
     if(m_listWidgetNeighbors->selectedItems().size() > 0)
     {
-        QString     selectedText = m_listWidgetNeighbors->currentItem()->text();
-        QStringList splitedText  = selectedText.split("_");  // format: glassname_catalogname
-        QString     glassName    = splitedText[0];
+        QString selectedText = m_listWidgetNeighbors->currentItem()->text();
+        QString fullName = selectedText;
 
-        GlassDataSheetForm* subwindow = new GlassDataSheetForm(getGlassFromName(glassName), m_parentMdiArea);
-        m_parentMdiArea->addSubWindow(subwindow);
-        subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
-        subwindow->show();
+        Glass *g = GlassCatalogManager::find(fullName);
+
+        if(g){
+            GlassDataSheetForm* subwindow = new GlassDataSheetForm(GlassCatalogManager::find(fullName), m_parentMdiArea);
+            m_parentMdiArea->addSubWindow(subwindow);
+            subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
+            subwindow->show();
+        }
     }
 }
 
 void GlassMapForm::showCurveFittingDlg()
 {
-    CurveFittingDialog* dlg = new CurveFittingDialog(m_catalogListPtr, m_xDataName, m_yDataName, this);
+    CurveFittingDialog* dlg = new CurveFittingDialog(m_xDataName, m_yDataName, this);
     if(dlg->exec() == QDialog::Accepted)
     {
         QList<double> coefs = {0.0, 0.0, 0.0, 0.0};
@@ -312,7 +317,7 @@ void GlassMapForm::update()
     m_customPlot->clearItems();
     m_customPlot->clearPlottables();
 
-    int catalogCount = m_catalogListPtr->size();
+    int catalogCount = GlassCatalogManager::catalogList().size();
     QCPScatterChart* glassmap;
     bool plot_on, label_on;
 
@@ -324,7 +329,7 @@ void GlassMapForm::update()
 
         if(plot_on || label_on){
             glassmap = new QCPScatterChart(m_customPlot);
-            setGlassmapData(glassmap, m_catalogListPtr->at(i), m_xDataName, m_yDataName, getColorFromIndex(i,catalogCount));
+            setGlassmapData(glassmap, GlassCatalogManager::catalogList().at(i), m_xDataName, m_yDataName, getColorFromIndex(i,catalogCount));
             glassmap->setVisiblePointSeries(plot_on);
             glassmap->setVisibleTextLabels(label_on);
         }
@@ -338,17 +343,6 @@ void GlassMapForm::update()
     }
 
     m_customPlot->replot();
-}
-
-
-Glass* GlassMapForm::getGlassFromName(QString glassName)
-{
-    for(auto &cat : *m_catalogListPtr){
-        if(cat->hasGlass(glassName)){
-            return cat->glass(glassName);
-        }
-    }
-    return nullptr;
 }
 
 void GlassMapForm::showPresetDlg()
@@ -385,7 +379,7 @@ void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catal
         }else{
             x.append(g->getValue(xlabel));
             y.append(g->getValue(ylabel));
-            s.append(g->productName());
+            s.append(g->fullName());
         }
     }
 

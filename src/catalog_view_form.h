@@ -44,7 +44,7 @@ class CatalogViewForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit CatalogViewForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent = nullptr);
+    explicit CatalogViewForm(QMdiArea *parent = nullptr);
     ~CatalogViewForm();
 
 private slots:
@@ -59,8 +59,6 @@ private:
     QMdiArea*     m_parentMdiArea;
     QTableWidget* m_table;
     QComboBox*    m_comboBox;
-
-    const QList<GlassCatalog*> *m_catalogListPtr;
 
     QStringList m_allPropertyList;
     QStringList m_currentPropertyList;

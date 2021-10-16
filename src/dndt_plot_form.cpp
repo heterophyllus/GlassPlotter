@@ -26,18 +26,16 @@
 #include "dndt_plot_form.h"
 #include "ui_dndt_plot_form.h"
 
+#include "glass_catalog_manager.h"
 #include "glass_selection_dialog.h"
 
 
-DnDtPlotForm::DnDtPlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent) :
+DnDtPlotForm::DnDtPlotForm(QWidget *parent) :
     PropertyPlotForm(parent),
     ui(new Ui::DnDtPlotForm)
 {
     ui->setupUi(this);
     this->setWindowTitle("Dn/Dt(abs) Plot");
-
-
-    m_catalogListPtr = catalogListPtr;
 
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
@@ -81,10 +79,8 @@ DnDtPlotForm::DnDtPlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *
 DnDtPlotForm::~DnDtPlotForm()
 {
     m_currentGlass = nullptr;
-    m_catalogListPtr = nullptr;
     m_wvlList.clear();
     m_plotDataTable->clear();
-    m_plotDataTable = nullptr;
     m_customPlot->clearGraphs();
     m_customPlot->clearItems();
     m_customPlot->clearPlottables();
@@ -95,22 +91,16 @@ DnDtPlotForm::~DnDtPlotForm()
 
 void DnDtPlotForm::setGlass()
 {
-    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogListPtr, this);
+    GlassSelectionDialog *dlg = new GlassSelectionDialog(this);
     if(dlg->exec() == QDialog::Accepted)
     {
-        int catalogIndex = dlg->getCatalogIndex();
-        QString glassName = dlg->getGlassName();
-        Glass* newGlass = m_catalogListPtr->at(catalogIndex)->glass(glassName);
+        Glass* newGlass = dlg->getSelectedGlass();
 
         // check whether the glass contains valid thermal data
-        QVector<double> vTemp = newGlass->getThermalData();
-        for(int i = 0; i < vTemp.size(); i++)
-        {
-            if(qIsNaN(vTemp[i])){
-                QMessageBox::information(this,tr("Error"), tr("This glass does not have thermal data."));
-                newGlass = nullptr;
-                return;
-            }
+        if( !newGlass->hasThermalData()){
+            QMessageBox::information(this,tr("Error"), tr("This glass does not have valid thermal data."));
+            newGlass = nullptr;
+            return;
         }
 
         clearAll();
@@ -133,11 +123,9 @@ void DnDtPlotForm::setGlass()
 
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-        dlg = nullptr;
-    }
+
+    delete dlg;
+
     dlg = nullptr;
 }
 

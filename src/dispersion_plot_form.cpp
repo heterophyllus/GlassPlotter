@@ -26,11 +26,11 @@
 #include "ui_dispersion_plot_form.h"
 
 #include "dispersion_formula.h"
-
+#include "glass_catalog_manager.h"
 #include "glass_selection_dialog.h"
 
 
-DispersionPlotForm::DispersionPlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent) :
+DispersionPlotForm::DispersionPlotForm(QWidget *parent) :
     PropertyPlotForm(parent),
     ui(new Ui::DispersionPlotForm)
 {
@@ -38,7 +38,6 @@ DispersionPlotForm::DispersionPlotForm(const QList<GlassCatalog*> *catalogListPt
     this->setWindowTitle("Dispersion Plot");
 
     // plot
-    m_catalogListPtr = catalogListPtr;
     m_customPlot = ui->widget;
     m_customPlot->setInteractions(QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
     m_customPlot->xAxis->setLabel("Wavelength(micron)");
@@ -136,8 +135,6 @@ DispersionPlotForm::~DispersionPlotForm()
     m_customPlot = nullptr;
     m_plotDataTable->clear();
     m_tableCoefs->clear();
-
-    m_catalogListPtr = nullptr;
 
     delete ui;
 }
@@ -280,7 +277,7 @@ QVector<double> DispersionPlotForm::computeUserDefinedCurve(const QVector<double
             dummyGlass.setDispCoef(i,m_tableCoefs->item(i,0)->text().toDouble());
         }
 
-        ydata = dummyGlass.refractiveIndex_rel(xdata);
+        ydata = dummyGlass.refractiveIndex(xdata);
     }
     else // formula in CODEV format
     {
@@ -290,7 +287,7 @@ QVector<double> DispersionPlotForm::computeUserDefinedCurve(const QVector<double
             dummyGlass.setDispCoef(i,m_tableCoefs->item(i,0)->text().toDouble());
         }
 
-        ydata = dummyGlass.refractiveIndex_rel(xdata);
+        ydata = dummyGlass.refractiveIndex(xdata);
     }
 
     return ydata;
@@ -306,13 +303,11 @@ void DispersionPlotForm::addGraph()
         return;
     }
 
-    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogListPtr, this);
+    GlassSelectionDialog *dlg = new GlassSelectionDialog(this);
     if(dlg->exec() == QDialog::Accepted)
     {
         // get glass
-        int catalogIndex  = dlg->getCatalogIndex();
-        QString glassName = dlg->getGlassName();
-        Glass* newGlass   = m_catalogListPtr->at(catalogIndex)->glass(glassName);
+        Glass* newGlass   = dlg->getSelectedGlass();
 
         // check dispersion formula of the glass
         if("Unknown" == newGlass->formulaName()){
@@ -364,7 +359,7 @@ void DispersionPlotForm::updateAll()
         currentGlass = m_glassList[i];
 
         // graphs
-        ydata = currentGlass->refractiveIndex_rel(vLambdamicron);
+        ydata = currentGlass->refractiveIndex(vLambdamicron);
         graph = m_customPlot->addGraph();
         graph->setName(currentGlass->fullName());
         graph->setData(vLambdamicron, ydata);

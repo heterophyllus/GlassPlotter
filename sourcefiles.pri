@@ -12,6 +12,7 @@ SOURCES += \
     src/dndt_plot_form.cpp \
     src/glass.cpp \
     src/glass_catalog.cpp \
+    src/glass_catalog_manager.cpp \
     src/glass_datasheet_form.cpp \
     src/glass_selection_dialog.cpp \
     src/glass_search_form.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     src/dndt_plot_form.h \
     src/glass.h \
     src/glass_catalog.h \
+    src/glass_catalog_manager.h \
     src/glass_datasheet_form.h \
     src/glass_selection_dialog.h \
     src/glass_search_form.h \

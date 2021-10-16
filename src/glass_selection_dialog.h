@@ -37,7 +37,7 @@
 #include <QComboBox>
 #include <QListWidget>
 
-#include "glass_catalog.h"
+#include "glass.h"
 
 namespace Ui {
 class GlassSelectionDialog;
@@ -48,13 +48,10 @@ class GlassSelectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    //explicit GlassSelectionDialog(QList<GlassCatalog*> catalogList, QWidget *parent = nullptr);
-    explicit GlassSelectionDialog(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent = nullptr);
+    explicit GlassSelectionDialog(QWidget *parent = nullptr);
     ~GlassSelectionDialog();
 
-    int     getCatalogIndex();
-    QString getSupplyerName();
-    QString getGlassName();
+    Glass* getSelectedGlass();
 
 private slots:
     void updateGlassList();
@@ -68,9 +65,7 @@ private:
     QLineEdit*   m_lineEditFilter;
     QListWidget* m_listWidgetGlass;
 
-    //QList<GlassCatalog*> m_catalogList;
-    const QList<GlassCatalog*> *m_catalogListPtr;
-    QStringList          m_glassNameList;
+    QStringList  m_glassNameList;
 
 };
 

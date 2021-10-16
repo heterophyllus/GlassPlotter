@@ -1,7 +1,3 @@
-#ifndef PROPERTYPLOTFORM_H
-#define PROPERTYPLOTFORM_H
-
-#include <QWidget>
 /*****************************************************************************
  **                                                                         **
  **  This file is part of GlassPlotter.                                     **
@@ -26,7 +22,10 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-#include <QTableWidget>
+#ifndef PROPERTYPLOTFORM_H
+#define PROPERTYPLOTFORM_H
+
+#include <QWidget>
 
 #include "qcustomplot.h"
 

@@ -29,7 +29,8 @@
 #include <QSettings>
 
 #include "qcustomplot.h"
-#include "glass_catalog.h"
+#include "glass_catalog_manager.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -85,13 +86,11 @@ private slots:
     void showAbout();
 
 private:
-    void loadCatalogFiles(const QStringList& catalogFilePaths);
-
 
     Ui::MainWindow *ui;
-    QList<GlassCatalog*> m_catalogList;
-
     QSettings* m_settings;
+
+    GlassCatalogManager *m_catalogManager;
 
     /** whether to show parse result dialog after loading catalogs */
     bool m_loadWithResult;

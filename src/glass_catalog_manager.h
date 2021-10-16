@@ -23,57 +23,29 @@
  *****************************************************************************/
 
 
-#ifndef GLASS_DATASHEET_FORM_H
-#define GLASS_DATASHEET_FORM_H
+#ifndef GLASSCATALOGMANAGER_H
+#define GLASSCATALOGMANAGER_H
 
-#include <QWidget>
-#include <QGridLayout>
-#include <QLabel>
+
+#include <QString>
 #include <QList>
+#include <QStringList>
 
-#include "glass.h"
+#include "glass_catalog.h"
 
-namespace Ui {
-class GlassDataSheetForm;
-}
-
-
-/** Qt form for glass datasheet */
-class GlassDataSheetForm : public QWidget
+class GlassCatalogManager
 {
-    Q_OBJECT
-
 public:
-    explicit GlassDataSheetForm(Glass* glass, QWidget *parent = nullptr);
-    ~GlassDataSheetForm();
+    GlassCatalogManager();
+    ~GlassCatalogManager();
+
+    static QList<GlassCatalog*>& catalogList();
+    static bool isEmpty();
+    static Glass* find(QString fullName);
+    static void loadCatalogFiles(const QStringList& catalogFilePaths, QString& parseResult);
 
 private:
-    void setUpBasicTab();
-    void setUpIndicesTab();
-    void setUpPartialTab();
-    void setUpDispersionTab();
-    void setUpThermalTab();
-    void setUpTransmittanceTab();
-    void setUpOtherDataTab();
-
-    void addGridItem(QGridLayout* gridLayout, int row, int col, QString str);
-
-    inline QString numToQString(double val, char fmt='f', int digit=6);
-
-    Ui::GlassDataSheetForm *ui;
-    Glass* m_glass;
-    QList<QGridLayout*> m_gridLayoutList; // contains all grids to delete later
-    QList<QLabel*>      m_labelList; //contains all QLabel to delete later
+    static QList<GlassCatalog*> m_catalogList;
 };
 
-QString GlassDataSheetForm::numToQString(double val, char fmt, int digit)
-{
-    if(qIsNaN(val)){
-        return "-";
-    }
-    else{
-        return QString::number(val,fmt,digit);
-    }
-}
-
-#endif // GLASS_DATASHEET_FORM_H
+#endif

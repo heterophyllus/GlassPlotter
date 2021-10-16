@@ -27,21 +27,22 @@
 
 #include <QMessageBox>
 #include <QLineEdit>
+#include <QDebug>
 
+#include "glass_catalog_manager.h"
 #include "glass_selection_dialog.h"
 
 #include "Eigen/Dense"
 
 using namespace Eigen;
 
-CurveFittingDialog::CurveFittingDialog(const QList<GlassCatalog*> *catalogListPtr, QString xdataname, QString ydataname, QWidget *parent) :
+CurveFittingDialog::CurveFittingDialog(QString xdataname, QString ydataname, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CurveFittingDialog)
 {
     ui->setupUi(this);
     this->setWindowTitle("Curve Fitting");
 
-    m_catalogListPtr = catalogListPtr;
     m_xDataName   = xdataname;
     m_yDataName   = ydataname;
 
@@ -64,8 +65,6 @@ CurveFittingDialog::CurveFittingDialog(const QList<GlassCatalog*> *catalogListPt
 
 CurveFittingDialog::~CurveFittingDialog()
 {
-    //m_catalogList.clear();
-
     m_table->clear();
 
     delete ui;
@@ -107,13 +106,11 @@ void CurveFittingDialog::addNewRow(QString s1, QString s2, QString s3)
  */
 void CurveFittingDialog::addGlassForNewRow()
 {
-    GlassSelectionDialog *dlg = new GlassSelectionDialog(m_catalogListPtr, this);
+    GlassSelectionDialog *dlg = new GlassSelectionDialog(this);
     if(dlg->exec() == QDialog::Accepted)
     {
         // get glass
-        int catalogIndex  = dlg->getCatalogIndex();
-        QString glassName = dlg->getGlassName();
-        Glass* glass   = m_catalogListPtr->at(catalogIndex)->glass(glassName);
+        Glass* glass   = dlg->getSelectedGlass();
 
         // check dispersion formula of the glass
         if("Unknown" == glass->formulaName()){
@@ -161,12 +158,12 @@ bool CurveFittingDialog::getFittingResult(QList<double>& result)
     if(M == 0){ // no input
         return false;
     }else{
-        double d;
-        bool ok;
         for(int i = 0; i < m_table->rowCount(); i++){
             for(int j = 0; j < 2; j++){
-                d = m_table->item(i,j)->text().toDouble(&ok);
+                bool ok;
+                double d = m_table->item(i,j)->text().toDouble(&ok);
                 if(!ok){ // invalid input
+                    qDebug() << "Input value is not Double " << "(" << i << "," << j << ") =" << d;
                     return false;
                 }
             }

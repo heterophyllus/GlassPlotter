@@ -1104,11 +1104,8 @@ void QCPLayer::setMode(QCPLayer::LayerMode mode)
   if (mMode != mode)
   {
     mMode = mode;
-    if (!mPaintBuffer.isNull()) {
-        // 'data' is deprecated:
-        //mPaintBuffer.data()->setInvalidated();
-        mPaintBuffer.toStrongRef().data()->setInvalidated();
-    }
+    if (!mPaintBuffer.isNull())
+      mPaintBuffer.data()->setInvalidated();
   }
 }
 
@@ -1145,16 +1142,14 @@ void QCPLayer::drawToPaintBuffer()
 {
   if (!mPaintBuffer.isNull())
   {
-    //if (QCPPainter *painter = mPaintBuffer.data()->startPainting())
-    if (QCPPainter *painter = mPaintBuffer.toStrongRef().data()->startPainting())
+    if (QCPPainter *painter = mPaintBuffer.data()->startPainting())
     {
       if (painter->isActive())
         draw(painter);
       else
         qDebug() << Q_FUNC_INFO << "paint buffer returned inactive painter";
       delete painter;
-      //mPaintBuffer.data()->donePainting();
-      mPaintBuffer.toStrongRef().data()->donePainting();
+      mPaintBuffer.data()->donePainting();
     } else
       qDebug() << Q_FUNC_INFO << "paint buffer returned zero painter";
   } else
@@ -1180,11 +1175,9 @@ void QCPLayer::replot()
   {
     if (!mPaintBuffer.isNull())
     {
-      //mPaintBuffer.data()->clear(Qt::transparent);
-      mPaintBuffer.toStrongRef().data()->clear(Qt::transparent);
+      mPaintBuffer.data()->clear(Qt::transparent);
       drawToPaintBuffer();
-      //mPaintBuffer.data()->setInvalidated(false);
-      mPaintBuffer.toStrongRef().data()->setInvalidated(false);
+      mPaintBuffer.data()->setInvalidated(false);
       mParentPlot->update();
     } else
       qDebug() << Q_FUNC_INFO << "no valid paint buffer associated with this layer";
@@ -1210,10 +1203,8 @@ void QCPLayer::addChild(QCPLayerable *layerable, bool prepend)
       mChildren.prepend(layerable);
     else
       mChildren.append(layerable);
-    if (!mPaintBuffer.isNull()){
-      //mPaintBuffer.data()->setInvalidated();
-      mPaintBuffer.toStrongRef().data()->setInvalidated();
-    }
+    if (!mPaintBuffer.isNull())
+      mPaintBuffer.data()->setInvalidated();
   } else
     qDebug() << Q_FUNC_INFO << "layerable is already child of this layer" << reinterpret_cast<quintptr>(layerable);
 }
@@ -1231,10 +1222,8 @@ void QCPLayer::removeChild(QCPLayerable *layerable)
 {
   if (mChildren.removeOne(layerable))
   {
-    if (!mPaintBuffer.isNull()) {
-      //mPaintBuffer.data()->setInvalidated();
-      mPaintBuffer.toStrongRef().data()->setInvalidated();
-    }
+    if (!mPaintBuffer.isNull())
+      mPaintBuffer.data()->setInvalidated();
   } else
     qDebug() << Q_FUNC_INFO << "layerable is not child of this layer" << reinterpret_cast<quintptr>(layerable);
 }
@@ -6152,8 +6141,7 @@ double QCPAxisTickerDateTime::dateTimeToKey(const QDate date)
 # if QT_VERSION < QT_VERSION_CHECK(4, 7, 0)
   return QDateTime(date).toTime_t();
 # else
-  //return QDateTime(date).toMSecsSinceEpoch()/1000.0;
-  return date.startOfDay().toMSecsSinceEpoch()/1000.0;
+  return QDateTime(date).toMSecsSinceEpoch()/1000.0;
 # endif
 }
 /* end of 'src/axis/axistickerdatetime.cpp' */

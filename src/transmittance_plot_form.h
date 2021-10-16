@@ -34,7 +34,7 @@
 #include <QWidget>
 
 #include "property_plot_form.h"
-#include "glass_catalog.h"
+#include "glass.h"
 
 namespace Ui {
 class TransmittancePlotForm;
@@ -45,7 +45,7 @@ class TransmittancePlotForm : public PropertyPlotForm
     Q_OBJECT
 
 public:
-    explicit TransmittancePlotForm(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent = nullptr);
+    explicit TransmittancePlotForm(QWidget *parent = nullptr);
     ~TransmittancePlotForm();
 
 private slots:
@@ -57,8 +57,7 @@ private slots:
 private:
     Ui::TransmittancePlotForm *ui;
 
-    const QList<GlassCatalog*> *m_catalogListPtr;
-    QList<Glass*>        m_glassList;
+    QList<Glass*>  m_glassList;
 
     QLineEdit* m_editThickness;
 

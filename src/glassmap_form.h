@@ -44,8 +44,7 @@ class GlassMapForm : public QWidget
     Q_OBJECT
 
 public:
-    //explicit GlassMapForm(QList<GlassCatalog*> catalogList, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed = true, QMdiArea *parent = nullptr);
-    explicit GlassMapForm(const QList<GlassCatalog*> *catalogListPtr, QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed = true, QMdiArea *parent = nullptr);
+    explicit GlassMapForm(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed = true, QMdiArea *parent = nullptr);
     ~GlassMapForm();
 
 private slots:
@@ -67,9 +66,10 @@ private:
      */
     class GlassMapCtrl{
     public:
-        GlassMapCtrl(QCheckBox* p, QCheckBox* l);
+        GlassMapCtrl(QLabel* l, QCheckBox* checkPlot, QCheckBox* checkLabel);
+        QLabel*    labelSupplyer;
         QCheckBox* checkBoxPlot;
-        QCheckBox* checkBoxLabel;
+        QCheckBox* checkBoxLabel; //text label
     };
 
     Ui::GlassMapForm *ui;
@@ -79,9 +79,6 @@ private:
     QCheckBox*   m_checkBoxLegend;
     QCheckBox*   m_checkBoxCurve;
     QListWidget* m_listWidgetNeighbors;
-
-    //QList<GlassCatalog*> m_catalogList;
-    const QList<GlassCatalog*> *m_catalogListPtr;
 
     QList<GlassMapCtrl>  m_glassMapCtrlList;
     QList<QLineEdit*>    m_lineEditList;
@@ -97,8 +94,7 @@ private:
 
     bool m_xReversed;
 
-    Glass* getGlassFromName(QString glassName);
-    void   setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
+    void   setGlassmapData(QCPScatterChart* glassmap, GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
     void   setUpScrollArea();
     void   saveSetting();
     QList<double> getCurveCoefs();

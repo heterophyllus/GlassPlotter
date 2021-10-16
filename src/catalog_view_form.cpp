@@ -30,10 +30,11 @@
 #include <QDialog>
 #include <QDebug>
 
+#include "glass_catalog_manager.h"
 #include "glass_datasheet_form.h"
 #include "catalog_view_setting_dialog.h"
 
-CatalogViewForm::CatalogViewForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent) :
+CatalogViewForm::CatalogViewForm(QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::CatalogViewForm)
 {
@@ -42,11 +43,9 @@ CatalogViewForm::CatalogViewForm(const QList<GlassCatalog*> *catalogListPtr, QMd
 
     m_parentMdiArea = parent;
 
-    m_catalogListPtr = catalogListPtr;
-
     m_comboBox = ui->comboBox_Supplyer;
-    for(int i = 0; i < m_catalogListPtr->size(); i++){
-        m_comboBox->addItem(m_catalogListPtr->at(i)->supplyer());
+    for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++){
+        m_comboBox->addItem(GlassCatalogManager::catalogList().at(i)->supplyer());
     }
     QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 
@@ -86,14 +85,13 @@ CatalogViewForm::CatalogViewForm(const QList<GlassCatalog*> *catalogListPtr, QMd
 CatalogViewForm::~CatalogViewForm()
 {
     m_table->clear();
-    m_catalogListPtr = nullptr;
 
     delete ui;
 }
 
 void CatalogViewForm::update()
 {
-    setUpTable(m_currentPropertyList, m_catalogListPtr->at( m_comboBox->currentIndex() ), m_currentDigit);
+    setUpTable(m_currentPropertyList, GlassCatalogManager::catalogList().at( m_comboBox->currentIndex() ), m_currentDigit);
 }
 
 void CatalogViewForm::addTableItem(int row, int col, QString str)
@@ -288,21 +286,14 @@ void CatalogViewForm::showDatasheet()
 {
     // get catalog name and glass name of the current row
     QString supplyername = m_comboBox->currentText();
-    QString glassname    = m_table->item(m_table->currentRow(),0)->text();
+    QString productname    = m_table->item(m_table->currentRow(),0)->text();
+    QString fullname = productname + "_" + supplyername;
 
     // show glass datasheet form
-    for(auto &cat: *m_catalogListPtr)
-    {
-        if(cat->supplyer() == supplyername)
-        {
-            GlassDataSheetForm* subwindow = new GlassDataSheetForm(cat->glass(glassname), m_parentMdiArea);
-            m_parentMdiArea->addSubWindow(subwindow);
-            subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
-            subwindow->show();
-
-            break;
-        }
-    }
+    GlassDataSheetForm* subwindow = new GlassDataSheetForm(GlassCatalogManager::find(fullname), m_parentMdiArea);
+    m_parentMdiArea->addSubWindow(subwindow);
+    subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
+    subwindow->show();
 }
 
 void CatalogViewForm::showSettingDlg()

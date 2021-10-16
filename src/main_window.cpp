@@ -88,9 +88,9 @@ MainWindow::MainWindow(QWidget *parent)
     double temperature = m_settings->value("Temperature", 25).toDouble();
     Glass::setCurrentTemperature(temperature);
 
-    // Load default catalogs
-    //loadDefaultCatalogFiles();
+    m_catalogManager = new GlassCatalogManager();
 
+    // loading default catalog files is in main.cpp
 }
 
 MainWindow::~MainWindow()
@@ -102,85 +102,10 @@ MainWindow::~MainWindow()
     }
     m_settings = nullptr;
 
-    if(!m_catalogList.isEmpty()){
-        for(auto &cat: m_catalogList){
-            try {
-                delete cat;
-            }  catch (...) {
-                cat = nullptr;
-            }
-            cat = nullptr;
-        }
-    }
-    m_catalogList.clear();
-
+    delete m_catalogManager;
     delete ui;
 }
 
-void MainWindow::loadCatalogFiles(const QStringList& catalogFilePaths)
-{
-    if(catalogFilePaths.empty()) {
-        return;
-    }
-
-    // clear old catalogs
-    if(!m_catalogList.isEmpty())
-    {
-        for (auto &cat: m_catalogList) {
-            delete cat;
-        }
-        m_catalogList.clear();
-    }
-
-    // load catalogs
-    GlassCatalog* catalog;
-    QString parse_result, parse_result_all;
-
-    QFileInfo finfo;
-    finfo.setFile(catalogFilePaths.first());
-    QString ext = finfo.suffix().toLower(); // .agf, .xml
-
-    for(int i = 0; i < catalogFilePaths.size(); i++){
-        catalog = new GlassCatalog;
-        parse_result.clear();
-
-        bool ok;
-        if(ext == "agf"){
-            ok = catalog->loadAGF(catalogFilePaths[i], parse_result);
-        }else{
-            ok = catalog->loadXml(catalogFilePaths[i], parse_result);
-        }
-
-        if(ok){
-            m_catalogList.append(catalog);
-            parse_result_all += parse_result;
-        }
-        else{
-            parse_result_all += ("Catalog loading error:" + catalogFilePaths[i] + "\n");
-            try {
-                delete catalog;
-            }  catch (...) {
-                qDebug() << "memory release error";
-                return;
-            }
-            continue;
-        }
-    }
-
-    catalog = nullptr;
-
-
-    // show parse result
-    if(m_loadWithResult) {
-        LoadCatalogResultDialog dlg(this);
-        dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
-        dlg.setText(parse_result_all);
-        dlg.exec();
-    }else{
-        QMessageBox::information(this, tr("Info"), "Catalog files were newly loaded");
-    }
-
-}
 
 void MainWindow::loadDefaultCatalogFiles()
 {
@@ -199,7 +124,21 @@ void MainWindow::loadDefaultCatalogFiles()
 
     m_settings->endGroup();
 
-    loadCatalogFiles(catalogFilePaths);
+    if(catalogFilePaths.empty()){
+        return;
+    }
+
+    QString parseResult;
+    m_catalogManager->loadCatalogFiles(catalogFilePaths, parseResult);
+
+    if(m_loadWithResult) {
+        LoadCatalogResultDialog dlg(this);
+        dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
+        dlg.setText(parseResult);
+        dlg.exec();
+    }else{
+        QMessageBox::information(this, tr("Info"), "Catalog files were newly loaded");
+    }
 
 }
 
@@ -215,8 +154,17 @@ void MainWindow::loadNewAGF()
         return;
     }else{
         ui->mdiArea->closeAllSubWindows();
-        loadCatalogFiles(filePaths);
-        //QMessageBox::information(this, tr("Info"), tr("AGF files have been newly loaded"));
+
+        QString parseResult;
+        GlassCatalogManager::loadCatalogFiles(filePaths, parseResult);
+        if(m_loadWithResult) {
+            LoadCatalogResultDialog dlg(this);
+            dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
+            dlg.setText(parseResult);
+            dlg.exec();
+        }else{
+            QMessageBox::information(this, tr("Info"), "Catalog files were newly loaded");
+        }
     }
 
 }
@@ -233,8 +181,16 @@ void MainWindow::loadNewXML()
         return;
     } else {
         ui->mdiArea->closeAllSubWindows();
-        loadCatalogFiles(filePaths);
-        //QMessageBox::information(this, tr("Info"), tr("XML files have been newly loaded"));
+        QString parseResult;
+        GlassCatalogManager::loadCatalogFiles(filePaths, parseResult);
+        if(m_loadWithResult) {
+            LoadCatalogResultDialog dlg(this);
+            dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
+            dlg.setText(parseResult);
+            dlg.exec();
+        }else{
+            QMessageBox::information(this, tr("Info"), "Catalog files were newly loaded");
+        }
     }
 }
 
@@ -263,12 +219,12 @@ void MainWindow::showPreferenceDlg()
 
 void MainWindow::showGlassMap(QString xdataname, QString ydataname, QCPRange xrange, QCPRange yrange, bool xreversed)
 {
-    if(m_catalogList.empty()){
+    if(m_catalogManager->isEmpty()){
         QMessageBox::warning(this,tr("Error"), tr("No catalog has been loaded."));
         return;
     }
 
-    GlassMapForm *subwindow = new GlassMapForm(&m_catalogList, xdataname, ydataname, xrange, yrange, xreversed, ui->mdiArea);
+    GlassMapForm *subwindow = new GlassMapForm(xdataname, ydataname, xrange, yrange, xreversed, ui->mdiArea);
     ui->mdiArea->addSubWindow(subwindow);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->parentWidget()->setGeometry(0,10,this->width()*3/4,this->height()*3/4);
@@ -304,12 +260,12 @@ void MainWindow::showGlassMapBuchdahl()
 
 template<class F> void MainWindow::showAnalysisForm()
 {
-    if(m_catalogList.empty()){
+    if(GlassCatalogManager::isEmpty()){
         QMessageBox::warning(this,tr("File"), tr("No catalog has been loaded"));
         return;
     }
 
-    F *subwindow = new F(&m_catalogList, ui->mdiArea);
+    F *subwindow = new F(ui->mdiArea);
     ui->mdiArea->addSubWindow(subwindow);
     subwindow->setAttribute(Qt::WA_DeleteOnClose);
     subwindow->parentWidget()->setGeometry(0,10,this->width()*3/4,this->height()*3/4);

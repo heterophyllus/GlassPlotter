@@ -126,7 +126,7 @@ bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
                 glasses_.last()->setStatus(lineparts[7].toUInt());
             }
 
-            if(glasses_.last()->formulaIndex() == 13){
+            if(glasses_.last()->formulaName() == "Unknown"){
                 parse_result += filename + "(" + QString::number(linecount) + "): " + glasses_.last()->productName() + ": " + "Unknown dispersion formula\n";
             }
         }
@@ -159,11 +159,13 @@ bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
         {
             lineparts = linetext.simplified().split(" ");
             if(lineparts.size() == 8){
+                glasses_.last()->setHasThermalData(true);
                 for(int i = 1;i<8;i++){
                     glasses_.last()->setThermalData(i-1, lineparts[i].toDouble());
                 }
             }else{
-                parse_result += filename + "(" + QString::number(linecount) + "): " + glasses_.last()->productName() + ": " + "Invalid line(TD)\n";
+                glasses_.last()->setHasThermalData(false);
+                parse_result += filename + "(" + QString::number(linecount) + "): " + glasses_.last()->productName() + ": " + "Thermal Data Not Found\n";
             }
         }
 
@@ -210,7 +212,7 @@ bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
                 }
             }
             else{
-                parse_result += filename + "(" + QString::number(linecount) + "): " + glasses_.last()->productName() + ": " + "Invalid line(OD)\n";
+                parse_result += filename + "(" + QString::number(linecount) + "): " + glasses_.last()->productName() + ": " + "Other Data Not Found\n";
             }
 
         }
@@ -231,12 +233,14 @@ bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
                 glasses_.last()->appendTransmittanceData(lineparts[1].toDouble(), lineparts[2].toDouble(), lineparts[3].toDouble());
             }
             else{
-                parse_result += filename + "(" + QString::number(linecount) + "): " + glasses_.last()->productName() + ": " + "Invalid line(IT)\n";
+                parse_result += filename + "(" + QString::number(linecount) + "): " + glasses_.last()->productName() + ": " + "Transmittance Data Not Found\n";
             }
         }
     }
 
     file.close();
+
+    Glass::setIndexMode(IndexMode::AGF);
 
     return true;
 }
@@ -378,6 +382,7 @@ bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
         // DnDt data
         if(glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants"))
         {
+            g->setHasThermalData(true);
             g->setThermalData( 0, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D0").text().as_double() );
             g->setThermalData( 1, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D1").text().as_double() );
             g->setThermalData( 2, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("DnDt_D2").text().as_double() );
@@ -387,6 +392,7 @@ bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
             g->setThermalData( 6, glass_it->child("DnDtData").child("DnDtForCategory").child("DnDtConstants").child("Temperature").text().as_double() );
         }
         else{
+            g->setHasThermalData(false);
             parse_result += filename + ": " + g->productName() + ": " + "Not found DnDtConstants\n";
         }
 
@@ -397,6 +403,8 @@ bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
         name_to_int_map_.insert(g->productName(), glassNumber);
         glassNumber += 1;
     }
+
+    Glass::setIndexMode(IndexMode::XML);
 
     g = nullptr;
 

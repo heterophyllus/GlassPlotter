@@ -26,24 +26,24 @@
 #include "ui_glass_selection_dialog.h"
 
 #include <QSortFilterProxyModel>
+#include "glass_catalog_manager.h"
 
-GlassSelectionDialog::GlassSelectionDialog(const QList<GlassCatalog*> *catalogListPtr, QWidget *parent) :
+GlassSelectionDialog::GlassSelectionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GlassSelectionDialog)
 {
-    if(catalogListPtr->empty()) return;
-
     ui->setupUi(this);
 
     this->setWindowTitle("Select Glass");
 
-    m_catalogListPtr = catalogListPtr;
     m_comboBoxSupplyer = ui->comboBox_Supplyer;
     m_lineEditFilter   = ui->lineEdit_Filter;
     m_listWidgetGlass  = ui->listWidget_Glass;
 
-    for(int i = 0; i < m_catalogListPtr->size(); i++){
-        m_comboBoxSupplyer->addItem(m_catalogListPtr->at(i)->supplyer());
+    m_lineEditFilter->setPlaceholderText("Filter");
+
+    for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++){
+        m_comboBoxSupplyer->addItem(GlassCatalogManager::catalogList().at(i)->supplyer());
     }
 
     QObject::connect(m_comboBoxSupplyer,SIGNAL(currentIndexChanged(int)), this, SLOT(onComboChanged()));
@@ -56,7 +56,6 @@ GlassSelectionDialog::GlassSelectionDialog(const QList<GlassCatalog*> *catalogLi
 
 GlassSelectionDialog::~GlassSelectionDialog()
 {
-    //m_catalogList.clear();
     delete ui;
 }
 
@@ -71,7 +70,7 @@ void GlassSelectionDialog::createGlassNameList()
 {
     m_glassNameList.clear();
     int catalogIndex = m_comboBoxSupplyer->currentIndex();
-    GlassCatalog* catalog = m_catalogListPtr->at(catalogIndex);
+    GlassCatalog* catalog = GlassCatalogManager::catalogList().at(catalogIndex);
     for(int i = 0; i < catalog->glassCount(); i++)
     {
         m_glassNameList.append(catalog->glass(i)->productName());
@@ -94,18 +93,10 @@ void GlassSelectionDialog::updateGlassList()
 }
 
 
-
-int GlassSelectionDialog::getCatalogIndex()
+Glass* GlassSelectionDialog::getSelectedGlass()
 {
-    return m_comboBoxSupplyer->currentIndex();
-}
+    int catalogIndex = ui->comboBox_Supplyer->currentIndex();
+    QString productName = ui->listWidget_Glass->currentItem()->text();
 
-QString GlassSelectionDialog::getSupplyerName()
-{
-    return m_comboBoxSupplyer->currentText();
-}
-
-QString GlassSelectionDialog::getGlassName()
-{
-    return m_listWidgetGlass->currentItem()->text();
+    return GlassCatalogManager::catalogList()[catalogIndex]->glass(productName);
 }

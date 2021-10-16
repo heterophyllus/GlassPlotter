@@ -28,12 +28,12 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#include "glass_catalog_manager.h"
 
-GlassSearchForm::GlassSearchForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent) :
+GlassSearchForm::GlassSearchForm(QMdiArea *parent) :
     QWidget(parent),
     ui(new Ui::GlassSearchForm),
-    m_parentMdiArea(parent),
-    m_catalogListPtr(catalogListPtr)
+    m_parentMdiArea(parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("Glass Search");
@@ -58,7 +58,6 @@ GlassSearchForm::GlassSearchForm(const QList<GlassCatalog*> *catalogListPtr, QMd
 
 GlassSearchForm::~GlassSearchForm()
 {
-    m_catalogListPtr = nullptr;
     delete ui;
 }
 
@@ -93,7 +92,7 @@ void GlassSearchForm::showSearchResult()
     QList<Glass*> results;
     QList<Glass*> allGlasses;
 
-    for(auto &cat : *m_catalogListPtr) {
+    for(auto &cat : GlassCatalogManager::catalogList()) {
         int glassCount = cat->glassCount();
         for(int gi = 0; gi < glassCount; gi++) {
             allGlasses.append(cat->glass(gi));
@@ -178,7 +177,7 @@ void GlassSearchForm::setCellValue(QTableWidget* table, int row, int col, QStrin
 }
 
 
-double GlassSearchForm::getErrorValue(Glass* g)
+double GlassSearchForm::getErrorValue(const Glass* g)
 {
     double e = 0.0;
 

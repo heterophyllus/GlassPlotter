@@ -36,14 +36,14 @@ PreferenceDialog::PreferenceDialog(QSettings *settings, QWidget *parent) :
 
     this->setWindowTitle("Preference");
 
-    ui->lineEdit_Temperature->setValidator(new QDoubleValidator(-10000.0, 10000.0, 4, this));
+    ui->lineEdit_Temperature->setValidator(new QDoubleValidator(-30, 70, 4, this));
 
     m_settings = settings;
     syncUiWithSettings();
 
     QObject::connect(ui->pushButton_Browse, SIGNAL(clicked()), this, SLOT(browseCatalogFiles()));
     QObject::connect(ui->pushButton_Clear,  SIGNAL(clicked()), this, SLOT(clearCatalogFiles()));
-    QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(onAccept()));
+    QObject::connect(ui->buttonBox,         SIGNAL(accepted()), this, SLOT(onAccept()));
 }
 
 PreferenceDialog::~PreferenceDialog()

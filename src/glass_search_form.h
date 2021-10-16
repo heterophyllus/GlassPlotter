@@ -31,7 +31,7 @@
 #include <QTableWidget>
 #include <QComboBox>
 
-#include "glass_catalog.h"
+#include "glass.h"
 
 namespace Ui {
 class GlassSearchForm;
@@ -43,7 +43,7 @@ class GlassSearchForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit GlassSearchForm(const QList<GlassCatalog*> *catalogListPtr, QMdiArea *parent = nullptr);
+    explicit GlassSearchForm(QMdiArea *parent = nullptr);
     ~GlassSearchForm();
 
 private slots:
@@ -61,7 +61,7 @@ private slots:
 
 private:
     /** Compute error function value */
-    double getErrorValue(Glass* g);
+    double getErrorValue(const Glass* g);
     QComboBox* createParameterCombo();
     void setCellValue(QTableWidget* table, int row, int col, QString str);
 
@@ -71,8 +71,6 @@ private:
     QMdiArea*     m_parentMdiArea;
     QTableWidget* m_tableProperties;
     QTableWidget* m_tableResult;
-
-    const QList<GlassCatalog*> *m_catalogListPtr;
 };
 
 

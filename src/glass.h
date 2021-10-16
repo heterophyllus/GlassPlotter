@@ -31,6 +31,11 @@
 #include <QVector>
 #include <QtMath>
 
+enum IndexMode
+{
+    AGF,
+    XML
+};
 
 class Glass
 {
@@ -41,15 +46,12 @@ public:
     static double currentTemperature();
     static void setCurrentTemperature(double t);
 
+    static void setIndexMode(int m);
+
     // fundamental data
-    double          refractiveIndex_abs_Tref(double lambdamicron) const;
-    double          refractiveIndex_rel_Tref(double lambdamicron) const;
-    double          refractiveIndex_abs(double lambdamicron) const;
-    double          refractiveIndex_rel(double lambdamicron) const;
-    double          refractiveIndex_abs(QString spectralname) const;
-    double          refractiveIndex_rel(QString spectralname) const;
-    QVector<double> refractiveIndex_abs(const QVector<double>& vLambdamicron) const;
-    QVector<double> refractiveIndex_rel(const QVector<double>& vLambdamicron) const;
+    double          refractiveIndex(double lambdamicron) const;
+    double          refractiveIndex(QString spectral) const;
+    QVector<double> refractiveIndex(const QVector<double>& vLambdamicron) const;
 
     inline QString  fullName() const;
     inline QString  productName() const;
@@ -64,7 +66,6 @@ public:
 
     /** convenience function to get glass property */
     double getValue(QString dname) const;
-
 
     double BuchdahlDispCoef(int n) const;
 
@@ -84,7 +85,6 @@ public:
     void   setLowTCE(double val);
     void   setHighTCE(double val);
 
-
     // dispersion data
     inline int formulaIndex() const;
     inline QString formulaName() const;
@@ -96,6 +96,7 @@ public:
 
 
     // thermal data
+    inline bool hasThermalData() const;
     inline double D0()  const;
     inline double D1()  const;
     inline double D2()  const;
@@ -108,8 +109,8 @@ public:
     double          dn_dt_abs(double T, double lambdamicron) const;
     QVector<double> dn_dt_abs(const QVector<double>& vT, double lambdamicron) const;
 
+    void setHasThermalData(bool state);
     void setThermalData(int n, double val);
-
 
     // other data
     inline double relCost() const;
@@ -140,8 +141,19 @@ public:
 
 
 private:
+
+    double          refractiveIndex_abs_Tref(double lambdamicron) const;
+    double          refractiveIndex_rel_Tref(double lambdamicron) const;
+    double          refractiveIndex_abs(double lambdamicron) const;
+    double          refractiveIndex_rel(double lambdamicron) const;
+    QVector<double> refractiveIndex_rel_Tref(const QVector<double>& vLambdamicron) const;
+    QVector<double> refractiveIndex_rel(const QVector<double>& vLambdamicron) const;
+
     /** current temperature */
     static double T_;
+
+    /** index calculation mode, AGF or XML */
+    static int indexMode_;
 
     QString product_name_;
     QString supplyer_;
@@ -161,6 +173,7 @@ private:
     double (*formula_func_ptr_)(double, const QVector<double>&);
 
     // thermal data
+    bool            hasThermalData_;
     const int       thermal_data_size_ = 7;
     QVector<double> thermal_data_; //<D0> <D1> <D2> <E0> <E1> <Ltk> <temp>
     double          Tref_;
@@ -242,6 +255,11 @@ int Glass::dispersionCoefCount() const
 double Glass::dispersionCoef(int n) const
 {
     return dispersion_data_[n];
+}
+
+bool Glass::hasThermalData() const
+{
+    return hasThermalData_;
 }
 
 double Glass::D0() const

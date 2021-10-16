@@ -25,6 +25,8 @@
 #include "glass_datasheet_form.h"
 #include "ui_glass_datasheet_form.h"
 
+#include <QDebug>
+
 #include "spectral_line.h"
 
 
@@ -55,6 +57,20 @@ GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
 
 GlassDataSheetForm::~GlassDataSheetForm()
 {
+    try {
+        for(int i = 0; i < m_labelList.size(); i++){
+            delete m_labelList[i];
+        }
+
+        for(int i = 0; i < m_gridLayoutList.size(); i++) {
+            delete m_gridLayoutList[i];
+        }
+    }  catch (...) {
+        qDebug() << "delete error: ~GlassDataSheetForm";
+    }
+    m_labelList.clear();
+    m_gridLayoutList.clear();
+
     delete ui;
 }
 
@@ -65,7 +81,7 @@ void GlassDataSheetForm::addGridItem(QGridLayout* gridLayout, int row, int col, 
     QLabel* label = new QLabel(str, scrollAreaContents);
     gridLayout->addWidget(label, row, col, 1, 1);
 
-    label = nullptr;
+    m_labelList.append(label);
 }
 
 
@@ -74,6 +90,7 @@ void GlassDataSheetForm::setUpBasicTab()
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Basic;
     QGridLayout* grid = new QGridLayout(scrollAreaContents);
     grid->setObjectName(QString::fromUtf8("gridLayout_Basic"));
+    m_gridLayoutList.append(grid);
 
     // name
     addGridItem(grid, 0, 0, "Name");
@@ -98,12 +115,13 @@ void GlassDataSheetForm::setUpBasicTab()
 
 void GlassDataSheetForm::setUpIndicesTab()
 {
-    const int wvl_digit = 3;
-    const int val_digit = 6;
+    constexpr int wvl_digit = 3;
+    constexpr int val_digit = 6;
 
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents;
     QGridLayout* grid = new QGridLayout(scrollAreaContents);
     grid->setObjectName(QString::fromUtf8("gridLayout_Indices"));
+    m_gridLayoutList.append(grid);
 
     // table header
     addGridItem(grid, 0, 0, "Spectral");
@@ -127,17 +145,18 @@ void GlassDataSheetForm::setUpIndicesTab()
         addGridItem(grid, row, 1, QString::number(SpectralLine::wavelength(spectralLineName), 'f', wvl_digit));
 
         // refractive index
-        addGridItem(grid, row, 2, numToQString(m_glass->refractiveIndex_rel(spectralLineName), 'f', val_digit));
+        addGridItem(grid, row, 2, numToQString(m_glass->refractiveIndex(spectralLineName), 'f', val_digit));
     }
 }
 
 void GlassDataSheetForm::setUpPartialTab()
 {   
-    const int digit = 6;
+    constexpr int digit = 6;
 
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Partial;
     QGridLayout* grid = new QGridLayout(scrollAreaContents);
     grid->setObjectName(QString::fromUtf8("gridLayout_Partial"));
+    m_gridLayoutList.append(grid);
 
     QStringList firsts, seconds;
 
@@ -171,11 +190,12 @@ void GlassDataSheetForm::setUpPartialTab()
 
 void GlassDataSheetForm::setUpDispersionTab()
 {   
-    const int digit = 6;
+    constexpr int digit = 6;
 
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Dispersion;
     QGridLayout* grid = new QGridLayout(scrollAreaContents);
     grid->setObjectName(QString::fromUtf8("gridLayout_Dispersion"));
+    m_gridLayoutList.append(grid);
 
     int row;
 
@@ -196,11 +216,12 @@ void GlassDataSheetForm::setUpDispersionTab()
 
 void GlassDataSheetForm::setUpThermalTab()
 {   
-    const int digit = 6;
+    constexpr int digit = 6;
 
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_dndT;
     QGridLayout* grid = new QGridLayout(scrollAreaContents);
     grid->setObjectName(QString::fromUtf8("gridLayout_dndT"));
+    m_gridLayoutList.append(grid);
 
     QStringList   coefNames  = QStringList(   {"D0", "D1", "D2", "E0", "E1", "Ltk", "T0"} );
     QList<double> coefValues = QList<double>( {m_glass->D0(), m_glass->D1(), m_glass->D2(), m_glass->E0(), m_glass->E1(), m_glass->Ltk(), m_glass->Tref()} );
@@ -214,13 +235,14 @@ void GlassDataSheetForm::setUpThermalTab()
 
 void GlassDataSheetForm::setUpTransmittanceTab()
 {
-    const int wvl_digit = 3;
-    const int thi_digit = 3;
-    const int tra_digit = 3;
+    constexpr int wvl_digit = 3;
+    constexpr int thi_digit = 3;
+    constexpr int tra_digit = 3;
 
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_Transmittance;
     QGridLayout* grid = new QGridLayout(scrollAreaContents);
     grid->setObjectName(QString::fromUtf8("gridLayout_Transmittance"));
+    m_gridLayoutList.append(grid);
 
     int row;
 
@@ -260,11 +282,12 @@ void GlassDataSheetForm::setUpTransmittanceTab()
 
 void GlassDataSheetForm::setUpOtherDataTab()
 {
-    const int digit = 2;
+    constexpr int digit = 2;
 
     QWidget* scrollAreaContents = ui->scrollAreaWidgetContents_OtherData;
     QGridLayout* grid = new QGridLayout(scrollAreaContents);
     grid->setObjectName(QString::fromUtf8("gridLayout_otherdata"));
+    m_gridLayoutList.append(grid);
 
     addGridItem(grid, 0, 0, "Relative Cost");
     addGridItem(grid, 0, 1, numToQString(m_glass->relCost(), 'f', digit));

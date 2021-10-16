@@ -1,7 +1,6 @@
 #include "catalog_view_setting_dialog.h"
 #include "ui_catalog_view_setting_dialog.h"
 
-#include <QListWidget>
 
 CatalogViewSettingDialog::CatalogViewSettingDialog(QStringList allPropertyList, QStringList currentCheckedList, int currentDigit, QWidget *parent) :
     QDialog(parent),
