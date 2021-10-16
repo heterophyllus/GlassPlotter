@@ -291,6 +291,7 @@ void CatalogViewForm::showDatasheet()
 
     // show glass datasheet form
     GlassDataSheetForm* subwindow = new GlassDataSheetForm(GlassCatalogManager::find(fullname), m_parentMdiArea);
+    subwindow->setAttribute(Qt::WA_DeleteOnClose);
     m_parentMdiArea->addSubWindow(subwindow);
     subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
     subwindow->show();

@@ -130,6 +130,11 @@ GlassMapForm::~GlassMapForm()
     }
     m_glassMapCtrlList.clear();
 
+    for(auto &grid: m_gridLayoutList){
+        delete grid;
+    }
+    m_gridLayoutList.clear();
+
     m_lineEditList.clear();
 
     delete ui;
@@ -173,11 +178,26 @@ void GlassMapForm::setUpScrollArea()
     QCheckBox *checkBox1, *checkBox2;
     QLabel *label;
 
+    if( !m_glassMapCtrlList.empty()){
+        for(auto &ctrl: m_glassMapCtrlList){
+            delete ctrl.labelSupplyer;
+            delete ctrl.checkBoxLabel;
+            delete ctrl.checkBoxPlot;
+        }
+    }
     m_glassMapCtrlList.clear();
+
+    if(!m_gridLayoutList.empty()){
+        for(auto &grid:m_gridLayoutList){
+            delete grid;
+        }
+    }
+
 
     //Dynamically create checkboxes
     gridLayout = new QGridLayout(ui->scrollAreaWidgetContents);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout_PlotControl"));
+    m_gridLayoutList.append(gridLayout);
 
     for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++)
     {
@@ -239,7 +259,7 @@ void GlassMapForm::showNeighbors(QCPAbstractItem* item)
                 double dx = (targetGlass->getValue(m_xDataName) - g->getValue(m_xDataName));
                 double dy = (targetGlass->getValue(m_yDataName) - g->getValue(m_yDataName));
 
-                if(abs(dx) < xThreshold && abs(dy) < yThreshold){
+                if(fabs(dx) < xThreshold && fabs(dy) < yThreshold){
                     m_listWidgetNeighbors->addItem(g->fullName());
                 }
             }
@@ -266,6 +286,7 @@ void GlassMapForm::showGlassDataSheet()
 
         if(g){
             GlassDataSheetForm* subwindow = new GlassDataSheetForm(GlassCatalogManager::find(fullName), m_parentMdiArea);
+            subwindow->setAttribute(Qt::WA_DeleteOnClose);
             m_parentMdiArea->addSubWindow(subwindow);
             subwindow->parentWidget()->setGeometry(0,10, this->width()*1/2,this->height()*3/4);
             subwindow->show();

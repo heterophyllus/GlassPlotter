@@ -82,6 +82,7 @@ private:
 
     QList<GlassMapCtrl>  m_glassMapCtrlList;
     QList<QLineEdit*>    m_lineEditList;
+    QList<QGridLayout*>  m_gridLayoutList;
 
     QSettings* m_settings;
     QString    m_settingFile;

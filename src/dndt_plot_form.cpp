@@ -161,7 +161,7 @@ void DnDtPlotForm::deleteGraph()
         QString graphName = selectedGraph->name();
         int wvlCount = m_wvlList.size();
         for(int i = 0;i < wvlCount; i++){
-            if(abs(m_wvlList[i] - graphName.toDouble()) < 0.1 ){
+            if(fabs(m_wvlList[i] - graphName.toDouble()) < 0.1 ){
                 m_wvlList.removeAt(i);
                 break;
             }
