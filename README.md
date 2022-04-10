@@ -1,9 +1,9 @@
-# GlassPlotter - Desktop Glassmap Viewer
+# GlassPlotter
 
 ![MDI](data/screenshot/Screenshot_MDI.png)
 
 ## Overview
-GlassPlotter is a desktop application for utilizing commercial optical glass catalogs.  It features to provide a great variety of glass maps, characteristics plots and other analyses with good-looking graphics.  Most of optical glass suppliers are supported. 
+GlassPlotter is a desktop application for utilizing commercial optical glass catalogs.  It features to provide a great variety of glass maps, characteristics plots and other analyses with good-looking graphics.  Most of the optical glass suppliers are supported. 
 
 
 ## Getting Started 
