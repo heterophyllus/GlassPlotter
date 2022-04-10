@@ -3,13 +3,7 @@
 ![MDI](data/screenshot/Screenshot_MDI.png)
 
 ## Overview
-GlassPlotter is easy-to-use glass map viewer. It hopes to be useful for diverse optical engineers. 
-
-
-## Features
-- Support great variety of glassmaps and plots
-- Support large number of optical glasses from multiple manufacturers
-- Standalone application
+GlassPlotter is a desktop application for utilizing commercial optical glass catalogs.  It features to provide a great variety of glass maps, characteristics plots and other analyses with good-looking graphics.  Most of optical glass suppliers are supported. 
 
 
 ## Getting Started 
@@ -18,7 +12,7 @@ The prebuilt binaries can be downloaded from [Release page](https://github.com/h
 See also [Wiki](https://github.com/heterophyllus/glassplotter/wiki) for further information.
 
 ## Glass Catalogs
-This application obtains glass property data from AGF/XML files distributed elsewhere, most of which are freely available.
+This application reads AGF/XML files distributed elsewhere, most of which are freely available.
 
 Note that the catalog files in this repository are not always up to date.
 
@@ -29,11 +23,11 @@ Note that the catalog files in this repository are not always up to date.
    Available on [Synopsys support page](https://www.synopsys.com/optical-solutions/support/support-glass-catalog.html).
 
 ## Notes
-This application computes refractive index relative to air(relative refractive index). This is because the values in the catalog are relative index values. And the refractive index of optical glasses changes with temperature, the extend of which depending on the glass type and on the wavelength. Read [Schott Technical Information (TIE-19)](https://www.schott.com/products/optical-glass/downloads) for calculation details.
+This application computes refractive index relative to air(relative refractive index). This is because the values in the catalog are relative index values. And the refractive index of optical glasses changes with temperature, and the extend depends on the glass type and on the wavelength. Read [Schott Technical Information (TIE-19)](https://www.schott.com/products/optical-glass/downloads) for calculation details.
 
 
 When you find a slight difference between official data and that of this application,
-check the environment temperature setting (File->Preference). With the temperature value set to the same as that of the glass manufacturer, the calculated refractive index should be the same value.
+check the environment temperature setting (File->Preference). With the temperature value set to the same as that of the glass supplier, the calculated refractive index should be the same value.
 
 
 ## Dependency

@@ -3,6 +3,8 @@
 #############################################################################
 
 SOURCES += \
+    src/qcustomtablewidget.cpp \
+    src/global_settings_io.cpp \
     src/air.cpp \
     src/preference_dialog.cpp \
     src/catalog_view_form.cpp \
@@ -30,6 +32,8 @@ SOURCES += \
 
 
 HEADERS += \
+    src/qcustomtablewidget.h \
+    src/global_settings_io.h \
     src/air.h \
     src/preference_dialog.h \
     src/catalog_view_form.h \
