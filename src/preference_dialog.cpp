@@ -26,29 +26,29 @@
 #include "ui_preference_dialog.h"
 
 #include <QFileDialog>
+#include <QDebug>
 #include "glass.h"
 
-PreferenceDialog::PreferenceDialog(QSettings *settings, QWidget *parent) :
+PreferenceDialog::PreferenceDialog(GlobalSettingsIO *settings, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PreferenceDialog)
 {
     ui->setupUi(this);
-
     this->setWindowTitle("Preference");
 
     ui->lineEdit_Temperature->setValidator(new QDoubleValidator(-30, 70, 4, this));
 
-    m_settings = settings;
-    syncUiWithSettings();
-
     QObject::connect(ui->pushButton_Browse, SIGNAL(clicked()), this, SLOT(browseCatalogFiles()));
     QObject::connect(ui->pushButton_Clear,  SIGNAL(clicked()), this, SLOT(clearCatalogFiles()));
     QObject::connect(ui->buttonBox,         SIGNAL(accepted()), this, SLOT(onAccept()));
+
+    m_globalSettings = settings;
+    syncUiWithSettings();
 }
 
 PreferenceDialog::~PreferenceDialog()
 {
-    m_settings = nullptr;
+    m_globalSettings = nullptr;
     delete ui;
 }
 
@@ -84,57 +84,48 @@ void PreferenceDialog::clearCatalogFiles()
 
 void PreferenceDialog::syncUiWithSettings()
 {
-    m_settings->beginGroup("Preference");
-
     // catalog file paths
-    int catalogFilecount = m_settings->value("NumFiles", 0).toInt();
+    int catalogFilecount = m_globalSettings->numberOfFiles();
+    QStringList filePaths = m_globalSettings->defaultFilePaths();
     if(catalogFilecount > 0) {
         for(int i = 0; i < catalogFilecount; i++) {
-            QString catalogFilePath  = m_settings->value("File" + QString::number(i), "").toString();
-            ui->listWidget_DefaultFiles->addItem(catalogFilePath);
+            ui->listWidget_DefaultFiles->addItem(filePaths[i]);
         }
     }
 
     // on/off result dialog
-    bool loadWithResult = m_settings->value("ShowResult", false).toBool();
+    bool loadWithResult = m_globalSettings->doShowResult();
     ui->checkBox_ParseResult->setChecked(loadWithResult);
 
     // environment
-    double temperature = m_settings->value("Temperature", 25).toDouble();
+    double temperature = m_globalSettings->temperature();
     ui->lineEdit_Temperature->setText(QString::number(temperature));
-
-    m_settings->endGroup();
-
-
 }
 
 void PreferenceDialog::onAccept()
 {
-    m_settings->beginGroup("Preference");
-
     // catalog file paths
     int catalogFileCount = ui->listWidget_DefaultFiles->count();
-    m_settings->setValue("NumFiles", catalogFileCount);
+    m_globalSettings->setNumFiles(catalogFileCount);
+
+    QStringList defaultFilePaths;
     if( catalogFileCount > 0) {
         for(int i = 0; i < catalogFileCount; i++) {
-            QString filePath = ui->listWidget_DefaultFiles->item(i)->text();
-            m_settings->setValue("File" + QString::number(i), filePath);
+            defaultFilePaths.append( ui->listWidget_DefaultFiles->item(i)->text() );
         }
     }
+    m_globalSettings->setDefaultFilePaths(defaultFilePaths);
 
     // on/off result dialog
-    bool withResult = ui->checkBox_ParseResult->checkState();
-    m_settings->setValue("ShowResult", withResult);
+    m_globalSettings->setDoShowResult(ui->checkBox_ParseResult->checkState());
 
     //environment
     double temperature = ui->lineEdit_Temperature->text().toDouble();
-    m_settings->setValue("Temperature", temperature);
-
-    m_settings->endGroup();
-    m_settings->sync();
-
+    m_globalSettings->setTemperature(temperature);
 
     Glass::setCurrentTemperature(temperature);
+
+    m_globalSettings->saveIniFile();
 
     accept();
 }

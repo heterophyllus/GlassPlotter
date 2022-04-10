@@ -34,7 +34,7 @@ GlassCatalog::GlassCatalog()
 {
     glasses_.clear();
     name_to_int_map_.clear();
-    supplyer_ = "";
+    supplier_ = "";
 }
 
 
@@ -56,7 +56,7 @@ void GlassCatalog::clear()
         }
         glasses_.clear();
     }
-    supplyer_ = "";
+    supplier_ = "";
     name_to_int_map_.clear();
 }
 
@@ -68,7 +68,7 @@ Glass* GlassCatalog::glass(int n) const
     return nullptr;
 }
 
-Glass* GlassCatalog::glass(QString glassname) const
+Glass* GlassCatalog::glass(const QString& glassname) const
 {
     if(name_to_int_map_.contains(glassname)){
         return glasses_[name_to_int_map_[glassname]];
@@ -76,13 +76,13 @@ Glass* GlassCatalog::glass(QString glassname) const
     return nullptr;
 }
 
-bool GlassCatalog::hasGlass(QString glassname) const
+bool GlassCatalog::hasGlass(const QString& glassname) const
 {
     return name_to_int_map_.contains(glassname);
 }
 
 
-bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
+bool GlassCatalog::loadAGF(const QString& AGFpath, QString& parse_result)
 {
     QFile file(AGFpath);
     if (! file.open(QIODevice::ReadOnly)) {
@@ -99,7 +99,7 @@ bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
     QString linetext;
     QStringList lineparts;
 
-    supplyer_ = QFileInfo(AGFpath).baseName();
+    supplier_ = QFileInfo(AGFpath).baseName();
 
     Glass *g;
     int glassNumber = 0;
@@ -115,7 +115,7 @@ bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
             g = new Glass;
             glasses_.append(g);
             glasses_.last()->setName(lineparts[1]);
-            glasses_.last()->setSupplyer(supplyer_);
+            glasses_.last()->setSupplier(supplier_);
             glasses_.last()->setDispForm(lineparts[2].toInt());
             glasses_.last()->setMIL(lineparts[3]);
 
@@ -240,7 +240,7 @@ bool GlassCatalog::loadAGF(QString AGFpath, QString& parse_result)
 
     file.close();
 
-    Glass::setIndexMode(IndexMode::AGF);
+    Glass::setIndexMode(Glass::IndexMode::AGF);
 
     return true;
 }
@@ -258,7 +258,7 @@ bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
 
     this->clear();
 
-    supplyer_ = doc.first_child().first_child().child_value();
+    supplier_ = doc.first_child().first_child().child_value();
 
     pugi::xml_node nodeglasses_ = doc.child("Catalog").child("Glasses");
 
@@ -269,7 +269,7 @@ bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
     for (pugi::xml_node_iterator glass_it = nodeglasses_.begin(); glass_it != nodeglasses_.end(); glass_it++ )
     {
         g = new Glass;
-        g->setSupplyer(supplyer_);
+        g->setSupplier(supplier_);
         g->setName(glass_it->child("GlassName").child_value());
         g->setMIL(glass_it->child("NumericName").child_value());
 
@@ -404,7 +404,7 @@ bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
         glassNumber += 1;
     }
 
-    Glass::setIndexMode(IndexMode::XML);
+    Glass::setIndexMode(Glass::IndexMode::XML);
 
     g = nullptr;
 

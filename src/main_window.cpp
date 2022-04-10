@@ -77,16 +77,8 @@ MainWindow::MainWindow(QWidget *parent)
     setUnifiedTitleAndToolBarOnMac(true);
 
     // preference
-    QDir qdir(QApplication::applicationDirPath());
-    if(!qdir.exists("INI")) qdir.mkdir("INI");
-    const QString settingFile = QApplication::applicationDirPath() + "/INI/" + "preference.ini";
-
-    m_settings = new QSettings(settingFile, QSettings::IniFormat);
-    m_settings->setIniCodec(QTextCodec::codecForName("UTF-8"));
-
-    //Set temperature
-    double temperature = m_settings->value("Temperature", 25).toDouble();
-    Glass::setCurrentTemperature(temperature);
+    m_globalSettings = new GlobalSettingsIO;
+    m_globalSettings->loadIniFile();
 
     m_catalogManager = new GlassCatalogManager();
 
@@ -96,11 +88,11 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     try {
-        delete m_settings;
+        delete m_globalSettings;
     }  catch (...) {
         qDebug() << "memory release error: m_setting in ~MainWindow";
     }
-    m_settings = nullptr;
+    m_globalSettings = nullptr;
 
     delete m_catalogManager;
     delete ui;
@@ -109,21 +101,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadDefaultCatalogFiles()
 {
-    m_settings->beginGroup("Preference");
-
-    int catalogCount = m_settings->value("NumFiles", 0).toInt();
-    QStringList catalogFilePaths;
-    if(catalogCount > 0) {
-        for(int i = 0; i < catalogCount; i++) {
-            QString filePath = m_settings->value("File" + QString::number(i), "").toString();
-            catalogFilePaths.append(filePath);
-        }
-    }
-
-    m_loadWithResult = m_settings->value("ShowResult", false).toBool();
-
-    m_settings->endGroup();
-
+    QStringList catalogFilePaths = m_globalSettings->defaultFilePaths();
     if(catalogFilePaths.empty()){
         return;
     }
@@ -131,7 +109,11 @@ void MainWindow::loadDefaultCatalogFiles()
     QString parseResult;
     m_catalogManager->loadCatalogFiles(catalogFilePaths, parseResult);
 
-    if(m_loadWithResult) {
+    //set temperature
+    double temperature = m_globalSettings->temperature();
+    Glass::setCurrentTemperature(temperature);
+
+    if(m_globalSettings->doShowResult()) {
         LoadCatalogResultDialog dlg(this);
         dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
         dlg.setText(parseResult);
@@ -157,7 +139,7 @@ void MainWindow::loadNewAGF()
 
         QString parseResult;
         GlassCatalogManager::loadCatalogFiles(filePaths, parseResult);
-        if(m_loadWithResult) {
+        if(m_globalSettings->doShowResult()) {
             LoadCatalogResultDialog dlg(this);
             dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
             dlg.setText(parseResult);
@@ -183,7 +165,7 @@ void MainWindow::loadNewXML()
         ui->mdiArea->closeAllSubWindows();
         QString parseResult;
         GlassCatalogManager::loadCatalogFiles(filePaths, parseResult);
-        if(m_loadWithResult) {
+        if(m_globalSettings->doShowResult()) {
             LoadCatalogResultDialog dlg(this);
             dlg.setLabel("Loading catalog files has been finished.\nBelows are notable parse results.");
             dlg.setText(parseResult);
@@ -199,7 +181,7 @@ void MainWindow::showPreferenceDlg()
 {
     closeAll();
 
-    PreferenceDialog* dlg = new PreferenceDialog(m_settings, this);
+    PreferenceDialog* dlg = new PreferenceDialog(m_globalSettings, this);
     if(dlg->exec() == QDialog::Accepted){
         int ans = QMessageBox::question(this, tr("Question"), tr("Setting has been updated. Will you load newly set catalog files?"));
         if(ans == QMessageBox::Yes){

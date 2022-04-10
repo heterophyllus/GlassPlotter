@@ -30,7 +30,6 @@
 #include <QVector>
 #include <QList>
 #include <QListWidget>
-
 #include "glass.h"
 #include "property_plot_form.h"
 

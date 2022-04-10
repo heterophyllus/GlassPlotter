@@ -22,38 +22,25 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
+#ifndef QCUSTOMTABLEWIDGET_H
+#define QCUSTOMTABLEWIDGET_H
 
-#ifndef QCPSCATTERCHART_H
-#define QCPSCATTERCHART_H
+#include <QTableWidget>
+#include <QString>
 
-#include "qcustomplot.h"
-
-/** Class for scatter chart using QCustomPlot */
-class QCPScatterChart
+class QCustomTableWidget : public QTableWidget
 {
+    Q_OBJECT
 
 public:
-    QCPScatterChart(QCustomPlot *customPlot);
-    ~QCPScatterChart();
-    QCPScatterChart(QCPScatterChart &other);
+    QCustomTableWidget(QWidget* parent = nullptr);
 
-    QCustomPlot*        parentPlot() const;
-    QCPCurve*           graphPoints() const;
-    QList<QCPItemText*> textLabels() const;
-    QString             name() const;
+    bool exportCSV(const QString& filepath);
 
-    void setData(const QVector<double>& x, const QVector<double>& y, const QVector<QString>& label_texts);
-    void setName(QString name);
-    void setColor(QColor color);
-    void setVisiblePointSeries(bool state);
-    void setVisibleTextLabels(bool state);
-    void setAxis(QCPRange xrange, QCPRange yrange);
-    int  dataCount() const;
-
-private:
-    QCustomPlot*        m_customPlot;
-    QCPCurve*           m_graphPoints; //points
-    QList<QCPItemText*> m_textlabels; // text label for each point
+private slots:
+    void copyCell();
+    void pasteCell();
 };
 
-#endif // QCPSCATTERCHART_H
+#endif
+

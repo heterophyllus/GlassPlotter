@@ -124,7 +124,7 @@ GlassMapForm::~GlassMapForm()
     m_customPlot = nullptr;
 
     for(int i = 0; i < m_glassMapCtrlList.size(); i++){
-        delete m_glassMapCtrlList[i].labelSupplyer;
+        delete m_glassMapCtrlList[i].labelSupplier;
         delete m_glassMapCtrlList[i].checkBoxPlot;
         delete m_glassMapCtrlList[i].checkBoxLabel;
     }
@@ -142,7 +142,7 @@ GlassMapForm::~GlassMapForm()
 
 GlassMapForm::GlassMapCtrl::GlassMapCtrl(QLabel* l, QCheckBox* checkPlot, QCheckBox* checkLabel)
 {
-    labelSupplyer = l;
+    labelSupplier = l;
     checkBoxPlot  = checkPlot;
     checkBoxLabel = checkLabel;
 }
@@ -180,7 +180,7 @@ void GlassMapForm::setUpScrollArea()
 
     if( !m_glassMapCtrlList.empty()){
         for(auto &ctrl: m_glassMapCtrlList){
-            delete ctrl.labelSupplyer;
+            delete ctrl.labelSupplier;
             delete ctrl.checkBoxLabel;
             delete ctrl.checkBoxPlot;
         }
@@ -201,10 +201,10 @@ void GlassMapForm::setUpScrollArea()
 
     for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++)
     {
-        // supplyer name
+        // supplier name
         label = new QLabel(ui->scrollAreaWidgetContents);
         label->setObjectName("label_" + QString::number(i));
-        label->setText(GlassCatalogManager::catalogList().at(i)->supplyer());
+        label->setText(GlassCatalogManager::catalogList().at(i)->supplier());
         gridLayout->addWidget(label, i, 0, 1, 1);
 
         // plot on/off
@@ -385,10 +385,11 @@ void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catal
     int glassCount = catalog->glassCount();
 
     QVector<double> x, y;
-    QVector<QString> s;
+    QVector<QString> labels, obj_names;
     x.reserve(glassCount);
     y.reserve(glassCount);
-    s.reserve(glassCount);
+    labels.reserve(glassCount);
+    obj_names.reserve(glassCount);
 
     Glass* g;
 
@@ -400,12 +401,12 @@ void GlassMapForm::setGlassmapData(QCPScatterChart* glassmap,GlassCatalog* catal
         }else{
             x.append(g->getValue(xlabel));
             y.append(g->getValue(ylabel));
-            s.append(g->fullName());
+            labels.append(g->fullName());
         }
     }
 
-    glassmap->setData(x,y,s);
-    glassmap->setName(catalog->supplyer());
+    glassmap->setData(x, y, labels);
+    glassmap->setName(catalog->supplier());
     glassmap->setColor(color);
 }
 

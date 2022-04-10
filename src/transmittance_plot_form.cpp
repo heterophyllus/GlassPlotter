@@ -46,21 +46,17 @@ TransmittancePlotForm::TransmittancePlotForm(QWidget *parent) :
 
     m_maxGraphCount = 5;
 
+    // table
+    m_plotDataTable = ui->tableWidget;
 
     // legend
     m_chkLegend = ui->checkBox_Legend;
 
-    QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()),     this, SLOT(addGraph()));
-    QObject::connect(ui->pushButton_DeleteGraph,SIGNAL(clicked()),     this, SLOT(deleteGraph()));
-    QObject::connect(ui->pushButton_SetAxis,    SIGNAL(clicked()),     this, SLOT(setAxis()));
-    QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()),     this, SLOT(clearAll()));
-    QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
+    // buttons ,legend checkbox
+    m_chkLegend = ui->checkBox_Legend;
+    QList<QPushButton*> buttons({ui->pushButton_AddGraph ,ui->pushButton_DeleteGraph , ui->pushButton_SetAxis , ui->pushButton_Clear});
 
-
-    // context menu
-    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(m_customPlot, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
-
+    setupFundamentalUi(buttons, m_chkLegend);
 
     // thickness
     m_editThickness = ui->lineEdit_Thickness;
@@ -80,7 +76,7 @@ TransmittancePlotForm::TransmittancePlotForm(QWidget *parent) :
     m_editYmin = ui->lineEdit_Ymin;
     m_editYmax = ui->lineEdit_Ymax;
 
-    m_plotDataTable = ui->tableWidget;
+
     setDefault();
 }
 
@@ -146,7 +142,7 @@ void TransmittancePlotForm::updateAll()
     m_plotDataTable->setRowCount(rowCount);
     m_plotDataTable->setColumnCount(columnCount);
 
-    QStringList header = QStringList() << "WVL";
+    QStringList header = QStringList() << "Wavelength(nm)";
 
     int    glassCount = m_glassList.size();
     Glass* currentGlass;
@@ -204,10 +200,10 @@ void TransmittancePlotForm::deleteGraph()
     {
         QCPGraph* selectedGraph = m_customPlot->selectedGraphs().at(0);
         QString graphName = selectedGraph->name();
-        QStringList glass_supplyer = graphName.split("_");
+        QStringList glass_supplier = graphName.split("_");
         int glassCount = m_glassList.size();
         for(int i = 0;i < glassCount; i++){
-            if(m_glassList[i]->productName() == glass_supplyer[0] && m_glassList[i]->supplyer() == glass_supplyer[1]){
+            if(m_glassList[i]->productName() == glass_supplier[0] && m_glassList[i]->supplier() == glass_supplier[1]){
                 m_glassList.removeAt(i);
                 break;
             }

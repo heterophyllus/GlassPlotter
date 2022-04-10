@@ -43,7 +43,7 @@ GlassSelectionDialog::GlassSelectionDialog(QWidget *parent) :
     m_lineEditFilter->setPlaceholderText("Filter");
 
     for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++){
-        m_comboBoxSupplyer->addItem(GlassCatalogManager::catalogList().at(i)->supplyer());
+        m_comboBoxSupplyer->addItem(GlassCatalogManager::catalogList().at(i)->supplier());
     }
 
     QObject::connect(m_comboBoxSupplyer,SIGNAL(currentIndexChanged(int)), this, SLOT(onComboChanged()));

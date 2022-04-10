@@ -67,7 +67,7 @@ private:
     class GlassMapCtrl{
     public:
         GlassMapCtrl(QLabel* l, QCheckBox* checkPlot, QCheckBox* checkLabel);
-        QLabel*    labelSupplyer;
+        QLabel*    labelSupplier;
         QCheckBox* checkBoxPlot;
         QCheckBox* checkBoxLabel; //text label
     };

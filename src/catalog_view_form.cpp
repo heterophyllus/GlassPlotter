@@ -45,7 +45,7 @@ CatalogViewForm::CatalogViewForm(QMdiArea *parent) :
 
     m_comboBox = ui->comboBox_Supplyer;
     for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++){
-        m_comboBox->addItem(GlassCatalogManager::catalogList().at(i)->supplyer());
+        m_comboBox->addItem(GlassCatalogManager::catalogList().at(i)->supplier());
     }
     QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 

@@ -46,24 +46,19 @@ DnDtPlotForm::DnDtPlotForm(QWidget *parent) :
 
     m_maxGraphCount = 7;
 
+    m_plotDataTable = ui->tableWidget;
+
     m_chkLegend = ui->checkBox_Legend;
 
-    QObject::connect(ui->pushButton_SetGlass,   SIGNAL(clicked()),     this, SLOT(setGlass()));
-    QObject::connect(ui->pushButton_AddGraph,   SIGNAL(clicked()),     this, SLOT(addGraph()));
-    QObject::connect(ui->pushButton_DeleteGraph,SIGNAL(clicked()),     this, SLOT(deleteGraph()));
-    QObject::connect(ui->pushButton_SetAxis,    SIGNAL(clicked()),     this, SLOT(setAxis()));
-    QObject::connect(ui->pushButton_Clear,      SIGNAL(clicked()),     this, SLOT(clearAll()));
-    QObject::connect(ui->checkBox_Legend,       SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
+    // buttons ,legend checkbox
+    m_chkLegend = ui->checkBox_Legend;
+    QList<QPushButton*> buttons({ui->pushButton_AddGraph ,ui->pushButton_DeleteGraph , ui->pushButton_SetAxis , ui->pushButton_Clear});
+
+    setupFundamentalUi(buttons, m_chkLegend);
 
     m_editPlotStep = ui->lineEdit_PlotStep;
     m_editPlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
     m_editPlotStep->setText(QString::number(5));
-
-    m_plotDataTable = ui->tableWidget;
-
-    // context menu
-    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
-    QObject::connect(m_customPlot, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
 
     // default axis setup
     m_editXmin = ui->lineEdit_Xmin;

@@ -245,7 +245,7 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QTableWidget" name="tableWidget"/>
+        <widget class="QCustomTableWidget" name="tableWidget"/>
        </item>
       </layout>
      </widget>
@@ -259,6 +259,11 @@
    <extends>QWidget</extends>
    <header>QCustomPlot/qcustomplot.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>src/qcustomtablewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

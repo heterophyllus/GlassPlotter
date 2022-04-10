@@ -131,7 +131,7 @@ void GlassSearchForm::showSearchResult()
     for(int i = 0; i < resultCount; i++) {
         Glass* g = results[i];
         setCellValue(ui->tableWidget_Result, i, 0, g->productName());
-        setCellValue(ui->tableWidget_Result, i, 1, g->supplyer());
+        setCellValue(ui->tableWidget_Result, i, 1, g->supplier());
 
         for(int j = 0; j < ui->tableWidget_Parameters->rowCount(); j++) {
             QString param = dynamic_cast<QComboBox*>(ui->tableWidget_Parameters->cellWidget(j, 0))->currentText();

@@ -42,7 +42,7 @@ GlassDataSheetForm::GlassDataSheetForm(Glass* glass, QWidget *parent) :
     m_glass = glass;
 
     // set names
-    ui->label_GlassName->setText( m_glass->productName() + " (" + m_glass->supplyer() + ")" );
+    ui->label_GlassName->setText( m_glass->productName() + " (" + m_glass->supplier() + ")" );
     ui->label_Fundamental->setText( "nd= " + QString::number(m_glass->getValue("nd")) + "   vd= " + QString::number(m_glass->getValue("vd")) );
 
     // set up all tabs
@@ -98,7 +98,7 @@ void GlassDataSheetForm::setUpBasicTab()
 
     // catalog
     addGridItem(grid, 1, 0, "Catalog");
-    addGridItem(grid, 1, 1, m_glass->supplyer());
+    addGridItem(grid, 1, 1, m_glass->supplier());
 
     // MIL
     addGridItem(grid, 2, 0, "MIL");

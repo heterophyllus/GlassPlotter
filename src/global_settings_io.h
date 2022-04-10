@@ -19,41 +19,47 @@
  **  Author  : Hiiragi                                                      **
  **  Contact : heterophyllus.work@gmail.com                                 **
  **  Website : https://github.com/heterophyllus/glassplotter                **
- **  Date    : 2020-1-25                                                    **
+ **  Date    : 2022-4-10                                                    **
  *****************************************************************************/
 
+#ifndef GLOBAL_SETTINGS_IO_H
+#define GLOBAL_SETTINGS_IO_H
 
-#ifndef QCPSCATTERCHART_H
-#define QCPSCATTERCHART_H
+#include <QSettings>
 
-#include "qcustomplot.h"
-
-/** Class for scatter chart using QCustomPlot */
-class QCPScatterChart
+/** Preference settings io */
+class GlobalSettingsIO
 {
-
 public:
-    QCPScatterChart(QCustomPlot *customPlot);
-    ~QCPScatterChart();
-    QCPScatterChart(QCPScatterChart &other);
+    GlobalSettingsIO();
+    ~GlobalSettingsIO();
 
-    QCustomPlot*        parentPlot() const;
-    QCPCurve*           graphPoints() const;
-    QList<QCPItemText*> textLabels() const;
-    QString             name() const;
+    QSettings* settings() const;
 
-    void setData(const QVector<double>& x, const QVector<double>& y, const QVector<QString>& label_texts);
-    void setName(QString name);
-    void setColor(QColor color);
-    void setVisiblePointSeries(bool state);
-    void setVisibleTextLabels(bool state);
-    void setAxis(QCPRange xrange, QCPRange yrange);
-    int  dataCount() const;
+    void loadIniFile();
+    void saveIniFile();
+
+    int numberOfFiles() const;
+    QStringList defaultFilePaths() const;
+    bool doShowResult() const;
+    double temperature() const;
+
+    void setNumFiles(int n);
+    void setDefaultFilePaths(QStringList filepaths);
+    void setDoShowResult(bool status);
+    void setTemperature(double t);
 
 private:
-    QCustomPlot*        m_customPlot;
-    QCPCurve*           m_graphPoints; //points
-    QList<QCPItemText*> m_textlabels; // text label for each point
+    QString iniFilePath;
+    QSettings *m_settings;
+
+    // contents
+    int m_numFiles;
+    QStringList m_defaultFilePaths;
+    bool m_doShowResult;
+    double m_temperature;
 };
 
-#endif // QCPSCATTERCHART_H
+
+
+#endif

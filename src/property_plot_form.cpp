@@ -31,12 +31,34 @@ PropertyPlotForm::PropertyPlotForm(QWidget *parent):
     this->setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
-void PropertyPlotForm::showContextMenu()
+void PropertyPlotForm::setupFundamentalUi(const QList<QPushButton*>& buttons, QCheckBox* chkLegend)
+{
+    QObject::connect(buttons[ButtonLabel::AddGraph],   SIGNAL(clicked()), this, SLOT(addGraph()));
+    QObject::connect(buttons[ButtonLabel::DeleteGraph],SIGNAL(clicked()), this, SLOT(deleteGraph()));
+    QObject::connect(buttons[ButtonLabel::SetAxis],    SIGNAL(clicked()), this, SLOT(setAxis()));
+    QObject::connect(buttons[ButtonLabel::Clear],      SIGNAL(clicked()), this, SLOT(clearAll()));
+
+    QObject::connect(chkLegend, SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
+
+    m_customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(m_customPlot, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnPlot()));
+    m_plotDataTable->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(m_plotDataTable, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnTable()));
+}
+
+void PropertyPlotForm::showContextMenuOnPlot()
 {
     QMenu contextMenu;
-    QAction *action1 = contextMenu.addAction("Export");
+    QAction *action1 = contextMenu.addAction("Export Image");
     QObject::connect(action1, SIGNAL(triggered()), this, SLOT(exportImage()));
+    contextMenu.exec(QCursor::pos());
+}
 
+void PropertyPlotForm::showContextMenuOnTable()
+{
+    QMenu contextMenu;
+    QAction *action1 = contextMenu.addAction("Export Data");
+    QObject::connect(action1, SIGNAL(triggered()), this, SLOT(exportCSV()));
     contextMenu.exec(QCursor::pos());
 }
 
@@ -50,9 +72,24 @@ void PropertyPlotForm::exportImage()
     if(m_customPlot->savePng(filePath)){
         QMessageBox::information(this, "Success", "The image was successfully exported");
     }else{
-        QMessageBox::warning(this, "Error", "Failed to export image");
+        QMessageBox::warning(this, "Error", "Failed to export");
     }
 }
+
+void PropertyPlotForm::exportCSV()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save as"),"",tr("CSV file(*.csv);;All Files(*.*)"));
+    if(filePath.isEmpty()){
+        return;
+    }
+
+    if(m_plotDataTable->exportCSV(filePath)){
+        QMessageBox::information(this, "Success", "The data was successfully exported");
+    }else{
+        QMessageBox::warning(this, "Error", "Failed to export");
+    }
+}
+
 
 void PropertyPlotForm::setAxis()
 {

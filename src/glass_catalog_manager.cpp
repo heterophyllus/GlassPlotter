@@ -63,7 +63,7 @@ Glass* GlassCatalogManager::find(QString fullName)
 
     int catalogCount = m_catalogList.size();
     for(int i = 0; i < catalogCount; i++) {
-        if(m_catalogList[i]->supplyer() == supplierName){
+        if(m_catalogList[i]->supplier() == supplierName){
             if(m_catalogList[i]->hasGlass(productName)){
                 return m_catalogList[i]->glass(productName);
             }

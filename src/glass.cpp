@@ -32,14 +32,14 @@
 #include "Eigen/Dense"
 
 double Glass::T_ = 25;
-int Glass::indexMode_;
+int Glass::index_mode_;
 
 Glass::Glass()
 {    
-    indexMode_ = IndexMode::AGF;
+    index_mode_ = IndexMode::AGF;
 
     product_name_ = "";
-    supplyer_ = "";
+    supplier_ = "";
     status_   = "";
     comment_  = "";
     MIL_      = "";
@@ -77,11 +77,6 @@ Glass::~Glass()
     thermal_data_.clear();
 }
 
-double Glass::currentTemperature()
-{
-    return T_;
-    qDebug() << "Set Environment Temeparature: " << T_;
-}
 
 void Glass::setCurrentTemperature(double t)
 {
@@ -90,30 +85,30 @@ void Glass::setCurrentTemperature(double t)
 
 void Glass::setIndexMode(int m)
 {
-    indexMode_ = m;
+    index_mode_ = m;
 }
 
-void Glass::setName(QString str)
+void Glass::setName(const QString& str)
 {
     product_name_ = str;
 }
 
-void Glass::setSupplyer(QString str)
+void Glass::setSupplier(const QString& str)
 {
-    supplyer_ = str;
+    supplier_ = str;
 }
 
-void Glass::setMIL(QString str)
+void Glass::setMIL(const QString& str)
 {
     MIL_ = str;
 }
 
-void Glass::setComment(QString str)
+void Glass::setComment(const QString& str)
 {
     comment_ = str;
 }
 
-double Glass::getValue(QString dname) const
+double Glass::getValue(const QString& dname) const
 {
     if(dname == "nd"){
         return refractiveIndex("d");
@@ -145,7 +140,7 @@ double Glass::getValue(QString dname) const
 }
 
 
-double Glass::Pxy(QString x, QString y) const
+double Glass::Pxy(const QString& x, const QString& y) const
 {
     double nx = refractiveIndex(x);
     double ny = refractiveIndex(y);
@@ -155,7 +150,7 @@ double Glass::Pxy(QString x, QString y) const
     return ( nx - ny )/( nF- nC);
 }
 
-double Glass::Pxy_(QString x, QString y) const
+double Glass::Pxy_(const QString& x, const QString& y) const
 {
     double nx  = refractiveIndex(x);
     double ny  = refractiveIndex(y);
@@ -181,7 +176,7 @@ double Glass::refractiveIndex(double lambdamicron) const
     return refractiveIndex_rel(lambdamicron);
 }
 
-double Glass::refractiveIndex(QString spectral) const
+double Glass::refractiveIndex(const QString& spectral) const
 {
     return refractiveIndex(SpectralLine::wavelength(spectral)/1000.0);
 }
@@ -301,7 +296,7 @@ double Glass::BuchdahlDispCoef(int n) const
     return (double)x(n);
 }
 
-void Glass::setStatus(QString str)
+void Glass::setStatus(const QString& str)
 {
     status_ = str;
 }
@@ -402,7 +397,7 @@ void Glass::setDispForm(int n)
         formula_name_ = "Extended2";
         break;
     case 13: // Unknown
-        if(supplyer_.contains("hikari", Qt::CaseInsensitive)){
+        if(supplier_.contains("hikari", Qt::CaseInsensitive)){
             formula_func_ptr_ = &(DispersionFormula::Nikon_Hikari);
             formula_name_ = "Nikon Hikari";
         }else{

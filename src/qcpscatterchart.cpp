@@ -98,7 +98,7 @@ QString QCPScatterChart::name() const
     return m_graphPoints->name();
 }
 
-void QCPScatterChart::setData(const QVector<double>& x, const QVector<double>& y, const QVector<QString>& str)
+void QCPScatterChart::setData(const QVector<double>& x, const QVector<double>& y, const QVector<QString>& label_texts)
 {   
     //set data to points
     m_graphPoints->setData(x,y);
@@ -122,13 +122,13 @@ void QCPScatterChart::setData(const QVector<double>& x, const QVector<double>& y
     m_textlabels.clear();
 
     QCPItemText *label;
-    int nlabels = str.size();
+    int nlabels = label_texts.size();
     for(int i = 0; i < nlabels; i++){
         label = new QCPItemText(m_customPlot);
         label->position->setCoords(x[i],y[i]);
         label->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
-        label->setText(str[i]);
-        label->setObjectName(str[i]); //used for mouse click
+        label->setText(label_texts[i]);
+        label->setObjectName(label_texts[i]); //used for mouse click
         m_textlabels.append(label);
     }
 

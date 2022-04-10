@@ -25,8 +25,7 @@
 #ifndef PROPERTYPLOTFORM_H
 #define PROPERTYPLOTFORM_H
 
-#include <QWidget>
-
+#include "qcustomtablewidget.h"
 #include "qcustomplot.h"
 
 namespace Ui {
@@ -45,36 +44,51 @@ class PropertyPlotForm : public QWidget
     Q_OBJECT
 
 public:
+    enum ButtonLabel{
+        AddGraph,
+        DeleteGraph,
+        SetAxis,
+        Clear
+    };
+
+public:
     PropertyPlotForm(QWidget *parent = nullptr);
 
 protected slots:
 
-    /** Add new graph. This function is designed to be used as slot for "Add" button. */
+    /** Add a new graph. Slot for "Add" button. */
     virtual void addGraph() = 0;
 
-    /** Delete selected graph. This function is designed to be used as slot for "Delete" button. */
+    /** Delete the selected graph. Slot for "Delete" button. */
     virtual void deleteGraph() = 0;
 
     /** Replot all graphs and set data to the table */
     virtual void updateAll() = 0;
 
-    /** Clear graphs and table data */
+    /** Clear all graphs and table data */
     virtual void clearAll() = 0;
 
-    /** Set axis using current input values in UI.  This can be slot for "Replot" button. */
+    /** Set axis range using current input values in UI.  Slot for "Replot" button. */
     void setAxis();
 
-    /** Set default axes.  This can be slot for "Reset" button. */
+    /** Set default axes.  Slot for "Reset" button. */
     void setDefault();
 
-    /** Set legend visible on/off.  This can be slot for the checkbox. */
+    /** Set the legend visible on/off.  Slot for the checkbox. */
     void setLegendVisible();
 
-    /** Show context menu at right click on the plot */
-    void showContextMenu();
+    /** Show a context menu in case of right click on the plot */
+    void showContextMenuOnPlot();
 
-    /** Export current plot to image file */
+    void showContextMenuOnTable();
+
+    void setupFundamentalUi(const QList<QPushButton*>& buttons, QCheckBox* chkLegend);
+
+    /** Export the current plot to image file */
     void exportImage();
+
+    /** Export the current data table to csv file */
+    void exportCSV();
 
 protected:
     /** Add data to the specified cell in plot data table */
@@ -89,11 +103,11 @@ protected:
     /** Get QVector<double> within the range */
     QVector<double> getVectorFromRange(QCPRange range, double step=5.0);
 
-    /** Plotteing widget */
+    /** Plotting widget */
     QCustomPlot*  m_customPlot;
 
     /** Plota data table widget */
-    QTableWidget* m_plotDataTable;
+    QCustomTableWidget* m_plotDataTable;
 
     /** Line edit widget (x min) */
     QLineEdit* m_editXmin;

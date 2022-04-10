@@ -22,11 +22,6 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-
-/** GlassCatalog Container Class */
-
-#pragma once
-
 #ifndef GLASSCATALOGUE_H
 #define GLASSCATALOGUE_H
 
@@ -36,18 +31,19 @@
 
 #include "glass.h"
 
+/** GlassCatalog Container Class */
 class GlassCatalog
 {
 public:
     GlassCatalog();
     ~GlassCatalog();
 
-    inline QString supplyer() const;
+    inline QString supplier() const;
 
     Glass*  glass(int n) const;
-    Glass*  glass(QString glassname) const;
+    Glass*  glass(const QString& glassname) const;
     inline int glassCount() const;
-    bool hasGlass(QString glassname) const;
+    bool hasGlass(const QString& glassname) const;
 
     /**
      * @brief Load glass data from Zemax AGF file
@@ -55,7 +51,7 @@ public:
      * @param parse_result Container for notable parse results
      * @return
      */
-    bool loadAGF(QString AGFpath, QString& parse_result);
+    bool loadAGF(const QString& AGFpath, QString& parse_result);
 
 
     /**
@@ -69,15 +65,15 @@ public:
     void clear();
 
 private:
-    QString       supplyer_;
+    QString       supplier_;
     QList<Glass*> glasses_;
 
     QMap<QString, int> name_to_int_map_;
 };
 
-QString GlassCatalog::supplyer() const
+QString GlassCatalog::supplier() const
 {
-    return supplyer_;
+    return supplier_;
 }
 
 int GlassCatalog::glassCount() const

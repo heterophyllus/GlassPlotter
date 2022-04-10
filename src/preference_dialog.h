@@ -26,7 +26,7 @@
 #define PREFERENCE_DIALOG_H
 
 #include <QDialog>
-#include <QSettings>
+#include "global_settings_io.h"
 
 namespace Ui {
 class PreferenceDialog;
@@ -37,7 +37,7 @@ class PreferenceDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PreferenceDialog(QSettings *settings, QWidget *parent = nullptr);
+    explicit PreferenceDialog(GlobalSettingsIO *settings, QWidget *parent = nullptr);
     ~PreferenceDialog();
 
     QStringList getCatalogPaths();
@@ -51,7 +51,7 @@ private:
     void syncUiWithSettings();
 
     Ui::PreferenceDialog *ui;
-    QSettings *m_settings;
+    GlobalSettingsIO *m_globalSettings;
 };
 
 #endif // PREFERENCE_DIALOG_H

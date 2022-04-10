@@ -26,11 +26,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSettings>
 
 #include "qcustomplot.h"
 #include "glass_catalog_manager.h"
-
+#include "global_settings_io.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -86,13 +85,9 @@ private slots:
     void showAbout();
 
 private:
-
     Ui::MainWindow *ui;
-    QSettings* m_settings;
-
+    GlobalSettingsIO* m_globalSettings;
     GlassCatalogManager *m_catalogManager;
 
-    /** whether to show parse result dialog after loading catalogs */
-    bool m_loadWithResult;
 };
 #endif // MAINWINDOW_H

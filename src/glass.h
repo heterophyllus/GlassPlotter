@@ -31,51 +31,51 @@
 #include <QVector>
 #include <QtMath>
 
-enum IndexMode
-{
-    AGF,
-    XML
-};
-
 class Glass
 {
 public:
     Glass();
     ~Glass();
 
-    static double currentTemperature();
+    enum IndexMode
+    {
+        AGF,
+        XML
+    };
+
     static void setCurrentTemperature(double t);
 
     static void setIndexMode(int m);
 
+
     // fundamental data
     double          refractiveIndex(double lambdamicron) const;
-    double          refractiveIndex(QString spectral) const;
+    double          refractiveIndex(const QString& spectral) const;
     QVector<double> refractiveIndex(const QVector<double>& vLambdamicron) const;
 
     inline QString  fullName() const;
     inline QString  productName() const;
-    inline QString  supplyer() const;
+    inline QString  supplier() const;
     inline QString  status() const;
     inline QString  MIL() const;
     inline QString  comment() const;
 
-    double Pxy(QString x, QString y) const;
-    double Pxy_(QString x, QString y) const;
+    double Pxy(const QString& x, const QString& y) const;
+    double Pxy_(const QString& x, const QString& y) const;
 
 
     /** convenience function to get glass property */
-    double getValue(QString dname) const;
+    double getValue(const QString& dname) const;
 
     double BuchdahlDispCoef(int n) const;
 
-    void setName(QString str);
-    void setSupplyer(QString str);
-    void setMIL(QString str);
-    void setStatus(QString str);
+    void setName(const QString& str);
+    void setSupplier(const QString& str);
+    void setMIL(const QString& str);
+    void setStatus(const QString& str);
 
     void setStatus(int n);
-    void setComment(QString str);
+    void setComment(const QString& str);
 
 
     // extra data
@@ -141,7 +141,6 @@ public:
 
 
 private:
-
     double          refractiveIndex_abs_Tref(double lambdamicron) const;
     double          refractiveIndex_rel_Tref(double lambdamicron) const;
     double          refractiveIndex_abs(double lambdamicron) const;
@@ -153,10 +152,10 @@ private:
     static double T_;
 
     /** index calculation mode, AGF or XML */
-    static int indexMode_;
+    static int index_mode_;
 
     QString product_name_;
-    QString supplyer_;
+    QString supplier_;
     QString status_;
     QString MIL_;
     QString comment_;
@@ -199,7 +198,7 @@ private:
 // getter
 QString Glass::fullName() const
 {
-    return product_name_ + "_" + supplyer_;
+    return product_name_ + "_" + supplier_;
 }
 
 QString Glass::productName() const
@@ -207,9 +206,9 @@ QString Glass::productName() const
     return product_name_;
 }
 
-QString Glass::supplyer() const
+QString Glass::supplier() const
 {
-    return supplyer_;
+    return supplier_;
 }
 
 QString Glass::status() const
