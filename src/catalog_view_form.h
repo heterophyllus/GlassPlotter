@@ -29,11 +29,11 @@
 #include <QWidget>
 #include <QMdiArea>
 #include <QList>
-#include <QTableWidget>
 #include <QComboBox>
 #include <QtMath>
 
 #include "glass_catalog.h"
+#include "qcustomtablewidget.h"
 
 namespace Ui {
 class CatalogViewForm;
@@ -52,13 +52,15 @@ private slots:
     void setUpTable(QStringList properties,GlassCatalog* catalog, int digit=6);
     void showDatasheet();
     void showSettingDlg();
+    void showContextMenuOnTable();
+    void exportCSV();
 
 private:
     Ui::CatalogViewForm *ui;
 
-    QMdiArea*     m_parentMdiArea;
-    QTableWidget* m_table;
-    QComboBox*    m_comboBox;
+    QMdiArea*           m_parentMdiArea;
+    QCustomTableWidget* m_table;
+    QComboBox*          m_comboBox;
 
     QStringList m_allPropertyList;
     QStringList m_currentPropertyList;

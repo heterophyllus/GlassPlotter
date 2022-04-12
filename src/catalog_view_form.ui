@@ -48,10 +48,17 @@
     </spacer>
    </item>
    <item row="1" column="0" colspan="4">
-    <widget class="QTableWidget" name="tableWidget"/>
+    <widget class="QCustomTableWidget" name="tableWidget"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header>src/qcustomtablewidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

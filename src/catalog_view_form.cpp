@@ -28,6 +28,9 @@
 
 #include <QListWidget>
 #include <QDialog>
+#include <QMenu>
+#include <QMessageBox>
+#include <QFileDialog>
 #include <QDebug>
 
 #include "glass_catalog_manager.h"
@@ -79,6 +82,10 @@ CatalogViewForm::CatalogViewForm(QMdiArea *parent) :
     // set up default table
     m_currentPropertyList << "nd" << "ne" << "vd" << "ve" << "PgF";
     m_currentDigit = 5;
+
+    m_table->setContextMenuPolicy(Qt::CustomContextMenu);
+    QObject::connect(m_table, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenuOnTable()));
+
     this->update();
 }
 
@@ -309,3 +316,24 @@ void CatalogViewForm::showSettingDlg()
     delete dlg;
 }
 
+void CatalogViewForm::showContextMenuOnTable()
+{
+    QMenu contextMenu;
+    QAction *action1 = contextMenu.addAction("Export Data");
+    QObject::connect(action1, SIGNAL(triggered()), this, SLOT(exportCSV()));
+    contextMenu.exec(QCursor::pos());
+}
+
+void CatalogViewForm::exportCSV()
+{
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Save as"),"",tr("CSV file(*.csv);;All Files(*.*)"));
+    if(filePath.isEmpty()){
+        return;
+    }
+
+    if(m_table->exportCSV(filePath)){
+        QMessageBox::information(this, "Success", "The data was successfully exported");
+    }else{
+        QMessageBox::warning(this, "Error", "Failed to export");
+    }
+}
