@@ -40,6 +40,7 @@ namespace Ui {
 class TransmittancePlotForm;
 }
 
+
 class TransmittancePlotForm : public PropertyPlotForm
 {
     Q_OBJECT

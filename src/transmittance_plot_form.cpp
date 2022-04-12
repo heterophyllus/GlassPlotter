@@ -49,14 +49,20 @@ TransmittancePlotForm::TransmittancePlotForm(QWidget *parent) :
     // table
     m_plotDataTable = ui->tableWidget;
 
-    // legend
-    m_chkLegend = ui->checkBox_Legend;
-
     // buttons ,legend checkbox
     m_chkLegend = ui->checkBox_Legend;
     QList<QPushButton*> buttons({ui->pushButton_AddGraph ,ui->pushButton_DeleteGraph , ui->pushButton_SetAxis , ui->pushButton_Clear});
-
     setupFundamentalUi(buttons, m_chkLegend);
+
+    // legend draggable
+    m_customPlot->axisRect()->insetLayout()->setInsetPlacement(0, QCPLayoutInset::ipFree);
+    m_draggingLegend = false;
+
+    connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(mouseMoveSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePressSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mouseRelease(QMouseEvent*)), this, SLOT(mouseReleaseSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(beforeReplot()), this, SLOT(beforeReplot()));
+
 
     // thickness
     m_editThickness = ui->lineEdit_Thickness;
@@ -185,8 +191,8 @@ void TransmittancePlotForm::updateAll()
         header << currentGlass->productName();
         for(j = 0; j< rowCount; j++)
         {
-            addTableItem(j, 0, QString::number(vLambdanano[j]) );         // wavelength
-            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit) ); // transmittance
+            setValueToCell(j, 0,   vLambdanano[j], digit ); // wavelength
+            setValueToCell(j, i+1, ydata[j],       digit ); // transmittance
         }
     }
 
@@ -194,6 +200,7 @@ void TransmittancePlotForm::updateAll()
     m_plotDataTable->setHorizontalHeaderLabels(header);
 
 }
+
 void TransmittancePlotForm::deleteGraph()
 {
     if(m_customPlot->selectedGraphs().size() > 0)

@@ -29,27 +29,24 @@
 
 #include<QString>
 
-/**
- * @class SpectralLine
- * @brief Container class for Fraunhofer spectral line
- */
+/** Fraunhofer spectral lines */
 class SpectralLine
 {
 public:
 
     /** get wavelength value from spectral line name */
-    static double wavelength(QString spectralname);
+    static double wavelength(const QString& spectralname);
 
     static const double t;
     static const double s;
     static const double r;
     static const double C;
-    static const double C_;
+    static const double C_; // C'
     static const double D;
     static const double d;
     static const double e;
     static const double F;
-    static const double F_;
+    static const double F_; // F'
     static const double g;
     static const double h;
     static const double i;

@@ -54,6 +54,7 @@ private:
     QCustomPlot*        m_customPlot;
     QCPCurve*           m_graphPoints; //points
     QList<QCPItemText*> m_textlabels; // text label for each point
+
 };
 
 #endif // QCPSCATTERCHART_H

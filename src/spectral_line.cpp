@@ -24,6 +24,7 @@
 
 #include "spectral_line.h"
 #include <math.h>
+#include <QDebug>
 
 //http://www.hoya-opticalworld.com/japanese/technical/002.html
 const double SpectralLine::t = 1013.980;
@@ -46,7 +47,7 @@ const double SpectralLine::i =  365.015;
  * @param spectralname
  * @return
  */
-double SpectralLine::wavelength(QString spectralname)
+double SpectralLine::wavelength(const QString& spectralname)
 {
     if(spectralname == "t"){
         return SpectralLine::t;
@@ -88,6 +89,7 @@ double SpectralLine::wavelength(QString spectralname)
         return SpectralLine::i;
     }
     else{
+        qDebug() << "Unknown spectral name: " << spectralname;
         return NAN;
     }
 }

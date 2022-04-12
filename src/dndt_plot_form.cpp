@@ -42,19 +42,31 @@ DnDtPlotForm::DnDtPlotForm(QWidget *parent) :
     m_customPlot->xAxis->setLabel("Temperature(C)");
     m_customPlot->yAxis->setLabel("Dn/Dt(abs)  [10^(-6) /K]");
     m_customPlot->legend->setVisible(true);
-    m_customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight|Qt::AlignBottom); // Legend position
+    //m_customPlot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignRight|Qt::AlignBottom); // Legend position
 
     m_maxGraphCount = 7;
 
     m_plotDataTable = ui->tableWidget;
 
-    m_chkLegend = ui->checkBox_Legend;
 
     // buttons ,legend checkbox
     m_chkLegend = ui->checkBox_Legend;
     QList<QPushButton*> buttons({ui->pushButton_AddGraph ,ui->pushButton_DeleteGraph , ui->pushButton_SetAxis , ui->pushButton_Clear});
-
     setupFundamentalUi(buttons, m_chkLegend);
+
+    QObject::connect(ui->pushButton_SetGlass,   SIGNAL(clicked()), this, SLOT(setGlass()));
+
+
+    // legend draggable
+    m_customPlot->axisRect()->insetLayout()->setInsetPlacement(0, QCPLayoutInset::ipFree);
+    m_draggingLegend = false;
+
+    connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(mouseMoveSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePressSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mouseRelease(QMouseEvent*)), this, SLOT(mouseReleaseSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(beforeReplot()), this, SLOT(beforeReplot()));
+
+
 
     m_editPlotStep = ui->lineEdit_PlotStep;
     m_editPlotStep->setValidator(new QDoubleValidator(0, 100, 2, this));
@@ -208,8 +220,8 @@ void DnDtPlotForm::updateAll()
         header << QString::number(currentWvl) + "nm";
         for(j = 0; j< rowCount; j++)
         {
-            addTableItem(j, 0,   QString::number(xdata[j]));         // temperature
-            addTableItem(j, i+1, QString::number(ydata[j], 'f', digit)); // dn/dt(abs)
+            setValueToCell(j, 0,   xdata[j], digit);  // temperature
+            setValueToCell(j, i+1, ydata[j], digit);  // dn/dt(abs)
         }
     }
     m_customPlot->replot();

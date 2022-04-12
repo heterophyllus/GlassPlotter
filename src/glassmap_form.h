@@ -95,6 +95,9 @@ private:
 
     bool m_xReversed;
 
+    bool m_draggingLegend;
+    QPointF m_dragLegendOrigin;
+
     void   setGlassmapData(QCPScatterChart* glassmap, GlassCatalog* catalog, QString xlabel, QString ylabel, QColor color);
     void   setUpScrollArea();
     void   saveSetting();
@@ -103,6 +106,12 @@ private:
     void setCurveData(QCPGraph* curveGraph, const QList<double>& coefs);
 
     QColor getColorFromIndex(int index, int maxIndex);
+
+private slots:
+    void mouseMoveSignal(QMouseEvent *event);
+    void mousePressSignal(QMouseEvent *event);
+    void mouseReleaseSignal(QMouseEvent *event);
+    void beforeReplot();
 };
 
 #endif // GLASSMAP_FORM_H

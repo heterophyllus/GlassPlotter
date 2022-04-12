@@ -298,7 +298,7 @@ void MainWindow::showAbout()
 {
     QString text =
             "GlassPlotter<br><br>"
-            "<font size=1>Version: 0.19.0 <br><br>"
+            "<font size=1>Version: 0.20.1 <br><br>"
             "This program is distributed in the hope that it will be useful,\n"
             "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
             "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"

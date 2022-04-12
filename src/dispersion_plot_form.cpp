@@ -53,8 +53,16 @@ DispersionPlotForm::DispersionPlotForm(QWidget *parent) :
     // buttons ,legend checkbox
     m_chkLegend = ui->checkBox_Legend;
     QList<QPushButton*> buttons({ui->pushButton_AddGraph ,ui->pushButton_DeleteGraph , ui->pushButton_SetAxis , ui->pushButton_Clear});
-
     setupFundamentalUi(buttons, m_chkLegend);
+
+    // legend draggable
+    m_customPlot->axisRect()->insetLayout()->setInsetPlacement(0, QCPLayoutInset::ipFree);
+    m_draggingLegend = false;
+
+    connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(mouseMoveSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePressSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mouseRelease(QMouseEvent*)), this, SLOT(mouseReleaseSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(beforeReplot()), this, SLOT(beforeReplot()));
 
 
     // user defined curve on/off
@@ -62,7 +70,7 @@ DispersionPlotForm::DispersionPlotForm(QWidget *parent) :
     QObject::connect(m_chkCurve,        SIGNAL(toggled(bool)), this, SLOT(updateAll()));
 
     // select formula for user defined curve
-    QStringList formulaNames = {"Polynomial",
+    const QStringList formulaNames = {"Polynomial",
                                 "Schott",
                                 "Sellmeier 1",
                                 "Herzberger",
@@ -92,10 +100,9 @@ DispersionPlotForm::DispersionPlotForm(QWidget *parent) :
     m_tableCoefs->setRowCount(12);
     m_tableCoefs->setHorizontalHeaderLabels(QStringList() << "val");
     QStringList vHeaderLabels;
-    QTableWidgetItem* item;
     for(int i = 0; i < 12; i++){
         vHeaderLabels << "C" + QString::number(i);
-        item = new QTableWidgetItem;
+        QTableWidgetItem *item = new QTableWidgetItem;
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled);
         m_tableCoefs->setItem(i,0,item);
     }
@@ -134,7 +141,6 @@ DispersionPlotForm::~DispersionPlotForm()
 
 void DispersionPlotForm::on_comboBoxChanged()
 {
-    QTableWidgetItem *item;
     int rowCount = m_tableCoefs->rowCount();
 
     QObject::disconnect(m_tableCoefs, SIGNAL(cellChanged(int,int)), this, SLOT(updateAll()));
@@ -142,7 +148,7 @@ void DispersionPlotForm::on_comboBoxChanged()
     // initialize all cells
     for(int i = 0; i < rowCount; i++)
     {
-        item = m_tableCoefs->item(i,0);
+        QTableWidgetItem *item = m_tableCoefs->item(i,0);
         item->setText("");
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         //item->setFlags(item->flags() | Qt::ItemIsEnabled);
@@ -213,7 +219,7 @@ void DispersionPlotForm::on_comboBoxChanged()
     // disable and color invalid cells
     for(int row = unused_start; row < rowCount; row++)
     {
-        item = m_tableCoefs->item(row,0);
+        QTableWidgetItem *item = m_tableCoefs->item(row,0);
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         //item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         item->setData(Qt::BackgroundRole, QColor("light grey"));
@@ -303,7 +309,7 @@ void DispersionPlotForm::addGraph()
 
         // check dispersion formula of the glass
         if("Unknown" == newGlass->formulaName()){
-            QMessageBox::information(this,tr("Error"), "Unknown dispersion formula");
+            QMessageBox::information(this,tr("Error"), "The selected glass has unknown dispersion formula");
         }
         else{
             m_glassList.append(newGlass);
@@ -312,13 +318,9 @@ void DispersionPlotForm::addGraph()
         newGlass = nullptr;
     }
 
-    try {
-        delete dlg;
-    }  catch (...) {
-        dlg = nullptr;
-    }
-    dlg = nullptr;
 
+    delete dlg;
+    dlg = nullptr;
 }
 
 void DispersionPlotForm::updateAll()
@@ -362,8 +364,8 @@ void DispersionPlotForm::updateAll()
         header << currentGlass->productName();
         for(j = 0; j< rowCount; j++)
         {
-            addTableItem(j, 0,   QString::number(vLambdamicron[j], 'f', digit) );  // wavelength
-            addTableItem(j, i+1, QString::number(ydata[j],         'f', digit) );  // refractive index
+            setValueToCell(j, 0,   vLambdamicron[j], digit );  // wavelength
+            setValueToCell(j, i+1, ydata[j],         digit );  // refractive index
         }
     }
 
@@ -380,7 +382,7 @@ void DispersionPlotForm::updateAll()
 
         for(i = 0; i < dataCount; i++)
         {
-            addTableItem(i, columnCount-1, QString::number(ydata[i], 'f', digit) );
+            setValueToCell(i, columnCount-1, ydata[i], digit );
         }
     }
 

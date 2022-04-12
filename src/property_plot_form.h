@@ -92,7 +92,7 @@ protected slots:
 
 protected:
     /** Add data to the specified cell in plot data table */
-    void addTableItem(int row, int col, QString str);
+    void setValueToCell(int row, int col, double val, int digit= 1);
 
     /** Get color at specified position in calormap */
     QColor getColorFromIndex(int index, int maxIndex=5);
@@ -102,6 +102,7 @@ protected:
 
     /** Get QVector<double> within the range */
     QVector<double> getVectorFromRange(QCPRange range, double step=5.0);
+
 
     /** Plotting widget */
     QCustomPlot*  m_customPlot;
@@ -131,8 +132,17 @@ protected:
     /** Legend on/off checkbox */
     QCheckBox* m_chkLegend;
 
+    bool m_draggingLegend;
+    QPointF m_dragLegendOrigin;
+
     /** Graph count limit.  This value is used to set colors to graphs. */
     int m_maxGraphCount;
+
+protected slots:
+    void mouseMoveSignal(QMouseEvent *event);
+    void mousePressSignal(QMouseEvent *event);
+    void mouseReleaseSignal(QMouseEvent *event);
+    void beforeReplot();
 
 };
 

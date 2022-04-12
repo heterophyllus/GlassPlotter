@@ -28,6 +28,7 @@
 #include <QTableWidget>
 #include <QString>
 
+/** Modified table widget that allows copy and paste on the cells and exporting to csv file. */
 class QCustomTableWidget : public QTableWidget
 {
     Q_OBJECT

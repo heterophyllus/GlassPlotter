@@ -122,10 +122,13 @@ void PropertyPlotForm::setLegendVisible()
 }
 
 
-void PropertyPlotForm::addTableItem(int row, int col, QString str)
+void PropertyPlotForm::setValueToCell(int row, int col, double val, int digit)
 {
-    QTableWidgetItem* item = new QTableWidgetItem();
-    item->setText(str);
+    QTableWidgetItem* item = m_plotDataTable->item(row, col);
+    if( !item ){
+        item = new QTableWidgetItem();
+    }
+    item->setText( QString::number(val, 'f', digit) );
     m_plotDataTable->setItem(row,col,item);
 }
 
@@ -162,4 +165,42 @@ QVector<double> PropertyPlotForm::getVectorFromRange(QCPRange range, double step
         x += step;
     }
     return xdata;
+}
+
+//https://www.qcustomplot.com/index.php/support/forum/481
+void PropertyPlotForm::mouseMoveSignal(QMouseEvent *event)
+{
+    if (m_draggingLegend)
+    {
+        QRectF rect = m_customPlot->axisRect()->insetLayout()->insetRect(0);
+        // since insetRect is in axisRect coordinates (0..1), we transform the mouse position:
+        QPointF mousePoint((event->pos().x()-m_customPlot->axisRect()->left())/(double)m_customPlot->axisRect()->width(),
+                           (event->pos().y()-m_customPlot->axisRect()->top())/(double)m_customPlot->axisRect()->height());
+        rect.moveTopLeft(mousePoint-m_dragLegendOrigin);
+        m_customPlot->axisRect()->insetLayout()->setInsetRect(0, rect);
+        m_customPlot->replot();
+    }
+}
+
+void PropertyPlotForm::mousePressSignal(QMouseEvent *event)
+{
+    if (m_customPlot->legend->selectTest(event->pos(), false) > 0)
+    {
+        m_draggingLegend = true;
+        // since insetRect is in axisRect coordinates (0..1), we transform the mouse position:
+        QPointF mousePoint((event->pos().x()-m_customPlot->axisRect()->left())/(double)m_customPlot->axisRect()->width(),
+                           (event->pos().y()-m_customPlot->axisRect()->top())/(double)m_customPlot->axisRect()->height());
+        m_dragLegendOrigin = mousePoint-m_customPlot->axisRect()->insetLayout()->insetRect(0).topLeft();
+    }
+}
+
+void PropertyPlotForm::mouseReleaseSignal(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    m_draggingLegend = false;
+}
+
+void PropertyPlotForm::beforeReplot()
+{
+    m_customPlot->legend->setMaximumSize(m_customPlot->legend->minimumOuterSizeHint());
 }

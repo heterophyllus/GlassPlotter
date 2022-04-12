@@ -68,6 +68,14 @@ GlassMapForm::GlassMapForm(QString xdataname, QString ydataname, QCPRange xrange
     // Legend
     m_checkBoxLegend = ui->checkBox_Legend;
     QObject::connect(m_checkBoxLegend,SIGNAL(toggled(bool)), this, SLOT(setLegendVisible()));
+    m_customPlot->axisRect()->insetLayout()->setInsetPlacement(0, QCPLayoutInset::ipFree);
+    m_draggingLegend = false;
+
+    connect(m_customPlot, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(mouseMoveSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePressSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(mouseRelease(QMouseEvent*)), this, SLOT(mouseReleaseSignal(QMouseEvent*)));
+    connect(m_customPlot, SIGNAL(beforeReplot()), this, SLOT(beforeReplot()));
+
 
     // neighbors
     m_listWidgetNeighbors = ui->listWidget_Neighbors;
@@ -462,4 +470,48 @@ QColor GlassMapForm::getColorFromIndex(int index, int maxIndex)
     QColor color = colorgrad.color(index, QCPRange(0, maxIndex));
 
     return color;
+}
+
+
+//https://www.qcustomplot.com/index.php/support/forum/481
+void GlassMapForm::mouseMoveSignal(QMouseEvent *event)
+{
+    if (m_draggingLegend)
+    {
+        QRectF rect = m_customPlot->axisRect()->insetLayout()->insetRect(0);
+        // since insetRect is in axisRect coordinates (0..1), we transform the mouse position:
+        QPointF mousePoint((event->pos().x()-m_customPlot->axisRect()->left())/(double)m_customPlot->axisRect()->width(),
+                           (event->pos().y()-m_customPlot->axisRect()->top())/(double)m_customPlot->axisRect()->height());
+        rect.moveTopLeft(mousePoint-m_dragLegendOrigin);
+        m_customPlot->axisRect()->insetLayout()->setInsetRect(0, rect);
+        m_customPlot->replot();
+    }
+}
+
+void GlassMapForm::mousePressSignal(QMouseEvent *event)
+{
+    if (m_customPlot->legend->selectTest(event->pos(), false) > 0)
+    {
+        m_customPlot->setInteraction(QCP::iRangeDrag, false);
+
+        m_draggingLegend = true;
+        // since insetRect is in axisRect coordinates (0..1), we transform the mouse position:
+        QPointF mousePoint((event->pos().x()-m_customPlot->axisRect()->left())/(double)m_customPlot->axisRect()->width(),
+                           (event->pos().y()-m_customPlot->axisRect()->top())/(double)m_customPlot->axisRect()->height());
+        m_dragLegendOrigin = mousePoint-m_customPlot->axisRect()->insetLayout()->insetRect(0).topLeft();
+    }
+    else{
+        m_customPlot->setInteraction(QCP::iRangeDrag, true);
+    }
+}
+
+void GlassMapForm::mouseReleaseSignal(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    m_draggingLegend = false;
+}
+
+void GlassMapForm::beforeReplot()
+{
+    m_customPlot->legend->setMaximumSize(m_customPlot->legend->minimumOuterSizeHint());
 }
