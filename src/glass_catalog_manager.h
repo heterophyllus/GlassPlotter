@@ -26,13 +26,13 @@
 #ifndef GLASSCATALOGMANAGER_H
 #define GLASSCATALOGMANAGER_H
 
-
 #include <QString>
 #include <QList>
 #include <QStringList>
 
 #include "glass_catalog.h"
 
+/** top level management class */
 class GlassCatalogManager
 {
 public:

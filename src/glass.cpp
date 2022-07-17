@@ -32,12 +32,9 @@
 #include "Eigen/Dense"
 
 double Glass::T_ = 25;
-int Glass::index_mode_;
 
 Glass::Glass()
 {    
-    index_mode_ = IndexMode::AGF;
-
     product_name_ = "";
     supplier_ = "";
     status_   = "";
@@ -83,30 +80,6 @@ void Glass::setCurrentTemperature(double t)
     T_ = t;
 }
 
-void Glass::setIndexMode(int m)
-{
-    index_mode_ = m;
-}
-
-void Glass::setName(const QString& str)
-{
-    product_name_ = str;
-}
-
-void Glass::setSupplier(const QString& str)
-{
-    supplier_ = str;
-}
-
-void Glass::setMIL(const QString& str)
-{
-    MIL_ = str;
-}
-
-void Glass::setComment(const QString& str)
-{
-    comment_ = str;
-}
 
 double Glass::getValue(const QString& dname) const
 {
@@ -162,17 +135,6 @@ double Glass::Pxy_(const QString& x, const QString& y) const
 
 double Glass::refractiveIndex(double lambdamicron) const
 {
-    /*
-    switch (indexMode_) {
-    case IndexMode::AGF:
-        return refractiveIndex_rel(lambdamicron);
-        break;
-    case IndexMode::XML:
-        return refractiveIndex_rel_Tref(lambdamicron);
-    default:
-        return refractiveIndex_rel_Tref(lambdamicron);
-    }
-    */
     return refractiveIndex_rel(lambdamicron);
 }
 
@@ -183,17 +145,6 @@ double Glass::refractiveIndex(const QString& spectral) const
 
 QVector<double> Glass::refractiveIndex(const QVector<double> &vLambdamicron) const
 {
-    /*
-    switch (indexMode_) {
-    case IndexMode::AGF:
-        return refractiveIndex_rel(vLambdamicron);
-        break;
-    case IndexMode::XML:
-        return refractiveIndex_rel_Tref(vLambdamicron);
-    default:
-        return refractiveIndex_rel_Tref(vLambdamicron);
-    }
-    */
     return refractiveIndex_rel(vLambdamicron);
 }
 
@@ -279,27 +230,23 @@ double Glass::BuchdahlDispCoef(int n) const
     double omegaF = ( wF-wd )/( 1 + 2.5*(wF-wd) );
     double omegaC = ( wC-wd )/( 1 + 2.5*(wC-wd) );
 
-    Eigen::MatrixXd A(2,2);
+    Eigen::Matrix2d A(2,2);
     A(0,0) = omegaF;
     A(0,1) = omegaF*omegaF;
     A(1,0) = omegaC;
     A(1,1) = omegaC*omegaC;
 
-    Eigen::VectorXd b(2);
+    Eigen::Vector2d b(2);
     b(0) = nF-nd;
     b(1) = nC-nd;
 
-    Eigen::VectorXd x = A.colPivHouseholderQr().solve(b);
+    Eigen::Vector2d x = A.colPivHouseholderQr().solve(b);
 
     x /= (nd-1);
 
     return (double)x(n);
 }
 
-void Glass::setStatus(const QString& str)
-{
-    status_ = str;
-}
 
 void Glass::setStatus(int n)
 {
@@ -322,15 +269,6 @@ void Glass::setStatus(int n)
     }
 }
 
-void Glass::setLowTCE(double val)
-{
-    lowTCE_ = val;
-}
-
-void Glass::setHighTCE(double val)
-{
-    highTCE_ = val;
-}
 
 
 void Glass::setDispCoef(int n, double val)
@@ -440,36 +378,6 @@ void Glass::setDispForm(int n)
 }
 
 
-void Glass::setRelCost(double val)
-{
-    rel_cost_ = val;
-}
-
-void Glass::setClimateResist(double val)
-{
-    climate_resist_ = val;
-}
-
-void Glass::setStainResist(double val)
-{
-    stain_resist_ = val;
-}
-
-void Glass::setAcidResist(double val)
-{
-    acid_resist_ = val;
-}
-
-void Glass::setAlkaliResist(double val)
-{
-    alkali_resist_ = val;
-}
-
-void Glass::setPhosphateResist(double val)
-{
-    phosphate_resist_ = val;
-}
-
 double Glass::transmittance(double lambdamicron, double thi) const
 {
     Q_ASSERT( (wavelength_data_.size() > 0) && (transmittance_data_.size() > 0) && (thickness_data_.size() > 0) );
@@ -540,20 +448,6 @@ void Glass::appendTransmittanceData(double lambdamicron, double trans, double th
     thickness_data_.append(thick);
 }
 
-void Glass::setLambdaMax(double val)
-{
-    lambda_max_ = val;
-}
-
-void Glass::setLambdaMin(double val)
-{
-    lambda_min_ = val;
-}
-
-void Glass::setHasThermalData(bool state)
-{
-    hasThermalData_ = state;
-}
 
 double Glass::dn_dt_abs(double T, double lambdamicron) const
 {
@@ -576,7 +470,6 @@ QVector<double> Glass::dn_dt_abs(const QVector<double>& vT, double lambdamicron)
 
     return vDndt;
 }
-
 
 void Glass::setThermalData(int n, double val)
 {

@@ -37,15 +37,7 @@ public:
     Glass();
     ~Glass();
 
-    enum IndexMode
-    {
-        AGF,
-        XML
-    };
-
     static void setCurrentTemperature(double t);
-
-    static void setIndexMode(int m);
 
 
     // fundamental data
@@ -69,21 +61,21 @@ public:
 
     double BuchdahlDispCoef(int n) const;
 
-    void setName(const QString& str);
-    void setSupplier(const QString& str);
-    void setMIL(const QString& str);
-    void setStatus(const QString& str);
+    inline void setName(const QString& str);
+    inline void setSupplier(const QString& str);
+    inline void setMIL(const QString& str);
+    inline void setStatus(const QString& str);
 
     void setStatus(int n);
-    void setComment(const QString& str);
+    inline void setComment(const QString& str);
 
 
     // extra data
     inline double lowTCE() const;
     inline double highTCE() const;
 
-    void   setLowTCE(double val);
-    void   setHighTCE(double val);
+    inline void setLowTCE(double val);
+    inline void setHighTCE(double val);
 
     // dispersion data
     inline int formulaIndex() const;
@@ -109,7 +101,7 @@ public:
     double          dn_dt_abs(double T, double lambdamicron) const;
     QVector<double> dn_dt_abs(const QVector<double>& vT, double lambdamicron) const;
 
-    void setHasThermalData(bool state);
+    inline void setHasThermalData(bool state);
     void setThermalData(int n, double val);
 
     // other data
@@ -120,12 +112,12 @@ public:
     inline double alkaliResist() const;
     inline double phosphateResist() const ;
 
-    void  setRelCost(double val);
-    void  setClimateResist(double val);
-    void  setStainResist(double val);
-    void  setAcidResist(double val);
-    void  setAlkaliResist(double val);
-    void  setPhosphateResist(double val);
+    inline void  setRelCost(double val);
+    inline void  setClimateResist(double val);
+    inline void  setStainResist(double val);
+    inline void  setAcidResist(double val);
+    inline void  setAlkaliResist(double val);
+    inline void  setPhosphateResist(double val);
 
     // transmittance data
     double          transmittance(double lambdamicron, double thi = 25) const;
@@ -136,8 +128,8 @@ public:
     void   getTransmittanceData(QList<double>& pvLambdamicron, QList<double>& pvTransmittance, QList<double>& pvThickness);
 
     void  appendTransmittanceData(double lambdamicron, double trans, double thick);
-    void  setLambdaMin(double val);
-    void  setLambdaMax(double val);
+    inline void  setLambdaMin(double val);
+    inline void  setLambdaMax(double val);
 
 
 private:
@@ -150,9 +142,6 @@ private:
 
     /** current temperature */
     static double T_;
-
-    /** index calculation mode, AGF or XML */
-    static int index_mode_;
 
     QString product_name_;
     QString supplier_;
@@ -339,6 +328,89 @@ double Glass::lambdaMin() const
 QVector<double> Glass::getThermalData() const
 {
     return thermal_data_;
+}
+
+
+// setter ***************************************
+void Glass::setName(const QString& str)
+{
+    product_name_ = str;
+}
+
+void Glass::setSupplier(const QString& str)
+{
+    supplier_ = str;
+}
+
+void Glass::setMIL(const QString& str)
+{
+    MIL_ = str;
+}
+
+void Glass::setComment(const QString& str)
+{
+    comment_ = str;
+}
+
+void Glass::setStatus(const QString& str)
+{
+    status_ = str;
+}
+
+void Glass::setLowTCE(double val)
+{
+    lowTCE_ = val;
+}
+
+void Glass::setHighTCE(double val)
+{
+    highTCE_ = val;
+}
+
+
+void Glass::setRelCost(double val)
+{
+    rel_cost_ = val;
+}
+
+void Glass::setClimateResist(double val)
+{
+    climate_resist_ = val;
+}
+
+void Glass::setStainResist(double val)
+{
+    stain_resist_ = val;
+}
+
+void Glass::setAcidResist(double val)
+{
+    acid_resist_ = val;
+}
+
+void Glass::setAlkaliResist(double val)
+{
+    alkali_resist_ = val;
+}
+
+void Glass::setPhosphateResist(double val)
+{
+    phosphate_resist_ = val;
+}
+
+void Glass::setLambdaMax(double val)
+{
+    lambda_max_ = val;
+}
+
+void Glass::setLambdaMin(double val)
+{
+    lambda_min_ = val;
+}
+
+void Glass::setHasThermalData(bool state)
+{
+    hasThermalData_ = state;
 }
 
 

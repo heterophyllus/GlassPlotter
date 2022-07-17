@@ -27,7 +27,8 @@
 #ifndef SPECTRAL_LINE_H
 #define SPECTRAL_LINE_H
 
-#include<QString>
+#include <QString>
+#include <QMap>
 
 /** Fraunhofer spectral lines */
 class SpectralLine
@@ -50,6 +51,7 @@ public:
     static const double g;
     static const double h;
     static const double i;
+
 };
 
 #endif // SPECTRAL_LINE_H

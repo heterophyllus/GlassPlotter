@@ -58,7 +58,7 @@ CurveFittingDialog::CurveFittingDialog(QString xdataname, QString ydataname, QWi
     }
 
     QObject::connect(ui->pushButton_AddRow,    SIGNAL(clicked()), this, SLOT(addNewRow()));
-    QObject::connect(ui->pushButton_AddGlass,    SIGNAL(clicked()), this, SLOT(addGlassForNewRow()));
+    QObject::connect(ui->pushButton_AddGlass,  SIGNAL(clicked()), this, SLOT(addGlassForNewRow()));
     QObject::connect(ui->pushButton_DeleteRow, SIGNAL(clicked()), this, SLOT(deleteSelectedRow()));
 
 }
@@ -70,12 +70,7 @@ CurveFittingDialog::~CurveFittingDialog()
     delete ui;
 }
 
-/**
- * @brief Add new row to the table
- * @param s1 string value for X cell
- * @param s2 string value for Y cell
- * @param s3 string value for Comment cell
- */
+
 void CurveFittingDialog::addNewRow(QString s1, QString s2, QString s3)
 {
     int nRow = m_table->rowCount();
@@ -101,9 +96,6 @@ void CurveFittingDialog::addNewRow(QString s1, QString s2, QString s3)
 }
 
 
-/**
- * @brief Add coordinates for new row by selecting glass
- */
 void CurveFittingDialog::addGlassForNewRow()
 {
     GlassSelectionDialog *dlg = new GlassSelectionDialog(this);
@@ -131,9 +123,7 @@ void CurveFittingDialog::addGlassForNewRow()
 
 }
 
-/**
- * @brief Delete currently selected row
- */
+
 void CurveFittingDialog::deleteSelectedRow()
 {
     int row = m_table->currentRow();
@@ -142,11 +132,7 @@ void CurveFittingDialog::deleteSelectedRow()
     m_table->update();
 }
 
-/**
- * @brief Get fitting result using simple polynomial regression.  The result will be contained the parameter "result"
- * @param result
- * @return if true, successfully computed
- */
+
 bool CurveFittingDialog::getFittingResult(QList<double>& result)
 {
     //https://en.wikipedia.org/wiki/Polynomial_regression

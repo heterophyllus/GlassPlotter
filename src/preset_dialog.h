@@ -34,6 +34,7 @@ namespace Ui {
 class PresetDialog;
 }
 
+/** Preset dialog for user defined curve coefficients */
 class PresetDialog : public QDialog
 {
     Q_OBJECT

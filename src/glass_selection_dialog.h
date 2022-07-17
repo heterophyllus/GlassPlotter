@@ -22,11 +22,6 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Qt Dialog Class for glass selection
-  */
-
-
 #ifndef GLASS_SELECTION_DIALOG_H
 #define GLASS_SELECTION_DIALOG_H
 
@@ -42,6 +37,7 @@
 namespace Ui {
 class GlassSelectionDialog;
 }
+
 
 class GlassSelectionDialog : public QDialog
 {

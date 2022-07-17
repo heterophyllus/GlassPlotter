@@ -29,8 +29,10 @@
 class Air
 {
 public:
+    /** Computes absolute refractive index */
     static double refractive_index_abs(double lambdamicron, double T, double P= 101325.0);
 
+    /** Computes refractive index at the reference temperature */
     static double refractive_index_ref(double lambdamicron);
 };
 

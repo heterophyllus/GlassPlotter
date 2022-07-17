@@ -22,15 +22,10 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Qt Form Class for Glassmap
-  */
-
 #ifndef GLASSMAP_FORM_H
 #define GLASSMAP_FORM_H
 
 #include <QWidget>
-
 #include "qcpscatterchart.h"
 #include "glass_catalog.h"
 

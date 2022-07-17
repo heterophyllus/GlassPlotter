@@ -22,16 +22,8 @@
  **  Date    : 2020-1-25                                                    **
  *****************************************************************************/
 
-/**
-  * Qt Form Class for Transmittance Plot
-  *
-  */
-
-
 #ifndef TRANSMITTANCE_PLOT_FORM_H
 #define TRANSMITTANCE_PLOT_FORM_H
-
-#include <QWidget>
 
 #include "property_plot_form.h"
 #include "glass.h"
@@ -59,7 +51,6 @@ private:
     Ui::TransmittancePlotForm *ui;
 
     QList<Glass*>  m_glassList;
-
     QLineEdit* m_editThickness;
 
 };

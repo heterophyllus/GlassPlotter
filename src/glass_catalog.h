@@ -38,11 +38,11 @@ public:
     GlassCatalog();
     ~GlassCatalog();
 
-    inline QString supplier() const;
+    QString supplier() const {return supplier_;}
 
     Glass*  glass(int n) const;
     Glass*  glass(const QString& glassname) const;
-    inline int glassCount() const;
+    int glassCount() const{return glasses_.size();}
     bool hasGlass(const QString& glassname) const;
 
     /**
@@ -71,14 +71,5 @@ private:
     QMap<QString, int> name_to_int_map_;
 };
 
-QString GlassCatalog::supplier() const
-{
-    return supplier_;
-}
-
-int GlassCatalog::glassCount() const
-{
-    return glasses_.size();
-}
 
 #endif // GLASSCATALOGUE_H

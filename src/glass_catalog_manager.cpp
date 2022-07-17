@@ -23,7 +23,8 @@
  *****************************************************************************/
 
 #include <QFileInfo>
-
+#include <QTextCodec>
+#include <QTextStream>
 #include "glass_catalog_manager.h"
 
 QList<GlassCatalog*> GlassCatalogManager::m_catalogList;
@@ -127,3 +128,4 @@ void GlassCatalogManager::loadCatalogFiles(const QStringList &catalogFilePaths, 
     parseResult = parse_result_all;
 
 }
+

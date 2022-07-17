@@ -25,7 +25,6 @@
 #include "catalog_view_form.h"
 #include "ui_catalog_view_form.h"
 
-
 #include <QListWidget>
 #include <QDialog>
 #include <QMenu>
@@ -50,10 +49,10 @@ CatalogViewForm::CatalogViewForm(QMdiArea *parent) :
     for(int i = 0; i < GlassCatalogManager::catalogList().size(); i++){
         m_comboBox->addItem(GlassCatalogManager::catalogList().at(i)->supplier());
     }
-    QObject::connect(m_comboBox,SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
 
-    QObject::connect(ui->pushButton_showDatasheet,SIGNAL(clicked()), this, SLOT(showDatasheet()));
-    QObject::connect(ui->pushButton_Setting,SIGNAL(clicked()),       this, SLOT(showSettingDlg()));
+    QObject::connect(m_comboBox,                  SIGNAL(currentIndexChanged(int)), this, SLOT(update()));
+    QObject::connect(ui->pushButton_showDatasheet,SIGNAL(clicked()),                this, SLOT(showDatasheet()));
+    QObject::connect(ui->pushButton_Setting,      SIGNAL(clicked()),                this, SLOT(showSettingDlg()));
 
     m_table = ui->tableWidget;
     m_table->setSortingEnabled(true);

@@ -42,11 +42,6 @@ const double SpectralLine::h =  404.656;
 const double SpectralLine::i =  365.015;
 
 
-/**
- * @brief Get wavelength of the line
- * @param spectralname
- * @return
- */
 double SpectralLine::wavelength(const QString& spectralname)
 {
     if(spectralname == "t"){

@@ -89,13 +89,14 @@ bool GlassCatalog::loadAGF(const QString& AGFpath, QString& parse_result)
         return false;
     }
 
+
     // parse result
     QString filename = QFileInfo(AGFpath).fileName();
 
     this->clear();
 
     int linecount = 0;
-    QTextStream in(&file);
+    QTextStream stream(&file);
     QString linetext;
     QStringList lineparts;
 
@@ -103,9 +104,9 @@ bool GlassCatalog::loadAGF(const QString& AGFpath, QString& parse_result)
 
     Glass *g;
     int glassNumber = 0;
-    while (! in.atEnd())
+    while (! stream.atEnd())
     {
-        linetext = in.readLine();
+        linetext = stream.readLine();
         linecount++;
 
         //NM <glass name> <dispersion formula #> <MIL#> <N(d)> <V(d)> <Exclude Sub> <status> <melt freq>
@@ -239,8 +240,6 @@ bool GlassCatalog::loadAGF(const QString& AGFpath, QString& parse_result)
     }
 
     file.close();
-
-    Glass::setIndexMode(Glass::IndexMode::AGF);
 
     return true;
 }
@@ -403,8 +402,6 @@ bool GlassCatalog::loadXml(QString xmlpath, QString& parse_result)
         name_to_int_map_.insert(g->productName(), glassNumber);
         glassNumber += 1;
     }
-
-    Glass::setIndexMode(Glass::IndexMode::XML);
 
     g = nullptr;
 
