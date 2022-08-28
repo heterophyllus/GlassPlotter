@@ -101,6 +101,8 @@ public:
     double          dn_dt_abs(double T, double lambdamicron) const;
     QVector<double> dn_dt_abs(const QVector<double>& vT, double lambdamicron) const;
 
+    double delta_n_abs(double T, double lambdamicron) const;
+
     inline void setHasThermalData(bool state);
     void setThermalData(int n, double val);
 
@@ -135,10 +137,10 @@ public:
 private:
     double          refractiveIndex_abs_Tref(double lambdamicron) const;
     double          refractiveIndex_rel_Tref(double lambdamicron) const;
-    double          refractiveIndex_abs(double lambdamicron) const;
-    double          refractiveIndex_rel(double lambdamicron) const;
+    double          refractiveIndex_abs(double lambdamicron, double T) const;
+    double          refractiveIndex_rel(double lambdamicron, double T) const;
     QVector<double> refractiveIndex_rel_Tref(const QVector<double>& vLambdamicron) const;
-    QVector<double> refractiveIndex_rel(const QVector<double>& vLambdamicron) const;
+    QVector<double> refractiveIndex_rel(const QVector<double>& vLambdamicron, double T) const;
 
     /** current temperature */
     static double T_;

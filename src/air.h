@@ -33,7 +33,7 @@ public:
     static double refractive_index_abs(double lambdamicron, double T, double P= 101325.0);
 
     /** Computes refractive index at the reference temperature */
-    static double refractive_index_ref(double lambdamicron);
+    static double refractive_index_15degC_1atm(double lambdamicron);
 };
 
 #endif // AIR_H

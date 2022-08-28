@@ -135,7 +135,7 @@ double Glass::Pxy_(const QString& x, const QString& y) const
 
 double Glass::refractiveIndex(double lambdamicron) const
 {
-    return refractiveIndex_rel(lambdamicron);
+    return refractiveIndex_rel(lambdamicron, T_);
 }
 
 double Glass::refractiveIndex(const QString& spectral) const
@@ -145,7 +145,7 @@ double Glass::refractiveIndex(const QString& spectral) const
 
 QVector<double> Glass::refractiveIndex(const QVector<double> &vLambdamicron) const
 {
-    return refractiveIndex_rel(vLambdamicron);
+    return refractiveIndex_rel(vLambdamicron, T_);
 }
 
 double Glass::refractiveIndex_rel_Tref(double lambdamicron) const
@@ -167,12 +167,11 @@ double Glass::refractiveIndex_abs_Tref(double lambdamicron) const
     return n_abs_T0;
 }
 
-double Glass::refractiveIndex_abs(double lambdamicron) const
+double Glass::refractiveIndex_abs(double lambdamicron, double T) const
 {
     double dn = 0.0;
     if(hasThermalData_){
-        double dn_dt = dn_dt_abs(T_, lambdamicron);
-        dn = (T_-Tref_)*dn_dt;
+        dn = delta_n_abs(T, lambdamicron);
     }
 
     double n_abs_T0 = refractiveIndex_abs_Tref(lambdamicron);
@@ -181,10 +180,10 @@ double Glass::refractiveIndex_abs(double lambdamicron) const
     return n_abs;
 }
 
-double Glass::refractiveIndex_rel(double lambdamicron) const
+double Glass::refractiveIndex_rel(double lambdamicron, double T) const
 {
-    double n_abs = refractiveIndex_abs(lambdamicron);
-    double n_air = Air::refractive_index_abs(lambdamicron, T_);
+    double n_abs = refractiveIndex_abs(lambdamicron, T);
+    double n_air = Air::refractive_index_abs(lambdamicron, T);
     double n_rel = n_abs/n_air;
 
     return n_rel;
@@ -204,13 +203,13 @@ QVector<double> Glass::refractiveIndex_rel_Tref(const QVector<double>& vLambdami
 }
 
 
-QVector<double> Glass::refractiveIndex_rel(const QVector<double> &vLambdamicron) const
+QVector<double> Glass::refractiveIndex_rel(const QVector<double> &vLambdamicron, double T) const
 {
     const int dataCount = vLambdamicron.size();
     QVector<double> n_rel_v(dataCount);
 
     for(int i = 0; i < dataCount; i++){
-        n_rel_v[i] = refractiveIndex_rel(vLambdamicron[i]);
+        n_rel_v[i] = refractiveIndex_rel(vLambdamicron[i], T);
     }
 
     return n_rel_v;
@@ -452,11 +451,9 @@ void Glass::appendTransmittanceData(double lambdamicron, double trans, double th
 double Glass::dn_dt_abs(double T, double lambdamicron) const
 {
     double dT = T - Tref_;
-    double Stk = (Ltk() > 0.0) - (Ltk() < 0.0);
     double n  = refractiveIndex_abs_Tref(lambdamicron);
 
-    //return (n*n-1)/(2*n) * ( D0() + 2*D1()*dT + 3*D2()*dT*dT + (E0() + 2*E1()*dT)/(lambdamicron*lambdamicron - Ltk()*Ltk()) );
-    return (n*n-1)/(2*n) * ( D0() + 2*D1()*dT + 3*D2()*dT*dT + (E0() + 2*E1()*dT)/(lambdamicron*lambdamicron - Stk*Ltk()*Ltk()) );
+    return (n*n-1)/(2*n) * ( D0() + 2*D1()*dT + 3*D2()*dT*dT + (E0() + 2*E1()*dT)/(lambdamicron*lambdamicron - Ltk()*Ltk()) );
 }
 
 QVector<double> Glass::dn_dt_abs(const QVector<double>& vT, double lambdamicron) const
@@ -469,6 +466,20 @@ QVector<double> Glass::dn_dt_abs(const QVector<double>& vT, double lambdamicron)
     }
 
     return vDndt;
+}
+
+
+double Glass::delta_n_abs(double T, double lambdamicron) const
+{
+    double dT = T - Tref_;
+    double Stk = (Ltk() > 0.0) - (Ltk() < 0.0);
+    double n  = refractiveIndex_rel_Tref(lambdamicron);
+
+    // Schott technical document
+    return (n*n-1)/(2*n) * ( D0()*dT+ D1()*dT*dT + D2()*dT*dT*dT + (E0()*dT + E1()*dT*dT)/(lambdamicron*lambdamicron - Ltk()*Ltk()) );
+
+    // Zemax manual
+    //return (n*n-1)/(2*n) * ( D0()*dT+ D1()*dT*dT + D2()*dT*dT*dT + (E0()*dT + E1()*dT*dT)/(lambdamicron*lambdamicron - Stk*Ltk()*Ltk()) );
 }
 
 void Glass::setThermalData(int n, double val)
