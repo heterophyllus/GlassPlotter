@@ -80,6 +80,15 @@ void Glass::setCurrentTemperature(double t)
     T_ = t;
 }
 
+double Glass::relative_wavelength(double lambdainput) const
+{
+    constexpr double P = 101325.0;
+    double n_air_system = Air::refractive_index_abs(lambdainput, T_, P);
+    double n_air_ref    = Air::refractive_index_abs(lambdainput, Tref_, P);
+    double lambda_rel   = lambdainput*(n_air_system/n_air_ref);
+
+    return lambda_rel;
+}
 
 double Glass::getValue(const QString& dname) const
 {
@@ -135,7 +144,9 @@ double Glass::Pxy_(const QString& x, const QString& y) const
 
 double Glass::refractiveIndex(double lambdamicron) const
 {
-    return refractiveIndex_rel(lambdamicron, T_);
+    double lambda_rel = relative_wavelength(lambdamicron);
+    return refractiveIndex_rel(lambda_rel, T_);
+    //return refractiveIndex_rel(lambdamicron, T_);
 }
 
 double Glass::refractiveIndex(const QString& spectral) const

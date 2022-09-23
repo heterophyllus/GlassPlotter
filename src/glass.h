@@ -39,6 +39,7 @@ public:
 
     static void setCurrentTemperature(double t);
 
+    double relative_wavelength(double lambdainput) const;
 
     // fundamental data
     double          refractiveIndex(double lambdamicron) const;
