@@ -55,3 +55,8 @@ This project is licensed under GPL License - see the [LICENSE](LICENSE.md) for d
 ## Contribution
 Contributions and feedbacks are greatly appreciated.
 Please read [CONTRIBUTING](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+
+## Related Repository
+- [python-glass-manager](https://github.com/heterophyllus/python-glass-manager): Python transcriptions of the core components to load AGF/XML and deal with glass properties.
+
